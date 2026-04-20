@@ -1,0 +1,117 @@
+---
+---
+<section
+  class="relative min-h-screen flex items-center overflow-hidden bg-charcoal-800"
+>
+  <!-- Background image with warm overlay -->
+  <div class="absolute inset-0">
+    <img
+      src="https://images.unsplash.com/photo-1596755094514-f87e34085b2c?w=1800&q=80&auto=format&fit=crop"
+      alt="Woman with glowing, confident skin"
+      class="w-full h-full object-cover object-center opacity-40"
+    />
+    <!-- Two-layer gradient: warm gold tint + dark bottom fade -->
+    <div class="absolute inset-0 bg-gradient-to-r from-charcoal-900/80 via-charcoal-800/60 to-charcoal-700/30"></div>
+    <div class="absolute inset-0 bg-gradient-to-t from-charcoal-900/60 via-transparent to-transparent"></div>
+  </div>
+
+  <!-- Decorative gold accent line -->
+  <div class="absolute left-0 top-0 bottom-0 w-1 bg-gradient-to-b from-transparent via-gold-500 to-transparent opacity-60"></div>
+
+  <div class="relative z-10 max-w-7xl mx-auto px-6 lg:px-8 pt-24 pb-16 lg:pb-24">
+    <div class="max-w-2xl">
+
+      <!-- Eyebrow badge -->
+      <div
+        x-data
+        x-intersect.once="$el.classList.add('opacity-100', 'translate-y-0')"
+        class="opacity-0 translate-y-4 transition-all duration-700 inline-flex items-center gap-2 mb-6"
+      >
+        <span class="w-8 h-px bg-gold-400"></span>
+        <span class="text-gold-400 text-sm font-medium tracking-widest uppercase">Nurse Practitioner Created</span>
+      </div>
+
+      <!-- Headline -->
+      <h1
+        x-data
+        x-intersect.once="$el.classList.add('opacity-100', 'translate-y-0')"
+        class="opacity-0 translate-y-6 transition-all duration-700 delay-100 font-serif text-4xl sm:text-5xl lg:text-6xl font-semibold text-white leading-tight mb-6"
+      >
+        Confident Skin<br/>
+        <em class="text-gold-300 not-italic">That Grows</em><br/>
+        With You.
+      </h1>
+
+      <!-- Subheadline -->
+      <p
+        x-data
+        x-intersect.once="$el.classList.add('opacity-100', 'translate-y-0')"
+        class="opacity-0 translate-y-6 transition-all duration-700 delay-200 text-lg text-charcoal-200 leading-relaxed mb-4 max-w-xl"
+      >
+        Medical-grade, plant-based skincare built by a nurse practitioner — not a marketing team.
+        Clean ingredients. Clinical results. Under five minutes.
+      </p>
+
+      <!-- 3-step pill -->
+      <div
+        x-data
+        x-intersect.once="$el.classList.add('opacity-100', 'translate-y-0')"
+        class="opacity-0 translate-y-6 transition-all duration-700 delay-300 flex items-center gap-3 mb-10"
+      >
+        {['Cleanse', 'Treat', 'Protect'].map((step, i) => (
+          <span class="px-4 py-1.5 bg-white/10 backdrop-blur-sm border border-white/20 rounded-full text-white text-sm font-medium">
+            {step}
+          </span>
+        ))}
+      </div>
+
+      <!-- CTAs -->
+      <div
+        x-data
+        x-intersect.once="$el.classList.add('opacity-100', 'translate-y-0')"
+        class="opacity-0 translate-y-6 transition-all duration-700 delay-[400ms] flex flex-wrap gap-4"
+      >
+        <a
+          href="#system"
+          class="px-8 py-4 bg-gold-500 hover:bg-gold-600 text-white font-medium rounded-full transition-all duration-200 shadow-lift hover:shadow-elegant"
+        >
+          Discover The System
+        </a>
+        <a
+          href="#products"
+          class="px-8 py-4 bg-white/10 hover:bg-white/20 backdrop-blur-sm border border-white/30 text-white font-medium rounded-full transition-all duration-200"
+        >
+          Shop Products
+        </a>
+      </div>
+
+      <!-- Social proof strip -->
+      <div
+        x-data
+        x-intersect.once="$el.classList.add('opacity-100')"
+        class="opacity-0 transition-all duration-700 delay-500 mt-12 flex items-center gap-6"
+      >
+        <div class="flex -space-x-2">
+          {[
+            'https://images.unsplash.com/photo-1580489944761-15a19d654956?w=48&h=48&q=80&fit=crop&crop=face',
+            'https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?w=48&h=48&q=80&fit=crop&crop=face',
+            'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=48&h=48&q=80&fit=crop&crop=face',
+          ].map(src => (
+            <img src={src} alt="Customer" class="w-10 h-10 rounded-full border-2 border-charcoal-700 object-cover" />
+          ))}
+        </div>
+        <div>
+          <div class="flex text-gold-400 text-sm mb-0.5">★★★★★</div>
+          <p class="text-charcoal-300 text-sm"><span class="text-white font-medium">500+</span> women transformed</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Scroll indicator -->
+  <div class="absolute bottom-8 left-1/2 -translate-x-1/2 text-charcoal-400 animate-bounce">
+    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 9l-7 7-7-7" />
+    </svg>
+  </div>
+</section>

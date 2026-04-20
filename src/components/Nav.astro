@@ -1,0 +1,77 @@
+---
+---
+<header
+  x-data="{ open: false, scrolled: false }"
+  x-init="window.addEventListener('scroll', () => { scrolled = window.scrollY > 40 })"
+  :class="scrolled ? 'bg-cream-100/95 backdrop-blur-sm shadow-card' : 'bg-transparent'"
+  class="fixed top-0 inset-x-0 z-50 transition-all duration-300"
+>
+  <nav class="max-w-7xl mx-auto px-6 lg:px-8 flex items-center justify-between h-16 lg:h-20">
+
+    <!-- Logo -->
+    <a href="/" class="flex items-center gap-2 group">
+      <span class="font-serif text-xl font-semibold tracking-tight text-charcoal-800 group-hover:text-gold-500 transition-colors">
+        CFC <span class="text-gold-500">Skincare</span>
+      </span>
+    </a>
+
+    <!-- Desktop Links -->
+    <ul class="hidden lg:flex items-center gap-8 text-sm font-medium text-charcoal-600">
+      <li><a href="#system" class="hover:text-gold-500 transition-colors">The System</a></li>
+      <li><a href="#products" class="hover:text-gold-500 transition-colors">Shop</a></li>
+      <li><a href="#about" class="hover:text-gold-500 transition-colors">About</a></li>
+      <li><a href="#contact" class="hover:text-gold-500 transition-colors">Contact</a></li>
+    </ul>
+
+    <!-- Desktop CTA -->
+    <div class="hidden lg:flex items-center gap-4">
+      <a
+        href="https://www.cfcskincare.shop/collections/all"
+        target="_blank"
+        rel="noopener"
+        class="px-5 py-2.5 bg-gold-500 text-white text-sm font-medium rounded-full hover:bg-gold-600 transition-colors shadow-card"
+      >
+        Shop Now
+      </a>
+    </div>
+
+    <!-- Mobile Menu Button -->
+    <button
+      @click="open = !open"
+      class="lg:hidden p-2 text-charcoal-700 hover:text-gold-500 transition-colors"
+      aria-label="Toggle menu"
+    >
+      <svg x-show="!open" class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+      </svg>
+      <svg x-show="open" class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+      </svg>
+    </button>
+  </nav>
+
+  <!-- Mobile Menu -->
+  <div
+    x-show="open"
+    x-transition:enter="transition ease-out duration-200"
+    x-transition:enter-start="opacity-0 -translate-y-2"
+    x-transition:enter-end="opacity-100 translate-y-0"
+    x-transition:leave="transition ease-in duration-150"
+    x-transition:leave-start="opacity-100 translate-y-0"
+    x-transition:leave-end="opacity-0 -translate-y-2"
+    class="lg:hidden bg-cream-100 border-t border-cream-300 px-6 pb-6 pt-4 space-y-4"
+  >
+    <a href="#system" @click="open=false" class="block text-charcoal-700 hover:text-gold-500 font-medium py-2">The System</a>
+    <a href="#products" @click="open=false" class="block text-charcoal-700 hover:text-gold-500 font-medium py-2">Shop</a>
+    <a href="#about" @click="open=false" class="block text-charcoal-700 hover:text-gold-500 font-medium py-2">About</a>
+    <a href="#contact" @click="open=false" class="block text-charcoal-700 hover:text-gold-500 font-medium py-2">Contact</a>
+    <a
+      href="https://www.cfcskincare.shop/collections/all"
+      target="_blank"
+      rel="noopener"
+      class="block w-full text-center px-5 py-3 bg-gold-500 text-white font-medium rounded-full mt-2"
+    >
+      Shop Now
+    </a>
+  </div>
+</header>

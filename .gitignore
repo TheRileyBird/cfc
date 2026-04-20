@@ -2,3 +2,12 @@
 # Dolt database files (added by bd init)
 .dolt/
 *.db
+
+# Astro
+dist/
+.astro/
+node_modules/
+.env
+.env.*
+!.env.example
+

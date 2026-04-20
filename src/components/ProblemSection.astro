@@ -1,0 +1,82 @@
+---
+import { Users, Layers, Leaf, CalendarX } from '@lucide/astro';
+
+const problems = [
+  {
+    icon: Users,
+    title: 'Made by Marketing, Not Medicine',
+    body: 'Most skincare is formulated by chemists hired by marketing departments — not medical professionals. The result sounds impressive but underdelivers on real skin.',
+  },
+  {
+    icon: Layers,
+    title: 'Overwhelming Complexity',
+    body: 'Twelve-step routines, conflicting advice, hundreds of brands. Women start strong and give up within weeks because the noise is impossible to navigate.',
+  },
+  {
+    icon: Leaf,
+    title: 'The Clean vs. Effective False Choice',
+    body: 'The industry tells you natural means weak, and medical-grade means harsh. You\'ve been forced to choose. That false choice ends here.',
+  },
+  {
+    icon: CalendarX,
+    title: 'Ignored by the Industry You\'re Funding',
+    body: 'Products designed for 25-year-olds don\'t address hormonal shifts, sun damage, or the specific changes that arrive in your 40s and 50s. You\'ve been chronically underserved.',
+  },
+];
+---
+
+<section class="py-24 lg:py-32 bg-white" id="problem">
+  <div class="max-w-7xl mx-auto px-6 lg:px-8">
+
+    <!-- Section header -->
+    <div
+      x-data
+      x-intersect.once="$el.classList.add('opacity-100', 'translate-y-0')"
+      class="opacity-0 translate-y-6 transition-all duration-700 max-w-2xl mb-16"
+    >
+      <div class="flex items-center gap-3 mb-4">
+        <span class="w-8 h-px bg-gold-500"></span>
+        <span class="text-gold-500 text-sm font-medium tracking-widest uppercase">The Problem</span>
+      </div>
+      <h2 class="font-serif text-3xl lg:text-4xl font-semibold text-charcoal-800 leading-tight mb-4">
+        You haven't found the right skincare.<br/>
+        <span class="text-charcoal-400">The industry hasn't built it — until now.</span>
+      </h2>
+      <p class="text-charcoal-500 text-lg leading-relaxed">
+        Women in their 30s, 40s, 50s, and beyond are being failed at every turn. Here's why nothing has worked.
+      </p>
+    </div>
+
+    <!-- Problem cards grid -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+      {problems.map(({ icon: Icon, title, body }, i) => (
+        <div
+          x-data
+          x-intersect.once="$el.classList.add('opacity-100', 'translate-y-0')"
+          class="opacity-0 translate-y-8 transition-all duration-700"
+          style={`transition-delay: ${i * 100}ms`}
+        >
+          <div class="group p-8 bg-cream-100 rounded-2xl border-l-4 border-gold-400 hover:shadow-card transition-all duration-300 hover:-translate-y-1 h-full">
+            <div class="w-10 h-10 rounded-xl bg-gold-500/10 flex items-center justify-center mb-5 group-hover:bg-gold-500/20 transition-colors">
+              <Icon class="w-5 h-5 text-gold-500" />
+            </div>
+            <h3 class="font-serif text-xl font-semibold text-charcoal-800 mb-3">{title}</h3>
+            <p class="text-charcoal-500 leading-relaxed text-[0.9375rem]">{body}</p>
+          </div>
+        </div>
+      ))}
+    </div>
+
+    <!-- Emotional bridge -->
+    <div
+      x-data
+      x-intersect.once="$el.classList.add('opacity-100', 'translate-y-0')"
+      class="opacity-0 translate-y-6 transition-all duration-700 mt-12 p-8 bg-charcoal-800 rounded-2xl text-center"
+    >
+      <p class="font-serif text-xl lg:text-2xl text-white leading-relaxed max-w-3xl mx-auto">
+        "This isn't a vanity problem. It's a confidence problem — and confidence touches
+        <em class="text-gold-300">every area of a woman's life.</em>"
+      </p>
+    </div>
+  </div>
+</section>

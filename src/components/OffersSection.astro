@@ -1,0 +1,143 @@
+---
+import { Check, ArrowRight, Star } from '@lucide/astro';
+
+const offers = [
+  {
+    name: 'Starter System',
+    tagline: 'Everything you need to start seeing results.',
+    price: '$130–$150',
+    savingsPrice: '$110–$130',
+    description: 'One cleanser, one treatment, one SPF. The foundation of the CFC system — clinically designed, simple to use.',
+    includes: [
+      'Age Defying Brightening Cleanser',
+      'Apple Stem Wrinkle Eraser',
+      'Pure Sun Defense SPF 50+',
+    ],
+    cta: 'Start Your Skin Journey',
+    href: 'https://www.cfcskincare.shop/collections/all',
+    featured: false,
+    badge: null,
+  },
+  {
+    name: 'Complete Treatment System',
+    tagline: 'This is the system they stop wearing foundation with.',
+    price: '$250–$300',
+    savingsPrice: '$175–$210',
+    description: 'The full Cleanse-Treat-Protect protocol — five products, three steps, one transformational routine. Under five minutes every day.',
+    includes: [
+      'Brightening Glyco Glow Cleanser',
+      'Apple Stem Wrinkle Eraser',
+      'Color Correction C&E Serum',
+      'Pure Hydration Hyaluronic Acid Serum',
+      'Sun Kissed Tinted SPF 30',
+    ],
+    cta: 'Shop the Complete System',
+    href: 'https://www.cfcskincare.shop/collections/all',
+    featured: true,
+    badge: 'Most Popular',
+  },
+  {
+    name: 'Premium Anti-Aging Collection',
+    tagline: 'Results that rival in-office treatments.',
+    price: '$450–$600+',
+    savingsPrice: '$315–$420',
+    description: 'Complete system plus our advanced NAD+ formulations and the clinical-grade Quad Glow Elite LED Mask. For women who are serious about their skin.',
+    includes: [
+      'Full Complete System (5 products)',
+      'NAD+ Age Defying Retinol Cream 0.5%',
+      'Revitalizing Retinol Eye Cream',
+      'T Tightening and Firming Serum',
+      'Quad Glow Elite LED Mask',
+    ],
+    cta: 'Build Your Premium Routine',
+    href: 'https://www.cfcskincare.shop/collections/all',
+    featured: false,
+    badge: 'Best Value',
+  },
+];
+---
+
+<section class="py-24 lg:py-32 bg-charcoal-800" id="offers">
+  <div class="max-w-7xl mx-auto px-6 lg:px-8">
+
+    <!-- Header -->
+    <div
+      x-data
+      x-intersect.once="$el.classList.add('opacity-100', 'translate-y-0')"
+      class="opacity-0 translate-y-6 transition-all duration-700 text-center max-w-2xl mx-auto mb-16"
+    >
+      <div class="flex items-center justify-center gap-3 mb-4">
+        <span class="w-8 h-px bg-gold-400"></span>
+        <span class="text-gold-400 text-sm font-medium tracking-widest uppercase">Choose Your System</span>
+        <span class="w-8 h-px bg-gold-400"></span>
+      </div>
+      <h2 class="font-serif text-3xl lg:text-4xl font-semibold text-white leading-tight mb-4">
+        Start where you are.<br/>
+        <span class="text-gold-300">Scale as you grow.</span>
+      </h2>
+      <p class="text-charcoal-300 text-lg">
+        Save 30% when you subscribe and save — and never run out of what your skin needs.
+      </p>
+    </div>
+
+    <!-- Offer cards -->
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      {offers.map(({ name, tagline, price, savingsPrice, description, includes, cta, href, featured, badge }, i) => (
+        <div
+          x-data
+          x-intersect.once="$el.classList.add('opacity-100', 'translate-y-0')"
+          class="opacity-0 translate-y-8 transition-all duration-700 flex flex-col"
+          style={`transition-delay: ${i * 100}ms`}
+        >
+          <div class={`relative flex flex-col flex-1 rounded-3xl p-8 ${featured ? 'bg-gold-500 text-white shadow-lift scale-105' : 'bg-charcoal-700 text-charcoal-100'}`}>
+
+            {badge && (
+              <span class={`absolute -top-3 left-1/2 -translate-x-1/2 px-4 py-1 rounded-full text-xs font-semibold ${featured ? 'bg-white text-gold-600' : 'bg-gold-500 text-white'}`}>
+                {badge}
+              </span>
+            )}
+
+            <div class="mb-6">
+              <h3 class={`font-serif text-2xl font-semibold mb-1 ${featured ? 'text-white' : 'text-white'}`}>{name}</h3>
+              <p class={`text-sm leading-relaxed mb-4 ${featured ? 'text-gold-100' : 'text-charcoal-300'}`}>{tagline}</p>
+              <p class={`text-sm leading-relaxed ${featured ? 'text-gold-100/80' : 'text-charcoal-400'}`}>{description}</p>
+            </div>
+
+            <div class="mb-6">
+              <div class={`flex items-baseline gap-2 mb-1 ${featured ? 'text-white' : 'text-charcoal-100'}`}>
+                <span class="font-serif text-3xl font-bold">{price}</span>
+              </div>
+              <p class={`text-sm ${featured ? 'text-gold-100' : 'text-charcoal-400'}`}>
+                <span class="font-medium">{savingsPrice}</span> with Subscribe &amp; Save 30%
+              </p>
+            </div>
+
+            <ul class="space-y-3 mb-8 flex-1">
+              {includes.map(item => (
+                <li class={`flex items-start gap-3 text-sm ${featured ? 'text-gold-50' : 'text-charcoal-300'}`}>
+                  <span class={`w-5 h-5 rounded-full flex items-center justify-center shrink-0 mt-0.5 ${featured ? 'bg-white/20' : 'bg-gold-500/20'}`}>
+                    <Check class={`w-3 h-3 ${featured ? 'text-white' : 'text-gold-400'}`} />
+                  </span>
+                  {item}
+                </li>
+              ))}
+            </ul>
+
+            <a
+              href={href}
+              target="_blank"
+              rel="noopener"
+              class={`inline-flex items-center justify-center gap-2 w-full py-3.5 px-6 rounded-full font-medium transition-all duration-200 ${
+                featured
+                  ? 'bg-white text-gold-600 hover:bg-gold-50'
+                  : 'bg-gold-500 text-white hover:bg-gold-600'
+              }`}
+            >
+              {cta} <ArrowRight class="w-4 h-4" />
+            </a>
+          </div>
+        </div>
+      ))}
+    </div>
+  </div>
+</section>

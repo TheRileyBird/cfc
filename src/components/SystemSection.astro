@@ -1,0 +1,121 @@
+---
+import { Droplets, Zap, Sun, ArrowRight } from '@lucide/astro';
+
+const steps = [
+  {
+    number: '01',
+    icon: Droplets,
+    step: 'Cleanse',
+    headline: 'A clean slate, not a stripped one.',
+    body: 'Gentle, plant-based cleansers that remove impurities without disrupting your skin\'s natural barrier. Options include our Age Defying Brightening Cleanser, Glyco Glow, NAD+ Bamboo Firming, and Jamin Jasmine formulas.',
+    products: ['Age Defying Brightening Cleanser', 'Brightening Glyco Glow Cleanser', 'NAD+ Bamboo Firming Cleanser'],
+    color: 'from-sage-100 to-sage-50',
+    accent: 'bg-sage-400',
+  },
+  {
+    number: '02',
+    icon: Zap,
+    step: 'Treat',
+    headline: 'Where the clinical results happen.',
+    body: 'The heart of the CFC system. Three hero treatment products working in synergy to address pigmentation, oxidative damage, fine lines, and cellular hydration.',
+    products: ['Apple Stem Wrinkle Eraser', 'Color Correction C&E Serum', 'Pure Hydration Hyaluronic Acid'],
+    color: 'from-gold-100 to-cream-200',
+    accent: 'bg-gold-500',
+  },
+  {
+    number: '03',
+    icon: Sun,
+    step: 'Protect',
+    headline: 'Guard every result you\'ve earned.',
+    body: 'Medical-grade SPF formulations that protect your skin investment and wear beautifully on all skin tones — no white cast, no compromise.',
+    products: ['Pure Sun Defense SPF 50+', 'Sun Kissed Protection Tinted SPF 30'],
+    color: 'from-cream-300 to-cream-200',
+    accent: 'bg-charcoal-700',
+  },
+];
+---
+
+<section class="py-24 lg:py-32 bg-cream-100" id="system">
+  <div class="max-w-7xl mx-auto px-6 lg:px-8">
+
+    <!-- Header -->
+    <div
+      x-data
+      x-intersect.once="$el.classList.add('opacity-100', 'translate-y-0')"
+      class="opacity-0 translate-y-6 transition-all duration-700 text-center max-w-3xl mx-auto mb-20"
+    >
+      <div class="flex items-center justify-center gap-3 mb-4">
+        <span class="w-8 h-px bg-gold-500"></span>
+        <span class="text-gold-500 text-sm font-medium tracking-widest uppercase">The Solution</span>
+        <span class="w-8 h-px bg-gold-500"></span>
+      </div>
+      <h2 class="font-serif text-3xl lg:text-5xl font-semibold text-charcoal-800 leading-tight mb-6">
+        Three steps.<br/>Under five minutes.<br/>
+        <span class="text-gold-500">Real results.</span>
+      </h2>
+      <p class="text-charcoal-500 text-lg leading-relaxed">
+        The CFC system removes complexity without removing results. A complete protocol, medical-grade precision, plant-based purity.
+      </p>
+    </div>
+
+    <!-- Steps -->
+    <div class="space-y-8">
+      {steps.map(({ number, icon: Icon, step, headline, body, products, color, accent }, i) => (
+        <div
+          x-data
+          x-intersect.once="$el.classList.add('opacity-100', 'translate-y-0')"
+          class="opacity-0 translate-y-8 transition-all duration-700"
+          style={`transition-delay: ${i * 150}ms`}
+        >
+          <div class={`grid lg:grid-cols-2 gap-0 rounded-3xl overflow-hidden shadow-elegant ${i % 2 === 1 ? 'lg:grid-flow-dense' : ''}`}>
+            <!-- Content side -->
+            <div class={`bg-gradient-to-br ${color} p-10 lg:p-14 flex flex-col justify-center ${i % 2 === 1 ? 'lg:col-start-2' : ''}`}>
+              <div class="flex items-center gap-4 mb-6">
+                <span class={`w-1.5 h-12 rounded-full ${accent}`}></span>
+                <div>
+                  <p class="text-charcoal-400 text-xs font-medium tracking-widest uppercase">Step {number}</p>
+                  <h3 class="font-serif text-3xl font-semibold text-charcoal-800">{step}</h3>
+                </div>
+              </div>
+              <p class="font-serif text-xl text-charcoal-700 mb-4 leading-snug">{headline}</p>
+              <p class="text-charcoal-500 leading-relaxed mb-8 max-w-md">{body}</p>
+              <ul class="space-y-2 mb-8">
+                {products.map(p => (
+                  <li class="flex items-center gap-3 text-charcoal-600 text-sm">
+                    <span class={`w-1.5 h-1.5 rounded-full ${accent} shrink-0`}></span>
+                    {p}
+                  </li>
+                ))}
+              </ul>
+              <a
+                href="#products"
+                class="inline-flex items-center gap-2 text-gold-600 font-medium hover:gap-3 transition-all text-sm"
+              >
+                Shop {step} <ArrowRight class="w-4 h-4" />
+              </a>
+            </div>
+
+            <!-- Image side -->
+            <div class={`relative min-h-64 lg:min-h-0 ${i % 2 === 1 ? 'lg:col-start-1 lg:row-start-1' : ''}`}>
+              <img
+                src={
+                  i === 0
+                    ? 'https://images.unsplash.com/photo-1612817288484-6f916006741a?w=800&q=80&auto=format&fit=crop'
+                    : i === 1
+                    ? 'https://images.unsplash.com/photo-1570172619644-dfd03ed5d881?w=800&q=80&auto=format&fit=crop'
+                    : 'https://images.unsplash.com/photo-1526758097130-bab247274f58?w=800&q=80&auto=format&fit=crop'
+                }
+                alt={`Step ${number}: ${step}`}
+                class="w-full h-full object-cover"
+              />
+              <!-- Step number overlay -->
+              <div class="absolute top-6 right-6 w-16 h-16 bg-charcoal-800/80 backdrop-blur-sm rounded-2xl flex items-center justify-center">
+                <span class="font-serif text-2xl font-bold text-gold-400">{number}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      ))}
+    </div>
+  </div>
+</section>

@@ -1,0 +1,76 @@
+---
+const testimonials = [
+  {
+    quote: "I haven't worn foundation to work in three months. I didn't even notice when it stopped feeling necessary. That's when I knew something had actually changed.",
+    name: "Sandra M.",
+    title: "Corporate Executive, 52",
+    avatar: "https://images.unsplash.com/photo-1580489944761-15a19d654956?w=96&h=96&q=80&fit=crop&crop=face",
+  },
+  {
+    quote: "I've tried everything — La Mer, SkinCeuticals, all the clean brands. This is the first time I've seen results I can photograph. My pigmentation is actually fading.",
+    name: "Karen T.",
+    title: "Teacher & Mother, 48",
+    avatar: "https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?w=96&h=96&q=80&fit=crop&crop=face",
+  },
+  {
+    quote: "As a woman of color, I've been burned by products not made for my skin. CFC is the first brand where I felt like they were thinking about me when they formulated it.",
+    name: "Tasha R.",
+    title: "Attorney, 41",
+    avatar: "https://images.unsplash.com/photo-1489424731084-a5d8b219a5bb?w=96&h=96&q=80&fit=crop&crop=face",
+  },
+  {
+    quote: "I spend $400 a month at the med spa. My NP told me I needed better at-home care between treatments. CFC is what she recommended. Now I'm extending every result.",
+    name: "Brenda L.",
+    title: "Entrepreneur, 55",
+    avatar: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=96&h=96&q=80&fit=crop&crop=face",
+  },
+];
+---
+
+<section class="py-24 lg:py-32 bg-cream-100">
+  <div class="max-w-7xl mx-auto px-6 lg:px-8">
+
+    <!-- Header -->
+    <div
+      x-data
+      x-intersect.once="$el.classList.add('opacity-100', 'translate-y-0')"
+      class="opacity-0 translate-y-6 transition-all duration-700 text-center max-w-2xl mx-auto mb-16"
+    >
+      <div class="flex items-center justify-center gap-3 mb-4">
+        <span class="w-8 h-px bg-gold-500"></span>
+        <span class="text-gold-500 text-sm font-medium tracking-widest uppercase">Real Women. Real Skin.</span>
+        <span class="w-8 h-px bg-gold-500"></span>
+      </div>
+      <h2 class="font-serif text-3xl lg:text-4xl font-semibold text-charcoal-800">
+        The results speak for themselves.
+      </h2>
+    </div>
+
+    <!-- Testimonials grid -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+      {testimonials.map(({ quote, name, title, avatar }, i) => (
+        <div
+          x-data
+          x-intersect.once="$el.classList.add('opacity-100', 'translate-y-0')"
+          class="opacity-0 translate-y-8 transition-all duration-700 flex flex-col bg-white rounded-2xl p-8 shadow-card border-t-4 border-gold-400"
+          style={`transition-delay: ${i * 100}ms`}
+        >
+          <!-- Stars -->
+          <div class="flex text-gold-400 text-sm mb-4">★★★★★</div>
+
+          <blockquote class="font-serif text-lg text-charcoal-700 leading-relaxed mb-6 flex-1">
+            "{quote}"
+          </blockquote>
+
+          <div class="flex items-center gap-4">
+            <img src={avatar} alt={name} class="w-12 h-12 rounded-full object-cover" />
+            <div>
+              <p class="font-semibold text-charcoal-800 text-sm">{name}</p>
+              <p class="text-charcoal-400 text-xs">{title}</p>
+            </div>
+          </div>
+        </div>
+      ))}
+    </div>
+  </div>
+</section>

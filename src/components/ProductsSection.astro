@@ -1,0 +1,90 @@
+---
+import { getProducts } from '../lib/shopify';
+import ProductCard from './ProductCard.astro';
+import { ArrowRight } from '@lucide/astro';
+
+const products = await getProducts(12);
+const hasProducts = products.length > 0;
+
+// Fallback placeholder products when API is unavailable
+const fallbackProducts = [
+  { id: '1', title: 'Apple Stem Wrinkle Eraser', handle: 'apple-stem-wrinkle-eraser', description: 'Advanced wrinkle treatment with plant stem cell technology.', priceRange: { minVariantPrice: { amount: '65.00', currencyCode: 'USD' } }, images: { edges: [] }, variants: { edges: [{ node: { id: '1', title: 'Default', price: { amount: '65.00' } } }] }, tags: ['treat'], collections: { edges: [] } },
+  { id: '2', title: 'Color Correction C&E Serum', handle: 'color-correction-ce-serum', description: 'Brightening serum with Vitamins C and E for even skin tone.', priceRange: { minVariantPrice: { amount: '58.00', currencyCode: 'USD' } }, images: { edges: [] }, variants: { edges: [{ node: { id: '2', title: 'Default', price: { amount: '58.00' } } }] }, tags: ['treat'], collections: { edges: [] } },
+  { id: '3', title: 'Pure Hydration Hyaluronic Acid Serum', handle: 'pure-hydration-hyaluronic-acid-serum', description: 'Deep cellular hydration with multi-weight hyaluronic acid.', priceRange: { minVariantPrice: { amount: '52.00', currencyCode: 'USD' } }, images: { edges: [] }, variants: { edges: [{ node: { id: '3', title: 'Default', price: { amount: '52.00' } } }] }, tags: ['treat'], collections: { edges: [] } },
+  { id: '4', title: 'Pure Sun Defense SPF 50+', handle: 'pure-sun-defense-spf-50', description: 'Medical-grade broad spectrum protection, no white cast.', priceRange: { minVariantPrice: { amount: '45.00', currencyCode: 'USD' } }, images: { edges: [] }, variants: { edges: [{ node: { id: '4', title: 'Default', price: { amount: '45.00' } } }] }, tags: ['protect'], collections: { edges: [] } },
+  { id: '5', title: 'Age Defying Brightening Cleanser', handle: 'age-defying-brightening-cleanser', description: 'Gentle yet effective cleansing with brightening botanicals.', priceRange: { minVariantPrice: { amount: '38.00', currencyCode: 'USD' } }, images: { edges: [] }, variants: { edges: [{ node: { id: '5', title: 'Default', price: { amount: '38.00' } } }] }, tags: ['cleanse'], collections: { edges: [] } },
+  { id: '6', title: 'Sun Kissed Protection Tinted SPF 30', handle: 'sun-kissed-protection-tinted-spf-30', description: 'Tinted SPF with a natural finish for all skin tones.', priceRange: { minVariantPrice: { amount: '42.00', currencyCode: 'USD' } }, images: { edges: [] }, variants: { edges: [{ node: { id: '6', title: 'Default', price: { amount: '42.00' } } }] }, tags: ['protect'], collections: { edges: [] } },
+];
+
+const displayProducts = hasProducts ? products : fallbackProducts;
+const filters = ['All', 'Cleanse', 'Treat', 'Protect'];
+---
+
+<section class="py-24 lg:py-32 bg-cream-100" id="products">
+  <div class="max-w-7xl mx-auto px-6 lg:px-8">
+
+    <!-- Header -->
+    <div
+      x-data
+      x-intersect.once="$el.classList.add('opacity-100', 'translate-y-0')"
+      class="opacity-0 translate-y-6 transition-all duration-700 flex flex-col sm:flex-row sm:items-end justify-between gap-6 mb-12"
+    >
+      <div>
+        <div class="flex items-center gap-3 mb-3">
+          <span class="w-8 h-px bg-gold-500"></span>
+          <span class="text-gold-500 text-sm font-medium tracking-widest uppercase">Shop CFC</span>
+        </div>
+        <h2 class="font-serif text-3xl lg:text-4xl font-semibold text-charcoal-800">
+          The complete system.
+        </h2>
+      </div>
+      <a
+        href="https://www.cfcskincare.shop/collections/all"
+        target="_blank"
+        rel="noopener"
+        class="inline-flex items-center gap-2 text-gold-600 font-medium hover:gap-3 transition-all shrink-0"
+      >
+        View All Products <ArrowRight class="w-4 h-4" />
+      </a>
+    </div>
+
+    <!-- Filter tabs -->
+    <div
+      x-data="{ active: 'All' }"
+      class="mb-10"
+    >
+      <div class="flex gap-2 flex-wrap mb-10">
+        {filters.map(f => (
+          <button
+            @click={`active = '${f}'`}
+            :class={`active === '${f}' ? 'bg-gold-500 text-white' : 'bg-white text-charcoal-500 hover:text-charcoal-800'`}
+            class="px-5 py-2 rounded-full text-sm font-medium transition-all duration-200 shadow-card"
+          >
+            {f}
+          </button>
+        ))}
+      </div>
+
+      <!-- Products grid -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+        {displayProducts.map((product, i) => {
+          const step = product.tags.find((t: string) => ['cleanse','treat','protect'].includes(t.toLowerCase())) ?? '';
+          return (
+            <div
+              x-show={`active === 'All' || active.toLowerCase() === '${step.toLowerCase()}'`}
+              x-transition:enter="transition ease-out duration-200"
+              x-transition:enter-start="opacity-0 scale-95"
+              x-transition:enter-end="opacity-100 scale-100"
+              x-data
+              x-intersect.once="$el.classList.add('opacity-100', 'translate-y-0')"
+              class="opacity-0 translate-y-6 transition-all duration-500"
+              style={`transition-delay: ${(i % 4) * 80}ms`}
+            >
+              <ProductCard product={product} />
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  </div>
+</section>

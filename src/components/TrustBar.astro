@@ -1,0 +1,24 @@
+---
+import { Leaf, FlaskConical, MapPin, ShieldCheck, Sparkles } from '@lucide/astro';
+
+const items = [
+  { icon: FlaskConical, label: 'Medical-Grade Efficacy' },
+  { icon: Leaf, label: 'Plant-Based Purity' },
+  { icon: Sparkles, label: 'Purity-Tested' },
+  { icon: MapPin, label: 'Louisiana-Made' },
+  { icon: ShieldCheck, label: 'NP-Created' },
+];
+---
+
+<div class="bg-charcoal-800 py-4">
+  <div class="max-w-7xl mx-auto px-6 lg:px-8">
+    <div class="flex flex-wrap items-center justify-center gap-6 lg:gap-12">
+      {items.map(({ icon: Icon, label }) => (
+        <div class="flex items-center gap-2 text-charcoal-300">
+          <Icon class="w-4 h-4 text-gold-400 shrink-0" />
+          <span class="text-xs font-medium tracking-wide uppercase">{label}</span>
+        </div>
+      ))}
+    </div>
+  </div>
+</div>
