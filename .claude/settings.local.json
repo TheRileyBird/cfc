@@ -2,7 +2,10 @@
   "permissions": {
     "allow": [
       "Bash(bd create *)",
-      "Bash(bd update *)"
+      "Bash(bd update *)",
+      "Bash(cp -f /Users/joshuariley/Sites/cfc/src/assets/images/*.jpg /Users/joshuariley/Sites/cfc/public/images/)",
+      "Bash(cp -f /Users/joshuariley/Sites/cfc/src/assets/images/*.png /Users/joshuariley/Sites/cfc/public/images/)",
+      "Bash(cp -f /Users/joshuariley/Sites/cfc/src/assets/videos/stock-video.mp4 /Users/joshuariley/Sites/cfc/public/video/)"
     ]
   }
 }

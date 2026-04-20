@@ -1,23 +1,22 @@
 ---
-import { Leaf, FlaskConical, MapPin, ShieldCheck, Sparkles } from '@lucide/astro';
-
 const items = [
-  { icon: FlaskConical, label: 'Medical-Grade Efficacy' },
-  { icon: Leaf, label: 'Plant-Based Purity' },
-  { icon: Sparkles, label: 'Purity-Tested' },
-  { icon: MapPin, label: 'Louisiana-Made' },
-  { icon: ShieldCheck, label: 'NP-Created' },
+  'Medical-Grade Efficacy',
+  'Plant-Based Purity',
+  'Purity-Tested',
+  'Louisiana-Made',
+  'NP-Founded',
+  'Chemist-Formulated',
 ];
 ---
 
-<div class="bg-charcoal-800 py-4">
-  <div class="max-w-7xl mx-auto px-6 lg:px-8">
-    <div class="flex flex-wrap items-center justify-center gap-6 lg:gap-12">
-      {items.map(({ icon: Icon, label }) => (
-        <div class="flex items-center gap-2 text-charcoal-300">
-          <Icon class="w-4 h-4 text-gold-400 shrink-0" />
-          <span class="text-xs font-medium tracking-wide uppercase">{label}</span>
-        </div>
+<div class="bg-charcoal-800 py-3.5">
+  <div class="max-w-7xl mx-auto px-6 lg:px-16">
+    <div class="flex flex-wrap items-center justify-center gap-x-8 gap-y-2">
+      {items.map((item, i) => (
+        <>
+          <span class="text-[#E8D5A3]/70 text-[0.65rem] tracking-[0.2em] uppercase font-medium">{item}</span>
+          {i < items.length - 1 && <span class="text-[#C9A84C]/30 hidden sm:block text-xs">·</span>}
+        </>
       ))}
     </div>
   </div>

@@ -1,117 +1,96 @@
 ---
+import videoSrc from '../assets/videos/stock-video.mp4';
 ---
-<section
-  class="relative min-h-screen flex items-center overflow-hidden bg-charcoal-800"
->
-  <!-- Background image with warm overlay -->
-  <div class="absolute inset-0">
-    <img
-      src="https://images.unsplash.com/photo-1596755094514-f87e34085b2c?w=1800&q=80&auto=format&fit=crop"
-      alt="Woman with glowing, confident skin"
-      class="w-full h-full object-cover object-center opacity-40"
-    />
-    <!-- Two-layer gradient: warm gold tint + dark bottom fade -->
-    <div class="absolute inset-0 bg-gradient-to-r from-charcoal-900/80 via-charcoal-800/60 to-charcoal-700/30"></div>
-    <div class="absolute inset-0 bg-gradient-to-t from-charcoal-900/60 via-transparent to-transparent"></div>
-  </div>
 
-  <!-- Decorative gold accent line -->
-  <div class="absolute left-0 top-0 bottom-0 w-1 bg-gradient-to-b from-transparent via-gold-500 to-transparent opacity-60"></div>
+<section class="relative h-screen min-h-[600px] flex items-end overflow-hidden">
 
-  <div class="relative z-10 max-w-7xl mx-auto px-6 lg:px-8 pt-24 pb-16 lg:pb-24">
-    <div class="max-w-2xl">
+  <!-- Video background -->
+  <video
+    autoplay
+    muted
+    loop
+    playsinline
+    class="absolute inset-0 w-full h-full object-cover"
+  >
+    <source src={videoSrc} type="video/mp4" />
+  </video>
 
-      <!-- Eyebrow badge -->
-      <div
-        x-data
-        x-intersect.once="$el.classList.add('opacity-100', 'translate-y-0')"
-        class="opacity-0 translate-y-4 transition-all duration-700 inline-flex items-center gap-2 mb-6"
-      >
-        <span class="w-8 h-px bg-gold-400"></span>
-        <span class="text-gold-400 text-sm font-medium tracking-widest uppercase">Nurse Practitioner Created</span>
-      </div>
+  <!-- Layered overlays: subtle warm tint + strong bottom-up fade for text legibility -->
+  <div class="absolute inset-0 bg-gradient-to-t from-[#0d0b09]/85 via-[#0d0b09]/20 to-transparent"></div>
+  <div class="absolute inset-0 bg-gradient-to-r from-[#0d0b09]/40 to-transparent"></div>
 
-      <!-- Headline -->
-      <h1
-        x-data
-        x-intersect.once="$el.classList.add('opacity-100', 'translate-y-0')"
-        class="opacity-0 translate-y-6 transition-all duration-700 delay-100 font-serif text-4xl sm:text-5xl lg:text-6xl font-semibold text-white leading-tight mb-6"
-      >
-        Confident Skin<br/>
-        <em class="text-gold-300 not-italic">That Grows</em><br/>
-        With You.
-      </h1>
+  <!-- Thin gold vertical rule — left editorial accent -->
+  <div class="absolute left-10 top-1/4 bottom-1/4 w-px bg-gradient-to-b from-transparent via-[#C9A84C]/60 to-transparent hidden lg:block"></div>
 
-      <!-- Subheadline -->
-      <p
-        x-data
-        x-intersect.once="$el.classList.add('opacity-100', 'translate-y-0')"
-        class="opacity-0 translate-y-6 transition-all duration-700 delay-200 text-lg text-charcoal-200 leading-relaxed mb-4 max-w-xl"
-      >
-        Medical-grade, plant-based skincare built by a nurse practitioner — not a marketing team.
-        Clean ingredients. Clinical results. Under five minutes.
+  <!-- Content — pinned to bottom -->
+  <div class="relative z-10 w-full max-w-7xl mx-auto px-6 lg:px-16 pb-16 lg:pb-24">
+
+    <!-- Eyebrow -->
+    <div
+      x-data
+      x-intersect.once="$el.classList.add('opacity-100', 'translate-y-0')"
+      class="opacity-0 translate-y-3 transition-all duration-1000 ease-out flex items-center gap-4 mb-5"
+    >
+      <span class="block w-10 h-px bg-[#C9A84C]"></span>
+      <span class="text-[#C9A84C] text-[0.7rem] tracking-[0.25em] uppercase font-medium">Nurse Practitioner Created · Louisiana Made</span>
+    </div>
+
+    <!-- Headline -->
+    <h1
+      x-data
+      x-intersect.once="$el.classList.add('opacity-100', 'translate-y-0')"
+      class="opacity-0 translate-y-5 transition-all duration-1000 ease-out delay-150 font-serif text-[clamp(2.8rem,6vw,5.5rem)] leading-[1.05] font-light text-white mb-6 max-w-3xl"
+    >
+      Confident Skin<br/>
+      <em class="italic text-[#E8D5A3]">That Grows</em><br/>
+      With You.
+    </h1>
+
+    <!-- Subline + CTA row -->
+    <div
+      x-data
+      x-intersect.once="$el.classList.add('opacity-100', 'translate-y-0')"
+      class="opacity-0 translate-y-5 transition-all duration-1000 ease-out delay-300 flex flex-col sm:flex-row sm:items-end gap-8 max-w-3xl"
+    >
+      <p class="text-white/70 text-base leading-relaxed max-w-xs font-light">
+        Medical-grade. Plant-based. Three steps.<br/>Under five minutes.
       </p>
 
-      <!-- 3-step pill -->
-      <div
-        x-data
-        x-intersect.once="$el.classList.add('opacity-100', 'translate-y-0')"
-        class="opacity-0 translate-y-6 transition-all duration-700 delay-300 flex items-center gap-3 mb-10"
-      >
-        {['Cleanse', 'Treat', 'Protect'].map((step, i) => (
-          <span class="px-4 py-1.5 bg-white/10 backdrop-blur-sm border border-white/20 rounded-full text-white text-sm font-medium">
-            {step}
-          </span>
-        ))}
-      </div>
-
-      <!-- CTAs -->
-      <div
-        x-data
-        x-intersect.once="$el.classList.add('opacity-100', 'translate-y-0')"
-        class="opacity-0 translate-y-6 transition-all duration-700 delay-[400ms] flex flex-wrap gap-4"
-      >
+      <div class="flex items-center gap-5">
         <a
           href="#system"
-          class="px-8 py-4 bg-gold-500 hover:bg-gold-600 text-white font-medium rounded-full transition-all duration-200 shadow-lift hover:shadow-elegant"
+          class="group inline-flex items-center gap-3 px-7 py-3.5 bg-[#C9A84C] hover:bg-[#B8950A] text-white text-sm tracking-widest uppercase font-medium transition-all duration-300 rounded-full"
         >
           Discover The System
+          <span class="w-4 h-px bg-white group-hover:w-6 transition-all duration-300"></span>
         </a>
         <a
           href="#products"
-          class="px-8 py-4 bg-white/10 hover:bg-white/20 backdrop-blur-sm border border-white/30 text-white font-medium rounded-full transition-all duration-200"
+          class="text-white/80 hover:text-white text-sm tracking-widest uppercase font-medium transition-colors border-b border-white/30 hover:border-white pb-px"
         >
-          Shop Products
+          Shop
         </a>
       </div>
+    </div>
 
-      <!-- Social proof strip -->
-      <div
-        x-data
-        x-intersect.once="$el.classList.add('opacity-100')"
-        class="opacity-0 transition-all duration-700 delay-500 mt-12 flex items-center gap-6"
-      >
-        <div class="flex -space-x-2">
-          {[
-            'https://images.unsplash.com/photo-1580489944761-15a19d654956?w=48&h=48&q=80&fit=crop&crop=face',
-            'https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?w=48&h=48&q=80&fit=crop&crop=face',
-            'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=48&h=48&q=80&fit=crop&crop=face',
-          ].map(src => (
-            <img src={src} alt="Customer" class="w-10 h-10 rounded-full border-2 border-charcoal-700 object-cover" />
-          ))}
+    <!-- Step pills — bottom right -->
+    <div
+      x-data
+      x-intersect.once="$el.classList.add('opacity-100')"
+      class="opacity-0 transition-all duration-1000 delay-500 absolute right-6 lg:right-16 bottom-16 lg:bottom-24 hidden md:flex flex-col gap-2 items-end"
+    >
+      {['Cleanse', 'Treat', 'Protect'].map((s, i) => (
+        <div class="flex items-center gap-3">
+          <span class="text-white/40 text-[0.65rem] tracking-[0.2em] uppercase">0{i+1}</span>
+          <span class="text-white/80 text-xs tracking-[0.15em] uppercase">{s}</span>
         </div>
-        <div>
-          <div class="flex text-gold-400 text-sm mb-0.5">★★★★★</div>
-          <p class="text-charcoal-300 text-sm"><span class="text-white font-medium">500+</span> women transformed</p>
-        </div>
-      </div>
+      ))}
     </div>
   </div>
 
-  <!-- Scroll indicator -->
-  <div class="absolute bottom-8 left-1/2 -translate-x-1/2 text-charcoal-400 animate-bounce">
-    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 9l-7 7-7-7" />
-    </svg>
+  <!-- Scroll nudge -->
+  <div class="absolute bottom-6 left-1/2 -translate-x-1/2 flex flex-col items-center gap-1.5 z-10">
+    <span class="text-white/30 text-[0.6rem] tracking-[0.2em] uppercase">Scroll</span>
+    <div class="w-px h-8 bg-gradient-to-b from-white/40 to-transparent animate-pulse"></div>
   </div>
 </section>
