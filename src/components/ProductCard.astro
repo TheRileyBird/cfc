@@ -37,7 +37,7 @@ const stepColors: Record<string, string> = {
       </div>
     )}
     {step && (
-      <span class={`absolute top-3 left-3 px-2.5 py-1 rounded-full text-xs font-medium capitalize ${stepColors[step.toLowerCase()] ?? 'bg-cream-200 text-charcoal-500'}`}>
+      <span class={`absolute top-3 left-3 px-2.5 py-1 rounded-full text-sm font-medium capitalize ${stepColors[step.toLowerCase()] ?? 'bg-cream-200 text-charcoal-500'}`}>
         {step}
       </span>
     )}
@@ -50,7 +50,7 @@ const stepColors: Record<string, string> = {
         {product.title}
       </h3>
     </a>
-    <p class="text-charcoal-400 text-xs leading-relaxed line-clamp-2 mb-4 flex-1">
+    <p class="text-charcoal-400 text-sm leading-relaxed line-clamp-2 mb-4 flex-1">
       {product.description}
     </p>
     <div class="flex items-center justify-between mt-auto">
@@ -59,7 +59,7 @@ const stepColors: Record<string, string> = {
         href={checkoutUrl}
         target="_blank"
         rel="noopener"
-        class="flex items-center gap-1.5 px-4 py-2 bg-gold-500 hover:bg-gold-600 text-white text-xs font-medium rounded-full transition-colors"
+        class="flex items-center gap-1.5 px-4 py-2 bg-gold-500 hover:bg-gold-600 text-white text-sm font-medium rounded-full transition-colors"
       >
         <ShoppingBag class="w-3.5 h-3.5" />
         Add to Cart

@@ -29,7 +29,7 @@ const testimonials = [
 ];
 ---
 
-<section class="bg-white" id="testimonials">
+<section class="bg-[#FDFCF8]" id="testimonials">
 
   <!-- Pull quote header -->
   <div class="max-w-7xl mx-auto px-6 lg:px-16 pt-24 lg:pt-32 pb-16 text-center">
@@ -39,7 +39,7 @@ const testimonials = [
       class="opacity-0 translate-y-4 transition-all duration-700"
     >
       <span class="block w-px h-10 bg-[#C9A84C] mx-auto mb-6"></span>
-      <p class="text-[#B8950A] text-[0.7rem] tracking-[0.25em] uppercase font-medium mb-4">Real Women. Real Skin.</p>
+      <p class="text-[#B8950A] text-sm tracking-[0.25em] uppercase font-medium mb-4">Real Women. Real Skin.</p>
       <h2 class="font-serif text-[clamp(2rem,4vw,3.25rem)] font-light text-charcoal-800 leading-tight max-w-2xl mx-auto">
         The results speak<br/><em class="italic text-[#B8950A]">for themselves.</em>
       </h2>
@@ -59,12 +59,12 @@ const testimonials = [
           style={`transition-delay: ${i * 100}ms`}
         >
           <div>
-            <div class="flex gap-0.5 text-[#C9A84C] text-xs mb-5">★★★★★</div>
+            <div class="flex gap-0.5 text-[#C9A84C] text-sm mb-5">★★★★★</div>
             <p class="font-serif text-charcoal-700 text-lg leading-relaxed italic mb-6">"{quote}"</p>
           </div>
           <div>
             <p class="text-charcoal-800 text-sm font-semibold">{name}</p>
-            <p class="text-charcoal-400 text-xs tracking-wide mt-0.5">{detail}</p>
+            <p class="text-charcoal-400 text-sm tracking-wide mt-0.5">{detail}</p>
           </div>
         </div>
       ))}
@@ -113,12 +113,12 @@ const testimonials = [
           style={`transition-delay: ${(i + 1) * 100}ms`}
         >
           <div>
-            <div class="flex gap-0.5 text-[#C9A84C] text-xs mb-5">★★★★★</div>
+            <div class="flex gap-0.5 text-[#C9A84C] text-sm mb-5">★★★★★</div>
             <p class="font-serif text-charcoal-700 text-lg leading-relaxed italic mb-6">"{quote}"</p>
           </div>
           <div>
             <p class="text-charcoal-800 text-sm font-semibold">{name}</p>
-            <p class="text-charcoal-400 text-xs tracking-wide mt-0.5">{detail}</p>
+            <p class="text-charcoal-400 text-sm tracking-wide mt-0.5">{detail}</p>
           </div>
         </div>
       ))}

@@ -34,7 +34,7 @@ const links = {
           Medical-grade, plant-based skincare created by a nurse practitioner.
           Clean. Gentle. Clinically effective.
         </p>
-        <p class="text-xs text-charcoal-500 italic mb-6">"Confident Skin That Grows With You."</p>
+        <p class="text-sm text-charcoal-500 italic mb-6">"Confident Skin That Grows With You."</p>
         <div class="flex gap-3">
           {[
             { label: 'IG', href: 'https://www.instagram.com/cfcskincare' },
@@ -44,7 +44,7 @@ const links = {
               href={href}
               target="_blank"
               rel="noopener"
-              class="w-9 h-9 rounded-full border border-charcoal-700 hover:border-[#C9A84C] hover:text-[#C9A84C] flex items-center justify-center text-[0.6rem] tracking-widest uppercase font-medium transition-all duration-200"
+              class="w-9 h-9 rounded-full border border-charcoal-700 hover:border-[#C9A84C] hover:text-[#C9A84C] flex items-center justify-center text-sm tracking-widest uppercase font-medium transition-all duration-200"
             >
               {label}
             </a>
@@ -55,11 +55,11 @@ const links = {
       <!-- Links -->
       {Object.entries(links).map(([group, items]) => (
         <div>
-          <h4 class="text-white text-[0.65rem] tracking-[0.2em] uppercase font-medium mb-5">{group}</h4>
+          <h4 class="text-white text-sm tracking-[0.2em] uppercase font-medium mb-5">{group}</h4>
           <ul class="space-y-3">
             {items.map(({ label, href }) => (
               <li>
-                <a href={href} class="text-xs hover:text-[#C9A84C] transition-colors duration-200 tracking-wide">{label}</a>
+                <a href={href} class="text-sm hover:text-[#C9A84C] transition-colors duration-200 tracking-wide">{label}</a>
               </li>
             ))}
           </ul>
@@ -68,7 +68,7 @@ const links = {
     </div>
 
     <!-- Bottom -->
-    <div class="border-t border-charcoal-800 pt-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-charcoal-600">
+    <div class="border-t border-charcoal-800 pt-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-sm text-charcoal-600">
       <p>© {new Date().getFullYear()} CFC Skincare · Locally made in Louisiana</p>
       <div class="flex gap-6">
         <a href="https://www.cfcskincare.shop/policies/privacy-policy" class="hover:text-charcoal-400 transition-colors">Privacy</a>

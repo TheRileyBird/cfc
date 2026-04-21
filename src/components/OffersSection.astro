@@ -65,12 +65,12 @@ const offers = [
       class="opacity-0 translate-y-4 transition-all duration-700 text-center max-w-xl mx-auto mb-16 lg:mb-20"
     >
       <span class="block w-px h-10 bg-[#C9A84C] mx-auto mb-6"></span>
-      <p class="text-[#B8950A] text-[0.7rem] tracking-[0.25em] uppercase font-medium mb-4">Choose Your System</p>
+      <p class="text-[#B8950A] text-sm tracking-[0.25em] uppercase font-medium mb-4">Choose Your System</p>
       <h2 class="font-serif text-[clamp(2rem,4vw,3rem)] font-light text-charcoal-800 leading-tight mb-4">
         Start where you are.<br/>
         <em class="italic text-[#B8950A]">Scale as you grow.</em>
       </h2>
-      <p class="text-charcoal-400 text-sm">Save 30% when you subscribe — and never run out of what your skin needs.</p>
+      <p class="text-charcoal-400 text-base">Save 30% when you subscribe — and never run out of what your skin needs.</p>
     </div>
 
     <!-- Cards -->
@@ -90,7 +90,7 @@ const offers = [
 
             {featured && (
               <div class="absolute -top-3.5 left-1/2 -translate-x-1/2">
-                <span class="px-5 py-1 bg-[#C9A84C] text-white text-[0.65rem] tracking-[0.15em] uppercase font-medium rounded-full">
+                <span class="px-5 py-1 bg-[#C9A84C] text-white text-sm tracking-[0.15em] uppercase font-medium rounded-full">
                   Most Popular
                 </span>
               </div>
@@ -98,7 +98,7 @@ const offers = [
 
             <!-- Name + tagline -->
             <div class="mb-6 pb-6" style={`border-bottom: 1px solid ${featured ? 'rgba(255,255,255,0.1)' : '#E8E0D5'}`}>
-              <p class={`text-[0.65rem] tracking-[0.2em] uppercase font-medium mb-2 ${featured ? 'text-[#C9A84C]' : 'text-[#B8950A]'}`}>
+              <p class={`text-sm tracking-[0.2em] uppercase font-medium mb-2 ${featured ? 'text-[#C9A84C]' : 'text-[#B8950A]'}`}>
                 {tagline}
               </p>
               <h3 class={`font-serif text-2xl font-light ${featured ? 'text-white' : 'text-charcoal-800'}`}>
@@ -112,13 +112,13 @@ const offers = [
                 <span class={`font-serif text-4xl font-light ${featured ? 'text-white' : 'text-charcoal-800'}`}>{price}</span>
                 <span class={`text-sm ${featured ? 'text-white/60' : 'text-charcoal-400'}`}>– {priceTo}</span>
               </div>
-              <p class={`text-xs ${featured ? 'text-white/50' : 'text-charcoal-400'}`}>
+              <p class={`text-sm ${featured ? 'text-white/50' : 'text-charcoal-400'}`}>
                 {savingsPrice} with Subscribe & Save 30%
               </p>
             </div>
 
             <!-- Description -->
-            <p class={`text-sm leading-relaxed mb-7 ${featured ? 'text-white/70' : 'text-charcoal-500'}`}>
+            <p class={`text-base leading-relaxed mb-7 ${featured ? 'text-white/70' : 'text-charcoal-500'}`}>
               {description}
             </p>
 
@@ -137,7 +137,7 @@ const offers = [
               href={href}
               target="_blank"
               rel="noopener"
-              class={`block text-center py-3.5 text-[0.7rem] tracking-[0.18em] uppercase font-medium rounded-full transition-all duration-300 ${
+              class={`block text-center py-3.5 text-sm tracking-[0.18em] uppercase font-medium rounded-full transition-all duration-300 ${
                 featured
                   ? 'bg-[#C9A84C] text-white hover:bg-[#B8950A]'
                   : 'border border-[#C9A84C] text-[#B8950A] hover:bg-[#C9A84C] hover:text-white'

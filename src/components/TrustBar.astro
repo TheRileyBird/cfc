@@ -14,8 +14,8 @@ const items = [
     <div class="flex flex-wrap items-center justify-center gap-x-8 gap-y-2">
       {items.map((item, i) => (
         <>
-          <span class="text-[#E8D5A3]/70 text-[0.65rem] tracking-[0.2em] uppercase font-medium">{item}</span>
-          {i < items.length - 1 && <span class="text-[#C9A84C]/30 hidden sm:block text-xs">·</span>}
+          <span class="text-[#E8D5A3]/70 text-sm tracking-[0.2em] uppercase font-medium">{item}</span>
+          {i < items.length - 1 && <span class="text-[#C9A84C]/30 hidden sm:block text-sm">·</span>}
         </>
       ))}
     </div>

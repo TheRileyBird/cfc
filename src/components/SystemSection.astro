@@ -48,7 +48,7 @@ const steps = [
       class="opacity-0 translate-y-4 transition-all duration-700"
     >
       <span class="block w-px h-10 bg-[#C9A84C] mx-auto mb-6"></span>
-      <p class="text-[#B8950A] text-[0.7rem] tracking-[0.25em] uppercase font-medium mb-4">The Solution</p>
+      <p class="text-[#B8950A] text-sm tracking-[0.25em] uppercase font-medium mb-4">The Solution</p>
       <h2 class="font-serif text-[clamp(2rem,4vw,3.5rem)] font-light text-charcoal-800 leading-tight">
         Three steps. Under five minutes.<br/>
         <em class="italic text-[#B8950A]">Real results.</em>
@@ -61,7 +61,7 @@ const steps = [
     <div
       x-data
       x-intersect.once="$el.classList.add('opacity-100')"
-      class="opacity-0 transition-all duration-1000 grid lg:grid-cols-2 min-h-[85vh]"
+      class="opacity-0 transition-all duration-1000 grid lg:grid-cols-2"
       style={`transition-delay: ${i * 100}ms`}
     >
       <!-- Image -->
@@ -80,17 +80,17 @@ const steps = [
       </div>
 
       <!-- Content -->
-      <div class={`flex flex-col justify-center px-8 lg:px-16 xl:px-24 py-16 lg:py-24 bg-white ${imagePosition === 'left' ? 'lg:order-last' : 'lg:order-first'}`}>
+      <div class={`flex flex-col justify-center px-8 lg:px-16 xl:px-24 py-16 lg:py-24 bg-[#FDFCF8] ${imagePosition === 'left' ? 'lg:order-last' : 'lg:order-first'}`}>
         <div class="max-w-md">
           <div class="flex items-center gap-4 mb-8">
             <span class="w-8 h-px bg-[#C9A84C]"></span>
-            <span class="text-[#B8950A] text-[0.7rem] tracking-[0.25em] uppercase font-medium">{step}</span>
+            <span class="text-[#B8950A] text-sm tracking-[0.25em] uppercase font-medium">{step}</span>
           </div>
 
           <h3 class="font-serif text-[clamp(1.75rem,3vw,2.5rem)] font-light text-charcoal-800 leading-snug mb-5">
             {headline}
           </h3>
-          <p class="text-charcoal-500 leading-relaxed mb-8 text-[0.9375rem]">{body}</p>
+          <p class="text-charcoal-500 leading-relaxed mb-8 text-base">{body}</p>
 
           <ul class="space-y-3 mb-10">
             {products.map(p => (
@@ -103,7 +103,7 @@ const steps = [
 
           <a
             href="#products"
-            class="inline-flex items-center gap-3 text-[0.7rem] tracking-[0.18em] uppercase font-medium text-[#B8950A] hover:gap-5 transition-all duration-300 group"
+            class="inline-flex items-center gap-3 text-sm tracking-[0.18em] uppercase font-medium text-[#B8950A] hover:gap-5 transition-all duration-300 group"
           >
             Shop {step}
             <span class="w-8 h-px bg-[#C9A84C] group-hover:w-12 transition-all duration-300"></span>

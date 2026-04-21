@@ -1,14 +1,17 @@
 ---
 ---
 <header
-  x-data="{ open: false, scrolled: false }"
-  x-init="window.addEventListener('scroll', () => { scrolled = window.scrollY > 60 })"
+  x-data="{ open: false, scrolled: window.scrollY > 60 }"
+  x-init="window.addEventListener('scroll', () => { scrolled = window.scrollY > 60 }, { passive: true })"
   :class="scrolled
     ? 'bg-[#FAF7F2]/95 backdrop-blur-md shadow-[0_1px_0_0_rgba(0,0,0,0.06)]'
     : 'bg-transparent'"
-  class="fixed top-0 inset-x-0 z-50 transition-all duration-500"
+  class="fixed top-0 inset-x-0 z-50 transition-all duration-300"
 >
-  <nav class="max-w-7xl mx-auto px-6 lg:px-16 flex items-center justify-between h-16 lg:h-20">
+  <nav
+    :class="scrolled ? 'h-14 lg:h-16' : 'h-16 lg:h-20'"
+    class="max-w-7xl mx-auto px-6 lg:px-16 flex items-center justify-between transition-all duration-300"
+  >
 
     <!-- Wordmark -->
     <a href="/" class="flex items-baseline gap-1.5 group">
@@ -35,7 +38,7 @@
             <a
               href={hrefs[i]}
               :class="scrolled ? 'text-charcoal-600 hover:text-charcoal-900' : 'text-white/80 hover:text-white'"
-              class="text-[0.75rem] tracking-[0.15em] uppercase font-medium transition-colors duration-300 relative after:absolute after:bottom-0 after:left-0 after:w-0 after:h-px after:bg-[#C9A84C] hover:after:w-full after:transition-all after:duration-300"
+              class="text-sm tracking-[0.15em] uppercase font-medium transition-colors duration-300 relative after:absolute after:bottom-0 after:left-0 after:w-0 after:h-px after:bg-[#C9A84C] hover:after:w-full after:transition-all after:duration-300"
             >
               {label}
             </a>
@@ -53,7 +56,7 @@
         :class="scrolled
           ? 'border-[#B8950A] text-[#B8950A] hover:bg-[#B8950A] hover:text-white'
           : 'border-white/60 text-white hover:bg-white hover:text-charcoal-800'"
-        class="px-6 py-2.5 border text-[0.7rem] tracking-[0.18em] uppercase font-medium transition-all duration-300 rounded-full"
+        class="px-6 py-2.5 border text-sm tracking-[0.18em] uppercase font-medium transition-all duration-300 rounded-full"
       >
         Shop Now
       </a>
@@ -96,7 +99,7 @@
       <a
         href={href}
         @click="open=false"
-        class="block py-3 text-[0.75rem] tracking-[0.15em] uppercase text-charcoal-600 hover:text-[#B8950A] font-medium border-b border-[#E8E0D5] last:border-0 transition-colors"
+        class="block py-3 text-sm tracking-[0.15em] uppercase text-charcoal-600 hover:text-[#B8950A] font-medium border-b border-[#E8E0D5] last:border-0 transition-colors"
       >
         {label}
       </a>
@@ -105,7 +108,7 @@
       href="https://www.cfcskincare.shop/collections/all"
       target="_blank"
       rel="noopener"
-      class="mt-4 block text-center py-3 border border-[#B8950A] text-[#B8950A] text-[0.7rem] tracking-[0.18em] uppercase font-medium rounded-full hover:bg-[#B8950A] hover:text-white transition-all"
+      class="mt-4 block text-center py-3 border border-[#B8950A] text-[#B8950A] text-sm tracking-[0.18em] uppercase font-medium rounded-full hover:bg-[#B8950A] hover:text-white transition-all"
     >
       Shop Now
     </a>

@@ -17,17 +17,17 @@ import productsImg from '../assets/images/imgi_3_Body_care.png';
         class="opacity-0 translate-y-6 transition-all duration-700 lg:col-span-5 lg:pb-12"
       >
         <span class="block w-px h-10 bg-[#C9A84C] mb-6"></span>
-        <p class="text-[#B8950A] text-[0.7rem] tracking-[0.25em] uppercase font-medium mb-5">About CFC</p>
+        <p class="text-[#B8950A] text-sm tracking-[0.25em] uppercase font-medium mb-5">About CFC</p>
 
         <h2 class="font-serif text-[clamp(2rem,3.5vw,3rem)] font-light text-charcoal-800 leading-tight mb-7">
           Built by someone who<br/>
           <em class="italic text-[#B8950A]">actually understands<br/>your skin.</em>
         </h2>
 
-        <p class="text-charcoal-500 leading-relaxed mb-5 text-[0.9375rem]">
+        <p class="text-charcoal-500 leading-relaxed mb-5 text-base">
           CFC Skincare is the bridge between clinical efficacy and clean beauty — a medical-grade, plant-based system created by a nurse practitioner, formulated with a licensed cosmetic chemist, and built for women who are done guessing.
         </p>
-        <p class="text-charcoal-500 leading-relaxed mb-10 text-[0.9375rem]">
+        <p class="text-charcoal-500 leading-relaxed mb-10 text-base">
           Every formula is plant-based <em>and</em> medical-grade. Purity-tested. Locally produced in Louisiana. Designed around a protocol that works in under five minutes — at every age, every stage.
         </p>
 
@@ -40,8 +40,8 @@ import productsImg from '../assets/images/imgi_3_Body_care.png';
             ['Louisiana-Made', 'Full quality control'],
           ].map(([title, desc]) => (
             <div class="p-4 bg-white border border-[#E8E0D5] rounded-xl">
-              <p class="text-charcoal-800 text-xs font-semibold mb-1 tracking-wide">{title}</p>
-              <p class="text-charcoal-400 text-xs leading-snug">{desc}</p>
+              <p class="text-charcoal-800 text-sm font-semibold mb-1 tracking-wide">{title}</p>
+              <p class="text-charcoal-400 text-base leading-snug">{desc}</p>
             </div>
           ))}
         </div>
@@ -64,10 +64,10 @@ import productsImg from '../assets/images/imgi_3_Body_care.png';
         <!-- Floating quote card -->
         <div class="absolute -bottom-6 -left-4 lg:-left-10 max-w-xs bg-white rounded-2xl p-6 shadow-[0_4px_24px_rgba(0,0,0,0.08)]">
           <div class="flex gap-1 text-[#C9A84C] mb-3 text-sm">★★★★★</div>
-          <p class="font-serif text-charcoal-700 text-sm leading-relaxed italic">
+          <p class="font-serif text-charcoal-700 text-base leading-relaxed italic">
             "I stopped wearing foundation to work. I didn't even notice when it stopped feeling necessary."
           </p>
-          <p class="text-charcoal-400 text-xs mt-3 tracking-wide">— CFC Customer</p>
+          <p class="text-charcoal-400 text-sm mt-3 tracking-wide">— CFC Customer</p>
         </div>
       </div>
     </div>
@@ -90,7 +90,7 @@ import productsImg from '../assets/images/imgi_3_Body_care.png';
       </div>
 
       <div>
-        <p class="text-[#B8950A] text-[0.7rem] tracking-[0.25em] uppercase font-medium mb-5">The USP</p>
+        <p class="text-[#B8950A] text-sm tracking-[0.25em] uppercase font-medium mb-5">The USP</p>
         <h3 class="font-serif text-[clamp(1.6rem,2.5vw,2.25rem)] font-light text-charcoal-800 leading-tight mb-6">
           "The only medical-grade, plant-based system created by a nurse practitioner — for women who want clinical results without clinical compromise."
         </h3>
@@ -100,7 +100,7 @@ import productsImg from '../assets/images/imgi_3_Body_care.png';
             'vs. Clinical brands — plant-based, locally made, and accessible without a dermatologist referral.',
             'vs. Clean beauty — formulated by a medical professional for efficacy, not just ingredient safety.',
           ].map(line => (
-            <p class="flex gap-3 text-charcoal-500 text-sm leading-relaxed">
+            <p class="flex gap-3 text-charcoal-500 text-base leading-relaxed">
               <span class="text-[#C9A84C] mt-1 shrink-0">—</span>
               {line}
             </p>
@@ -108,7 +108,7 @@ import productsImg from '../assets/images/imgi_3_Body_care.png';
         </div>
         <a
           href="#contact"
-          class="inline-flex items-center gap-3 text-[0.7rem] tracking-[0.18em] uppercase font-medium text-[#B8950A] group hover:gap-5 transition-all duration-300"
+          class="inline-flex items-center gap-3 text-sm tracking-[0.18em] uppercase font-medium text-[#B8950A] group hover:gap-5 transition-all duration-300"
         >
           Request a consultation
           <span class="w-8 h-px bg-[#C9A84C] group-hover:w-12 transition-all duration-300"></span>
