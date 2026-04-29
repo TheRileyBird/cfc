@@ -21,7 +21,7 @@ const links = {
 };
 ---
 
-<footer class="bg-charcoal-900 text-charcoal-400">
+<footer class="bg-[#efe5d7] text-charcoal-500">
   <div class="max-w-7xl mx-auto px-6 lg:px-16 pt-16 lg:pt-20 pb-10">
 
     <div class="grid grid-cols-2 lg:grid-cols-5 gap-10 mb-14">
@@ -45,7 +45,7 @@ const links = {
               href={href}
               target="_blank"
               rel="noopener"
-              class="w-9 h-9 rounded-full border border-charcoal-700 hover:border-[#C9A84C] hover:text-[#C9A84C] flex items-center justify-center text-sm tracking-widest uppercase font-medium transition-all duration-200"
+              class="w-9 h-9 rounded-full border border-[#d0c0ab] hover:border-[#C9A84C] hover:text-[#C9A84C] flex items-center justify-center text-sm tracking-widest uppercase font-medium transition-all duration-200"
             >
               {label}
             </a>
@@ -56,7 +56,7 @@ const links = {
       <!-- Links -->
       {Object.entries(links).map(([group, items]) => (
         <div>
-          <h4 class="text-white text-sm tracking-[0.2em] uppercase font-medium mb-5">{group}</h4>
+          <h4 class="text-charcoal-800 text-sm tracking-[0.2em] uppercase font-medium mb-5">{group}</h4>
           <ul class="space-y-3">
             {items.map(({ label, href }) => (
               <li>
@@ -69,7 +69,7 @@ const links = {
     </div>
 
     <!-- Bottom -->
-    <div class="border-t border-charcoal-800 pt-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-sm text-charcoal-600">
+    <div class="border-t border-[#d5c8b5] pt-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-sm text-charcoal-600">
       <p>© {new Date().getFullYear()} CFC Skincare · Locally made in Louisiana</p>
       <div class="flex gap-6">
         <a href="https://www.cfcskincare.shop/policies/privacy-policy" class="hover:text-charcoal-400 transition-colors">Privacy</a>

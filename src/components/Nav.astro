@@ -5,8 +5,8 @@ import cfcLogo from '../assets/images/cfc-logo.png';
   x-data="{ open: false, scrolled: window.scrollY > 60 }"
   x-init="window.addEventListener('scroll', () => { scrolled = window.scrollY > 60 }, { passive: true })"
   :class="scrolled
-    ? 'bg-[#FAF7F2]/95 backdrop-blur-md shadow-[0_1px_0_0_rgba(0,0,0,0.06)]'
-    : 'bg-transparent'"
+    ? 'bg-[#f6f0e7]/92 backdrop-blur-md shadow-[0_1px_0_0_rgba(49,37,24,0.08)]'
+    : 'bg-[#f6f0e7]/80 backdrop-blur-sm'"
   class="fixed top-0 inset-x-0 z-50 transition-all duration-300"
 >
   <nav
@@ -19,7 +19,7 @@ import cfcLogo from '../assets/images/cfc-logo.png';
       <img
         src={cfcLogo.src}
         alt="CFC Skincare"
-        class="h-8 w-auto lg:h-10 transition-all duration-300"
+        class="h-9 w-auto lg:h-11 transition-all duration-300"
       />
     </a>
 
@@ -31,8 +31,7 @@ import cfcLogo from '../assets/images/cfc-logo.png';
           <li>
             <a
               href={hrefs[i]}
-              :class="scrolled ? 'text-charcoal-600 hover:text-charcoal-900' : 'text-white/80 hover:text-white'"
-              class="text-sm tracking-[0.15em] uppercase font-medium transition-colors duration-300 relative after:absolute after:bottom-0 after:left-0 after:w-0 after:h-px after:bg-[#C9A84C] hover:after:w-full after:transition-all after:duration-300"
+              class="text-sm tracking-[0.18em] uppercase font-medium text-charcoal-600 hover:text-charcoal-900 transition-colors duration-300 relative after:absolute after:-bottom-1 after:left-0 after:w-0 after:h-px after:bg-[#b99649] hover:after:w-full after:transition-all after:duration-300"
             >
               {label}
             </a>
@@ -47,10 +46,7 @@ import cfcLogo from '../assets/images/cfc-logo.png';
         href="https://www.cfcskincare.shop/collections/all"
         target="_blank"
         rel="noopener"
-        :class="scrolled
-          ? 'border-[#B8950A] text-[#B8950A] hover:bg-[#B8950A] hover:text-white'
-          : 'border-white/60 text-white hover:bg-white hover:text-charcoal-800'"
-        class="px-6 py-2.5 border text-sm tracking-[0.18em] uppercase font-medium transition-all duration-300 rounded-full"
+        class="px-6 py-2.5 bg-charcoal-800 text-white text-sm tracking-[0.18em] uppercase font-medium transition-all duration-300 rounded-full hover:bg-[#b99649]"
       >
         Shop Now
       </a>
@@ -59,8 +55,7 @@ import cfcLogo from '../assets/images/cfc-logo.png';
     <!-- Mobile toggle -->
     <button
       @click="open = !open"
-      :class="scrolled ? 'text-charcoal-700' : 'text-white'"
-      class="lg:hidden p-2 transition-colors"
+      class="lg:hidden p-2 text-charcoal-700 transition-colors"
       aria-label="Menu"
     >
       <span x-show="!open" class="block w-6 space-y-1.5">

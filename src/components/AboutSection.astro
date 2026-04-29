@@ -6,48 +6,40 @@ import productsImg from '../assets/images/imgi_3_Body_care.png';
 
 <section class="bg-[#FAF7F2]" id="about">
   <div class="max-w-7xl mx-auto px-6 lg:px-16 py-24 lg:py-36">
-
-    <!-- Top: text + large founder image -->
-    <div class="grid lg:grid-cols-12 gap-12 lg:gap-20 items-end mb-24 lg:mb-36">
-
-      <!-- Left: copy -->
+    <div class="grid lg:grid-cols-12 gap-12 lg:gap-20 items-center mb-24 lg:mb-28">
       <div
         x-data
         x-intersect.once="$el.classList.add('opacity-100', 'translate-y-0')"
         class="opacity-0 translate-y-6 transition-all duration-700 lg:col-span-5 lg:pb-12"
       >
-        <span class="block w-px h-10 bg-[#C9A84C] mb-6"></span>
-        <p class="text-[#B8950A] text-sm tracking-[0.25em] uppercase font-medium mb-5">About CFC</p>
-
-        <h2 class="font-serif text-[clamp(2rem,3.5vw,3rem)] font-light text-charcoal-800 leading-tight mb-7">
-          Built by someone who<br/>
-          <em class="italic text-[#B8950A]">actually understands<br/>your skin.</em>
+        <p class="text-[#B8950A] text-sm tracking-[0.25em] uppercase font-medium mb-5">Brand Mission</p>
+        <h2 class="font-serif text-[clamp(2rem,3.5vw,3.5rem)] leading-[1.02] text-charcoal-800 mb-7">
+          We believe better skin care should feel
+          <em class="italic text-[#B8950A]"> calm, inclusive, and clear.</em>
         </h2>
 
         <p class="text-charcoal-500 leading-relaxed mb-5 text-base">
-          CFC Skincare is the bridge between clinical efficacy and clean beauty — a medical-grade, plant-based system created by a nurse practitioner, formulated with a licensed cosmetic chemist, and built for women who are done guessing.
+          CFC Skincare is the bridge between clinical efficacy and clean beauty: a medical-grade, plant-based system created by a nurse practitioner and shaped for women who are done guessing.
         </p>
         <p class="text-charcoal-500 leading-relaxed mb-10 text-base">
-          Every formula is plant-based <em>and</em> medical-grade. Purity-tested. Locally produced in Louisiana. Designed around a protocol that works in under five minutes — at every age, every stage.
+          Every formula is designed to be gentle enough for daily use, structured enough to guide real routines, and grounded in the kind of oversight that usually never reaches direct-to-consumer skincare.
         </p>
 
-        <!-- 4 credential pills -->
         <div class="grid grid-cols-2 gap-3">
           {[
-            ['NP Founded', 'Clinical knowledge, not marketing'],
-            ['Chemist Formulated', 'Medical-grade efficacy'],
-            ['Purity-Tested', 'Every batch, every time'],
-            ['Louisiana-Made', 'Full quality control'],
+            ['Confidence in every bottle', 'Products made to feel wearable and effective.'],
+            ['Timeless formulas', 'Routine staples instead of trend chasing.'],
+            ['For every stage', 'Designed for changing skin needs over time.'],
+            ['Pure and ethical', 'Plant-based formulas with measured discipline.'],
           ].map(([title, desc]) => (
-            <div class="p-4 bg-white border border-[#E8E0D5] rounded-xl">
+            <div class="p-4 bg-white border border-[#E8E0D5] rounded-[1.5rem]">
               <p class="text-charcoal-800 text-sm font-semibold mb-1 tracking-wide">{title}</p>
-              <p class="text-charcoal-400 text-base leading-snug">{desc}</p>
+              <p class="text-charcoal-400 text-sm leading-snug">{desc}</p>
             </div>
           ))}
         </div>
       </div>
 
-      <!-- Right: founder image — large, editorial -->
       <div
         x-data
         x-intersect.once="$el.classList.add('opacity-100', 'translate-x-0')"
@@ -55,30 +47,28 @@ import productsImg from '../assets/images/imgi_3_Body_care.png';
       >
         <Image
           src={founderImg}
-          alt="CFC Skincare — real woman showing results"
-          class="w-full rounded-2xl object-cover object-top"
+          alt="CFC Skincare founder imagery"
+          class="w-full rounded-[2.5rem] object-cover object-top"
           style="max-height: 620px;"
           widths={[600, 900, 1200]}
           sizes="(max-width: 1024px) 100vw, 58vw"
         />
-        <!-- Floating quote card -->
-        <div class="absolute -bottom-6 -left-4 lg:-left-10 max-w-xs bg-white rounded-2xl p-6 shadow-[0_4px_24px_rgba(0,0,0,0.08)]">
+        <div class="absolute -bottom-6 -left-4 lg:-left-10 max-w-xs bg-white rounded-[2rem] p-6 shadow-[0_4px_24px_rgba(0,0,0,0.08)]">
           <div class="flex gap-1 text-[#C9A84C] mb-3 text-sm">★★★★★</div>
           <p class="font-serif text-charcoal-700 text-base leading-relaxed italic">
-            "I stopped wearing foundation to work. I didn't even notice when it stopped feeling necessary."
+            "I finally found a routine that feels polished, not punishing."
           </p>
           <p class="text-charcoal-400 text-sm mt-3 tracking-wide">— CFC Customer</p>
         </div>
       </div>
     </div>
 
-    <!-- Bottom: products held image — full width editorial -->
     <div
       x-data
       x-intersect.once="$el.classList.add('opacity-100', 'translate-y-0')"
-      class="opacity-0 translate-y-6 transition-all duration-700 grid lg:grid-cols-2 gap-12 lg:gap-20 items-center"
+      class="opacity-0 translate-y-6 transition-all duration-700 grid lg:grid-cols-[0.95fr_1.05fr] gap-12 lg:gap-20 items-center"
     >
-      <div class="relative rounded-2xl overflow-hidden">
+      <div class="relative rounded-[2.5rem] overflow-hidden border border-[#e8dcc9]">
         <Image
           src={productsImg}
           alt="CFC Skincare product collection"
@@ -90,15 +80,17 @@ import productsImg from '../assets/images/imgi_3_Body_care.png';
       </div>
 
       <div>
-        <p class="text-[#B8950A] text-sm tracking-[0.25em] uppercase font-medium mb-5">The USP</p>
-        <h3 class="font-serif text-[clamp(1.6rem,2.5vw,2.25rem)] font-light text-charcoal-800 leading-tight mb-6">
-          "The only medical-grade, plant-based system created by a nurse practitioner — for women who want clinical results without clinical compromise."
+        <p class="text-[#B8950A] text-sm tracking-[0.25em] uppercase font-medium mb-5">Why It Feels Different</p>
+        <h3 class="font-serif text-[clamp(1.8rem,2.8vw,2.75rem)] leading-tight text-charcoal-800 mb-6">
+          Clinical enough to trust.
+          <br />
+          Soft enough to live with.
         </h3>
         <div class="space-y-4 mb-10">
           {[
-            'vs. Luxury brands — clinical results at a fraction of the price, with transparent ingredients and direct access to the NP who created them.',
-            'vs. Clinical brands — plant-based, locally made, and accessible without a dermatologist referral.',
-            'vs. Clean beauty — formulated by a medical professional for efficacy, not just ingredient safety.',
+            'Compared with luxury skincare, CFC stays focused on function instead of ceremony alone.',
+            'Compared with harsher clinical brands, the formulas keep comfort and consistency in the conversation.',
+            'Compared with trend-led clean beauty, the system is organized like a real care plan, not a mood board.',
           ].map(line => (
             <p class="flex gap-3 text-charcoal-500 text-base leading-relaxed">
               <span class="text-[#C9A84C] mt-1 shrink-0">—</span>

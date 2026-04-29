@@ -1,96 +1,71 @@
 ---
-import videoSrc from '../assets/videos/stock-video.mp4';
+import { Image } from 'astro:assets';
+import heroImage from '../assets/images/imgi_12_tt-75_1500x.jpg';
+import productImage from '../assets/images/imgi_71_tt-116_0f7352c9-4007-4f7a-a8a5-032982aed8f6_375x.jpg';
 ---
 
-<section class="relative h-screen min-h-[600px] flex items-end overflow-hidden">
-
-  <!-- Video background -->
-  <video
-    autoplay
-    muted
-    loop
-    playsinline
-    class="absolute inset-0 w-full h-full object-cover"
-  >
-    <source src={videoSrc} type="video/mp4" />
-  </video>
-
-  <!-- Layered overlays: subtle warm tint + strong bottom-up fade for text legibility -->
-  <div class="absolute inset-0 bg-gradient-to-t from-[#0d0b09]/85 via-[#0d0b09]/20 to-transparent"></div>
-  <div class="absolute inset-0 bg-gradient-to-r from-[#0d0b09]/40 to-transparent"></div>
-
-  <!-- Thin gold vertical rule — left editorial accent -->
-  <div class="absolute left-10 top-1/4 bottom-1/4 w-px bg-gradient-to-b from-transparent via-[#C9A84C]/60 to-transparent hidden lg:block"></div>
-
-  <!-- Content — pinned to bottom -->
-  <div class="relative z-10 w-full max-w-7xl mx-auto px-6 lg:px-16 pb-16 lg:pb-24">
-
-    <!-- Eyebrow -->
+<section class="bg-[#f6f0e7] py-20 pb-0 overflow-hidden">
+  <div class="mx-auto px-6 lg:px-16">
     <div
       x-data
       x-intersect.once="$el.classList.add('opacity-100', 'translate-y-0')"
-      class="opacity-0 translate-y-3 transition-all duration-1000 ease-out flex items-center gap-4 mb-5"
+      class="opacity-0 translate-y-4 transition-all duration-700 relative overflow-hidden rounded-[2rem] lg:rounded-[2.25rem] min-h-[680px] lg:min-h-[760px] bg-[#cab391]"
     >
-      <span class="block w-10 h-px bg-[#C9A84C]"></span>
-      <span class="text-[#C9A84C] text-sm tracking-[0.25em] uppercase font-medium">Nurse Practitioner Created · Louisiana Made</span>
-    </div>
+      <Image
+        src={heroImage}
+        alt="CFC skincare hero image"
+        class="absolute inset-0 h-full w-full object-cover object-center"
+        widths={[900, 1400, 1800]}
+        sizes="100vw"
+      />
+      <div class="absolute inset-0 bg-[linear-gradient(90deg,rgba(41,27,14,0.46)_0%,rgba(41,27,14,0.18)_32%,rgba(41,27,14,0.08)_60%,rgba(41,27,14,0.12)_100%)]"></div>
+      <div class="absolute inset-0 bg-[linear-gradient(180deg,rgba(255,250,241,0.06)_0%,rgba(21,12,8,0.14)_100%)]"></div>
 
-    <!-- Headline -->
-    <h1
-      x-data
-      x-intersect.once="$el.classList.add('opacity-100', 'translate-y-0')"
-      class="opacity-0 translate-y-5 transition-all duration-1000 ease-out delay-150 font-serif text-[clamp(2.8rem,6vw,5.5rem)] leading-[1.05] font-light text-white mb-6 max-w-3xl"
-    >
-      Confident Skin<br/>
-      <em class="italic text-[#E8D5A3]">That Grows</em><br/>
-      With You.
-    </h1>
+      <div class="relative z-10 flex min-h-[680px] lg:min-h-[760px] items-end p-8 sm:p-10 lg:p-14">
+        <div class="mx-auto grid w-full max-w-[1100px] items-end gap-10 lg:grid-cols-[0.95fr_1.05fr]">
+          <div class="max-w-[380px] pt-8 lg:pt-0">
+            <h1 class="font-serif text-[clamp(3.4rem,7vw,5.8rem)] leading-[0.93] text-white">
+              Glow
+              <br />
+              naturally
+              <br />
+              every day
+            </h1>
+            <p class="mt-6 max-w-[330px] text-[1.05rem] leading-relaxed text-white/85">
+              Discover our skincare essentials, crafted with clinical care and powered by nature.
+            </p>
+            <a
+              href="#products"
+              class="mt-10 inline-flex items-center justify-center rounded-[1.35rem] bg-white px-8 py-5 font-serif text-[1.1rem] text-[#4b312d] transition-colors hover:bg-[#f6eee4]"
+            >
+              Shop now
+            </a>
+          </div>
 
-    <!-- Subline + CTA row -->
-    <div
-      x-data
-      x-intersect.once="$el.classList.add('opacity-100', 'translate-y-0')"
-      class="opacity-0 translate-y-5 transition-all duration-1000 ease-out delay-300 flex flex-col sm:flex-row sm:items-end gap-8 max-w-3xl"
-    >
-      <p class="text-white/70 text-base leading-relaxed max-w-xs font-light">
-        Medical-grade. Plant-based. Three steps.<br/>Under five minutes.
-      </p>
-
-      <div class="flex items-center gap-5">
-        <a
-          href="#system"
-          class="group inline-flex items-center gap-3 px-7 py-3.5 bg-[#C9A84C] hover:bg-[#B8950A] text-white text-sm tracking-widest uppercase font-medium transition-all duration-300 rounded-full"
-        >
-          Discover The System
-          <span class="w-4 h-px bg-white group-hover:w-6 transition-all duration-300"></span>
-        </a>
-        <a
-          href="#products"
-          class="text-white/80 hover:text-white text-sm tracking-widest uppercase font-medium transition-colors border-b border-white/30 hover:border-white pb-px"
-        >
-          Shop
-        </a>
+          <div class="relative flex min-h-[280px] items-end justify-end">
+            <div class="w-full max-w-[360px] rounded-[1.75rem] bg-white p-6 shadow-[0_18px_40px_rgba(0,0,0,0.16)]">
+              <h2 class="max-w-[220px] font-serif text-[1.15rem] leading-[1.2] text-[#4d3a34] sm:text-[1.35rem]">
+                Ultra-Gentle foaming
+                <br />
+                facial cleanser
+              </h2>
+              <div class="mt-5 overflow-hidden rounded-[1.4rem] bg-[#f1eadf] p-5">
+                <Image
+                  src={productImage}
+                  alt="Featured CFC cleanser"
+                  class="mx-auto h-[220px] w-auto object-contain"
+                  widths={[220, 440]}
+                  sizes="220px"
+                />
+              </div>
+              <div class="mt-5 flex items-end gap-2 font-sans">
+                <span class="text-[1rem] font-semibold text-[#3c2b27]">$79.00 USD</span>
+                <span class="text-[0.9rem] text-[#8c7f79] line-through">$99.00 USD</span>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
-
-    <!-- Step pills — bottom right -->
-    <div
-      x-data
-      x-intersect.once="$el.classList.add('opacity-100')"
-      class="opacity-0 transition-all duration-1000 delay-500 absolute right-6 lg:right-16 bottom-16 lg:bottom-24 hidden md:flex flex-col gap-2 items-end"
-    >
-      {['Cleanse', 'Treat', 'Protect'].map((s, i) => (
-        <div class="flex items-center gap-3">
-          <span class="text-white/40 text-sm tracking-[0.2em] uppercase">0{i+1}</span>
-          <span class="text-white/80 text-sm tracking-[0.15em] uppercase">{s}</span>
-        </div>
-      ))}
-    </div>
-  </div>
-
-  <!-- Scroll nudge -->
-  <div class="absolute bottom-6 left-1/2 -translate-x-1/2 flex flex-col items-center gap-1.5 z-10">
-    <span class="text-white/30 text-sm tracking-[0.2em] uppercase">Scroll</span>
-    <div class="w-px h-8 bg-gradient-to-b from-white/40 to-transparent animate-pulse"></div>
   </div>
 </section>
