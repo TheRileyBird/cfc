@@ -1,4 +1,6 @@
 ---
+import cfcLogo from '../assets/images/cfc-logo.png';
+
 const links = {
   Shop: [
     { label: 'All Products', href: 'https://www.cfcskincare.shop/collections/all' },
@@ -26,10 +28,9 @@ const links = {
 
       <!-- Brand -->
       <div class="col-span-2">
-        <div class="mb-5">
-          <span class="font-serif text-xl font-light text-white tracking-wide">CFC</span>
-          <span class="font-serif text-xl italic font-light text-[#C9A84C] tracking-wide"> Skincare</span>
-        </div>
+        <a href="/" class="mb-5 inline-flex items-center">
+          <img src={cfcLogo.src} alt="CFC Skincare" class="h-12 w-auto" />
+        </a>
         <p class="text-sm leading-relaxed max-w-xs text-charcoal-400 mb-2">
           Medical-grade, plant-based skincare created by a nurse practitioner.
           Clean. Gentle. Clinically effective.

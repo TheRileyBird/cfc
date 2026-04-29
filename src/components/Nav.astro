@@ -1,4 +1,5 @@
 ---
+import cfcLogo from '../assets/images/cfc-logo.png';
 ---
 <header
   x-data="{ open: false, scrolled: window.scrollY > 60 }"
@@ -13,20 +14,13 @@
     class="max-w-7xl mx-auto px-6 lg:px-16 flex items-center justify-between transition-all duration-300"
   >
 
-    <!-- Wordmark -->
-    <a href="/" class="flex items-baseline gap-1.5 group">
-      <span
-        :class="scrolled ? 'text-charcoal-800' : 'text-white'"
-        class="font-serif text-xl font-light tracking-wide transition-colors duration-300"
-      >
-        CFC
-      </span>
-      <span
-        :class="scrolled ? 'text-[#B8950A]' : 'text-[#C9A84C]'"
-        class="font-serif text-xl italic font-light tracking-wide transition-colors duration-300"
-      >
-        Skincare
-      </span>
+    <!-- Logo -->
+    <a href="/" class="flex items-center">
+      <img
+        src={cfcLogo.src}
+        alt="CFC Skincare"
+        class="h-8 w-auto lg:h-10 transition-all duration-300"
+      />
     </a>
 
     <!-- Desktop links -->
