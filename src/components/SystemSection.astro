@@ -39,77 +39,74 @@ const steps = [
 ---
 
 <section class="bg-[#FAF7F2]" id="system">
-
-  <!-- Section header -->
-  <div class="max-w-7xl mx-auto px-6 lg:px-16 pt-24 lg:pt-32 pb-16 lg:pb-20 text-center">
-    <div
-      x-data
-      x-intersect.once="$el.classList.add('opacity-100', 'translate-y-0')"
-      class="opacity-0 translate-y-4 transition-all duration-700"
-    >
-      <span class="block w-px h-10 bg-[#C9A84C] mx-auto mb-6"></span>
-      <p class="text-[#B8950A] text-sm tracking-[0.25em] uppercase font-medium mb-4">The Solution</p>
-      <h2 class="font-serif text-[clamp(2rem,4vw,3.5rem)] font-light text-charcoal-800 leading-tight">
-        Three steps. Under five minutes.<br/>
-        <em class="italic text-[#B8950A]">Real results.</em>
-      </h2>
-    </div>
-  </div>
-
-  <!-- Steps — full-bleed editorial -->
-  {steps.map(({ number, step, headline, body, products, image, imageAlt, imagePosition }, i) => (
-    <div
-      x-data
-      x-intersect.once="$el.classList.add('opacity-100')"
-      class="opacity-0 transition-all duration-1000 grid lg:grid-cols-2"
-      style={`transition-delay: ${i * 100}ms`}
-    >
-      <!-- Image -->
-      <div class={`relative overflow-hidden ${imagePosition === 'left' ? 'lg:order-first' : 'lg:order-last'} order-first`}>
-        <Image
-          src={image}
-          alt={imageAlt}
-          class="w-full h-64 lg:h-full object-cover object-center"
-          widths={[600, 900, 1200]}
-          sizes="(max-width: 1024px) 100vw, 50vw"
-        />
-        <!-- Step number watermark -->
-        <div class="absolute top-8 left-8 lg:top-12 lg:left-12">
-          <span class="font-serif text-[5rem] lg:text-[8rem] font-light leading-none text-white/20 select-none">{number}</span>
-        </div>
+  <div class="max-w-7xl mx-auto px-6 lg:px-16 py-24 lg:py-32">
+    <div class="grid gap-12 lg:grid-cols-[0.9fr_1.1fr] lg:items-end mb-14">
+      <div
+        x-data
+        x-intersect.once="$el.classList.add('opacity-100', 'translate-y-0')"
+        class="opacity-0 translate-y-4 transition-all duration-700"
+      >
+        <p class="text-sm tracking-[0.24em] uppercase text-[#9a7d3f] font-medium mb-4">The Routine</p>
+        <h2 class="font-serif text-[clamp(2.1rem,4vw,4rem)] leading-[1] text-charcoal-800">
+          Simple care,
+          <br />
+          structured like
+          <br />
+          <em class="italic text-[#b99649]">a real protocol.</em>
+        </h2>
       </div>
+      <p
+        x-data
+        x-intersect.once="$el.classList.add('opacity-100', 'translate-y-0')"
+        class="opacity-0 translate-y-4 transition-all duration-700 delay-100 max-w-2xl text-lg leading-relaxed text-charcoal-500"
+      >
+        Inspired by the cleaner merchandising flow of the reference design, this section turns CFC’s system into three clear choices with supporting imagery, quick product cues, and direct shopping paths.
+      </p>
+    </div>
 
-      <!-- Content -->
-      <div class={`flex flex-col justify-center px-8 lg:px-16 xl:px-24 py-16 lg:py-24 bg-[#FDFCF8] ${imagePosition === 'left' ? 'lg:order-last' : 'lg:order-first'}`}>
-        <div class="max-w-md">
-          <div class="flex items-center gap-4 mb-8">
-            <span class="w-8 h-px bg-[#C9A84C]"></span>
-            <span class="text-[#B8950A] text-sm tracking-[0.25em] uppercase font-medium">{step}</span>
+    <div class="grid gap-6 lg:grid-cols-3">
+      {steps.map(({ number, step, headline, body, products, image, imageAlt }, i) => (
+        <article
+          x-data
+          x-intersect.once="$el.classList.add('opacity-100', 'translate-y-0')"
+          class="opacity-0 translate-y-6 transition-all duration-700 overflow-hidden rounded-[2rem] border border-[#eadcc8] bg-[#fffdf8]"
+          style={`transition-delay: ${i * 100}ms`}
+        >
+          <div class="relative">
+            <Image
+              src={image}
+              alt={imageAlt}
+              class="h-72 w-full object-cover object-top"
+              widths={[500, 800]}
+              sizes="(max-width: 1024px) 100vw, 33vw"
+            />
+            <div class="absolute left-5 top-5 flex items-center gap-3 rounded-full bg-[#fffaf2]/90 px-4 py-2 backdrop-blur-sm">
+              <span class="font-serif text-xl text-[#b99649]">{number}</span>
+              <span class="text-xs uppercase tracking-[0.22em] text-charcoal-600">{step}</span>
+            </div>
           </div>
 
-          <h3 class="font-serif text-[clamp(1.75rem,3vw,2.5rem)] font-light text-charcoal-800 leading-snug mb-5">
-            {headline}
-          </h3>
-          <p class="text-charcoal-500 leading-relaxed mb-8 text-base">{body}</p>
-
-          <ul class="space-y-3 mb-10">
-            {products.map(p => (
-              <li class="flex items-center gap-3 text-charcoal-600 text-sm">
-                <span class="w-1 h-1 rounded-full bg-[#C9A84C] shrink-0"></span>
-                {p}
-              </li>
-            ))}
-          </ul>
-
-          <a
-            href="#products"
-            class="inline-flex items-center gap-3 text-sm tracking-[0.18em] uppercase font-medium text-[#B8950A] hover:gap-5 transition-all duration-300 group"
-          >
-            Shop {step}
-            <span class="w-8 h-px bg-[#C9A84C] group-hover:w-12 transition-all duration-300"></span>
-          </a>
-        </div>
-      </div>
+          <div class="p-7">
+            <h3 class="font-serif text-3xl leading-tight text-charcoal-800">{headline}</h3>
+            <p class="mt-4 text-base leading-relaxed text-charcoal-500">{body}</p>
+            <ul class="mt-6 space-y-2">
+              {products.slice(0, 3).map(p => (
+                <li class="flex items-center gap-3 text-sm text-charcoal-600">
+                  <span class="h-1.5 w-1.5 rounded-full bg-[#b99649]"></span>
+                  {p}
+                </li>
+              ))}
+            </ul>
+            <a
+              href="#products"
+              class="mt-7 inline-flex items-center gap-3 text-sm uppercase tracking-[0.18em] text-[#9a7d3f] transition-colors hover:text-charcoal-800"
+            >
+              Shop {step}
+              <span class="block h-px w-8 bg-[#b99649]"></span>
+            </a>
+          </div>
+        </article>
+      ))}
     </div>
-  ))}
+  </div>
 </section>

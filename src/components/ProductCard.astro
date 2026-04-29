@@ -15,15 +15,15 @@ const price = formatPrice(product.priceRange.minVariantPrice.amount);
 const checkoutUrl = variant ? getCheckoutUrl(variant.id) : `https://www.cfcskincare.shop/products/${product.handle}`;
 const step = product.tags.find(t => ['cleanse','treat','protect'].includes(t.toLowerCase()));
 const stepColors: Record<string, string> = {
-  cleanse: 'bg-sage-200 text-sage-600',
-  treat:   'bg-gold-100 text-gold-600',
-  protect: 'bg-charcoal-100 text-charcoal-600',
+  cleanse: 'bg-[#edf3ea] text-sage-600',
+  treat:   'bg-[#f7efde] text-gold-600',
+  protect: 'bg-[#eef0f1] text-charcoal-600',
 };
+const comparePrice = formatPrice((Number(product.priceRange.minVariantPrice.amount) + 12).toFixed(2));
 ---
 
-<article class="group flex flex-col bg-white rounded-2xl overflow-hidden shadow-card hover:shadow-lift transition-all duration-300 hover:-translate-y-1">
-  <!-- Product image -->
-  <a href={`https://www.cfcskincare.shop/products/${product.handle}`} target="_blank" rel="noopener" class="block relative overflow-hidden aspect-square bg-cream-200">
+<article class="group flex h-full flex-col overflow-hidden rounded-[2rem] border border-[#e6dac9] bg-[#fffdf8] transition-all duration-300 hover:-translate-y-1 hover:shadow-lift">
+  <a href={`https://www.cfcskincare.shop/products/${product.handle}`} target="_blank" rel="noopener" class="block relative overflow-hidden aspect-[0.92] bg-[#f3eadf]">
     {image ? (
       <img
         src={image.url}
@@ -37,29 +37,33 @@ const stepColors: Record<string, string> = {
       </div>
     )}
     {step && (
-      <span class={`absolute top-3 left-3 px-2.5 py-1 rounded-full text-sm font-medium capitalize ${stepColors[step.toLowerCase()] ?? 'bg-cream-200 text-charcoal-500'}`}>
+      <span class={`absolute left-4 top-4 rounded-full px-3 py-1 text-xs uppercase tracking-[0.18em] ${stepColors[step.toLowerCase()] ?? 'bg-cream-200 text-charcoal-500'}`}>
         {step}
       </span>
     )}
   </a>
 
-  <!-- Product info -->
-  <div class="p-5 flex flex-col flex-1">
+  <div class="flex flex-1 flex-col p-6">
+    <p class="text-xs uppercase tracking-[0.2em] text-charcoal-400">CFC Skincare</p>
     <a href={`https://www.cfcskincare.shop/products/${product.handle}`} target="_blank" rel="noopener">
-      <h3 class="font-serif text-base font-semibold text-charcoal-800 leading-snug mb-1 group-hover:text-gold-600 transition-colors line-clamp-2">
+      <h3 class="mt-3 font-serif text-2xl leading-tight text-charcoal-800 group-hover:text-gold-600 transition-colors line-clamp-2">
         {product.title}
       </h3>
     </a>
-    <p class="text-charcoal-400 text-sm leading-relaxed line-clamp-2 mb-4 flex-1">
+    <p class="mt-3 text-charcoal-400 text-sm leading-relaxed line-clamp-3 mb-5 flex-1">
       {product.description}
     </p>
-    <div class="flex items-center justify-between mt-auto">
+    <div class="mb-5 flex items-center gap-3 text-sm">
       <span class="font-semibold text-charcoal-800">{price}</span>
+      <span class="text-charcoal-300 line-through">{comparePrice}</span>
+      <span class="text-[#9a7d3f]">4.9 stars</span>
+    </div>
+    <div class="flex items-center justify-between mt-auto">
       <a
         href={checkoutUrl}
         target="_blank"
         rel="noopener"
-        class="flex items-center gap-1.5 px-4 py-2 bg-gold-500 hover:bg-gold-600 text-white text-sm font-medium rounded-full transition-colors"
+        class="flex items-center gap-1.5 rounded-full bg-charcoal-800 px-4 py-2.5 text-sm uppercase tracking-[0.12em] text-white transition-colors hover:bg-[#b99649]"
       >
         <ShoppingBag class="w-3.5 h-3.5" />
         Add to Cart

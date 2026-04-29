@@ -21,52 +21,48 @@ const filters = ['All', 'Cleanse', 'Treat', 'Protect'];
 ---
 
 <section class="py-24 lg:py-32 bg-cream-100" id="products">
-  <div class="max-w-7xl mx-auto px-6 lg:px-8">
+  <div class="max-w-7xl mx-auto px-6 lg:px-16">
 
-    <!-- Header -->
     <div
       x-data
       x-intersect.once="$el.classList.add('opacity-100', 'translate-y-0')"
-      class="opacity-0 translate-y-6 transition-all duration-700 flex flex-col sm:flex-row sm:items-end justify-between gap-6 mb-12"
+      class="opacity-0 translate-y-6 transition-all duration-700 flex flex-col lg:flex-row lg:items-end justify-between gap-8 mb-12"
     >
-      <div>
-        <div class="flex items-center gap-3 mb-3">
-          <span class="w-8 h-px bg-gold-500"></span>
-          <span class="text-gold-500 text-sm font-medium tracking-widest uppercase">Shop CFC</span>
-        </div>
-        <h2 class="font-serif text-3xl lg:text-4xl font-semibold text-charcoal-800">
-          The complete system.
+      <div class="max-w-2xl">
+        <p class="mb-3 text-sm tracking-[0.24em] uppercase text-[#9a7d3f] font-medium">Shop CFC</p>
+        <h2 class="font-serif text-[clamp(2rem,4vw,4rem)] leading-[1] text-charcoal-800">
+          Discover more
+          <br />
+          for your skin.
         </h2>
+        <p class="mt-4 text-lg leading-relaxed text-charcoal-500">
+          Browse the collection the way the reference page does: category-led, airy, and visually calm, with just enough information to keep momentum.
+        </p>
       </div>
       <a
         href="https://www.cfcskincare.shop/collections/all"
         target="_blank"
         rel="noopener"
-        class="inline-flex items-center gap-2 text-gold-600 font-medium hover:gap-3 transition-all shrink-0"
+        class="inline-flex items-center gap-2 rounded-full border border-[#d7c7b1] px-5 py-3 text-sm uppercase tracking-[0.18em] text-charcoal-700 hover:border-[#b99649] hover:text-[#b99649] transition-all shrink-0"
       >
         View All Products <ArrowRight class="w-4 h-4" />
       </a>
     </div>
 
-    <!-- Filter tabs -->
-    <div
-      x-data="{ active: 'All' }"
-      class="mb-10"
-    >
-      <div class="flex gap-2 flex-wrap mb-10">
+    <div x-data="{ active: 'All' }" class="mb-10">
+      <div class="flex gap-2.5 flex-wrap mb-10">
         {filters.map(f => (
           <button
             @click={`active = '${f}'`}
-            :class={`active === '${f}' ? 'bg-gold-500 text-white' : 'bg-white text-charcoal-500 hover:text-charcoal-800'`}
-            class="px-5 py-2 rounded-full text-sm font-medium transition-all duration-200 shadow-card"
+            :class={`active === '${f}' ? 'bg-charcoal-800 text-white border-charcoal-800' : 'bg-[#fffaf2] text-charcoal-500 border-[#e5d8c5] hover:text-charcoal-800'`}
+            class="rounded-full border px-5 py-2.5 text-sm uppercase tracking-[0.14em] transition-all duration-200"
           >
             {f}
           </button>
         ))}
       </div>
 
-      <!-- Products grid -->
-      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+      <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-6">
         {displayProducts.map((product, i) => {
           const step = product.tags.find((t: string) => ['cleanse','treat','protect'].includes(t.toLowerCase())) ?? '';
           return (
