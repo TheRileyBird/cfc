@@ -11,11 +11,11 @@ const items = [
 
 <div class="bg-charcoal-800 py-3.5">
   <div class="max-w-7xl mx-auto px-6 lg:px-16">
-    <div class="flex flex-wrap items-center justify-center gap-x-6 gap-y-2 rounded-full border border-[#ded0bb] bg-[#fffaf2] px-6 py-4">
+    <div class="flex flex-wrap items-center justify-center gap-x-8 gap-y-2">
       {items.map((item, i) => (
         <>
-          <span class="text-charcoal-600 text-sm tracking-[0.18em] uppercase font-medium">{item}</span>
-          {i < items.length - 1 && <span class="text-[#C9A84C]/40 hidden sm:block text-sm">•</span>}
+          <span class="text-white text-sm tracking-[0.18em] uppercase font-medium">{item}</span>
+          {i < items.length - 1 && <span class="text-[#C9A84C]/35 hidden sm:block text-sm">•</span>}
         </>
       ))}
     </div>
