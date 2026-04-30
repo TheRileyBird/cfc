@@ -1,98 +1,255 @@
 ---
 import cfcLogo from '../assets/images/cfc-logo.png';
 ---
-<header
-  x-data="{ open: false }"
-  class="fixed top-0 inset-x-0 z-50 bg-white border-b border-slate-100"
->
-  <nav class="max-w-7xl mx-auto px-6 lg:px-16 flex items-center justify-between h-16">
 
-    <!-- Logo: circle icon + text wordmark -->
-    <a href="/" class="flex items-center gap-2.5">
-      <img
-        src={cfcLogo.src}
-        alt="CFC Skincare"
-        class="h-8 w-8 rounded-full object-cover shrink-0"
-      />
-      <span class="text-[11px] font-bold tracking-[0.28em] uppercase text-slate-900 leading-none">
-        CFC Skincare
-      </span>
-    </a>
+<!-- Announcement bar -->
+<div class="fixed top-0 inset-x-0 z-50">
+  <div class="bg-slate-900 py-2.5 px-6">
+    <div class="max-w-7xl mx-auto flex items-center justify-between gap-4">
 
-    <!-- Desktop links -->
-    <ul class="hidden lg:flex items-center gap-8">
-      {[['The System', '#system'], ['Shop', '#products'], ['About', '#about'], ['Contact', '#contact']].map(([label, href]) => (
-        <li>
-          <a
-            href={href}
-            class="text-sm font-medium text-slate-500 hover:text-slate-900 transition-colors duration-200"
-          >
-            {label}
-          </a>
-        </li>
-      ))}
-    </ul>
+      <!-- Left: empty spacer to balance icons on right -->
+      <div class="hidden sm:block w-48"></div>
 
-    <!-- CTA -->
-    <div class="hidden lg:block">
-      <a
-        href="https://www.cfcskincare.shop/collections/all"
-        target="_blank"
-        rel="noopener"
-        class="inline-flex items-center px-5 py-2.5 bg-[#B8950A] hover:bg-[#9A7D08] text-white text-sm font-semibold rounded-full transition-colors duration-200"
-      >
-        Shop Now
-      </a>
+      <!-- Center: announcement -->
+      <p class="text-white/75 text-xs font-medium tracking-widest text-center flex-1">
+        Subscribe &amp; Save
+        <span class="text-[#C9A84C] font-bold">30% Off</span>
+        &nbsp;—&nbsp;
+        <a
+          href="https://www.cfcskincare.shop/collections/all"
+          target="_blank"
+          rel="noopener"
+          class="text-white/90 underline underline-offset-2 hover:text-[#C9A84C] transition-colors font-semibold"
+        >
+          Shop Now
+        </a>
+      </p>
+
+      <!-- Right: utility icons -->
+      <div class="hidden sm:flex items-center gap-4 w-48 justify-end">
+        <!-- Search -->
+        <a
+          href="https://www.cfcskincare.shop/search"
+          target="_blank"
+          rel="noopener"
+          class="text-white/50 hover:text-white transition-colors"
+          aria-label="Search"
+        >
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+            <circle cx="11" cy="11" r="8"/>
+            <path stroke-linecap="round" d="m21 21-4.35-4.35"/>
+          </svg>
+        </a>
+        <!-- Account -->
+        <a
+          href="https://www.cfcskincare.shop/account"
+          target="_blank"
+          rel="noopener"
+          class="text-white/50 hover:text-white transition-colors"
+          aria-label="Account"
+        >
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+            <circle cx="12" cy="7" r="4"/>
+          </svg>
+        </a>
+        <!-- Cart -->
+        <a
+          href="https://www.cfcskincare.shop/cart"
+          target="_blank"
+          rel="noopener"
+          class="text-white/50 hover:text-white transition-colors"
+          aria-label="Cart"
+        >
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/>
+            <line x1="3" y1="6" x2="21" y2="6"/>
+            <path stroke-linecap="round" d="M16 10a4 4 0 0 1-8 0"/>
+          </svg>
+        </a>
+      </div>
     </div>
-
-    <!-- Mobile hamburger -->
-    <button
-      @click="open = !open"
-      class="lg:hidden p-2 text-slate-600 hover:text-slate-900 transition-colors"
-      aria-label="Menu"
-    >
-      <span x-show="!open" class="block space-y-1.5">
-        <span class="block h-px w-6 bg-current"></span>
-        <span class="block h-px w-4 bg-current ml-auto"></span>
-      </span>
-      <svg x-show="open" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M6 18L18 6M6 6l12 12"/>
-      </svg>
-    </button>
-  </nav>
-
-  <!-- Mobile drawer -->
-  <div
-    x-show="open"
-    x-transition:enter="transition ease-out duration-200"
-    x-transition:enter-start="opacity-0 -translate-y-2"
-    x-transition:enter-end="opacity-100 translate-y-0"
-    x-transition:leave="transition ease-in duration-150"
-    x-transition:leave-start="opacity-100"
-    x-transition:leave-end="opacity-0"
-    class="lg:hidden bg-white border-t border-slate-100 px-6 pb-8 pt-5"
-  >
-    {[
-      ['The System', '#system'],
-      ['Shop', '#products'],
-      ['About', '#about'],
-      ['Contact', '#contact'],
-    ].map(([label, href]) => (
-      <a
-        href={href}
-        @click="open=false"
-        class="block py-3.5 text-sm font-medium text-slate-600 hover:text-slate-900 border-b border-slate-100 last:border-0 transition-colors"
-      >
-        {label}
-      </a>
-    ))}
-    <a
-      href="https://www.cfcskincare.shop/collections/all"
-      target="_blank"
-      rel="noopener"
-      class="mt-5 block text-center py-3 bg-[#B8950A] hover:bg-[#9A7D08] text-white text-sm font-semibold rounded-full transition-colors"
-    >
-      Shop Now
-    </a>
   </div>
-</header>
+
+  <!-- Main nav -->
+  <header
+    x-data="{ open: false }"
+    class="bg-white border-b border-slate-100"
+  >
+    <nav class="max-w-7xl mx-auto px-6 lg:px-16 flex items-center h-[60px] relative">
+
+      <!-- Logo — left -->
+      <a href="/" class="flex items-center gap-2.5 shrink-0 z-10">
+        <img
+          src={cfcLogo.src}
+          alt="CFC Skincare"
+          class="h-8 w-8 rounded-full object-cover shrink-0"
+        />
+        <span class="text-sm font-black tracking-[0.22em] uppercase text-slate-900 leading-none">
+          CFC Skincare
+        </span>
+      </a>
+
+      <!-- Desktop links — truly centered via absolute positioning -->
+      <ul class="hidden lg:flex absolute left-1/2 -translate-x-1/2 items-center gap-9">
+        {[
+          ['The System', '#system'],
+          ['Shop', '#products'],
+          ['About', '#about'],
+          ['Contact', '#contact'],
+        ].map(([label, href]) => (
+          <li>
+            <a
+              href={href}
+              class="text-[11px] font-bold tracking-[0.2em] uppercase text-slate-500 hover:text-slate-900 transition-colors duration-200 relative after:absolute after:bottom-0 after:left-0 after:w-0 after:h-[1.5px] after:bg-[#B8950A] hover:after:w-full after:transition-all after:duration-300"
+            >
+              {label}
+            </a>
+          </li>
+        ))}
+      </ul>
+
+      <!-- Right: icons + CTA -->
+      <div class="hidden lg:flex items-center gap-4 ml-auto z-10">
+        <!-- Search -->
+        <a
+          href="https://www.cfcskincare.shop/search"
+          target="_blank"
+          rel="noopener"
+          class="text-slate-400 hover:text-slate-700 transition-colors"
+          aria-label="Search"
+        >
+          <svg class="w-[18px] h-[18px]" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.75">
+            <circle cx="11" cy="11" r="8"/>
+            <path stroke-linecap="round" d="m21 21-4.35-4.35"/>
+          </svg>
+        </a>
+        <!-- Account -->
+        <a
+          href="https://www.cfcskincare.shop/account"
+          target="_blank"
+          rel="noopener"
+          class="text-slate-400 hover:text-slate-700 transition-colors"
+          aria-label="Account"
+        >
+          <svg class="w-[18px] h-[18px]" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.75">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+            <circle cx="12" cy="7" r="4"/>
+          </svg>
+        </a>
+        <!-- Cart -->
+        <a
+          href="https://www.cfcskincare.shop/cart"
+          target="_blank"
+          rel="noopener"
+          class="text-slate-400 hover:text-slate-700 transition-colors"
+          aria-label="Cart"
+        >
+          <svg class="w-[18px] h-[18px]" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.75">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/>
+            <line x1="3" y1="6" x2="21" y2="6"/>
+            <path stroke-linecap="round" d="M16 10a4 4 0 0 1-8 0"/>
+          </svg>
+        </a>
+
+        <div class="w-px h-5 bg-slate-200 mx-1"></div>
+
+        <a
+          href="https://www.cfcskincare.shop/collections/all"
+          target="_blank"
+          rel="noopener"
+          class="inline-flex items-center px-5 py-2 bg-[#B8950A] hover:bg-[#9A7D08] text-white text-[10px] font-black tracking-[0.18em] uppercase rounded-full transition-colors duration-200"
+        >
+          Shop Now
+        </a>
+      </div>
+
+      <!-- Mobile: icons + hamburger -->
+      <div class="lg:hidden flex items-center gap-3.5 ml-auto">
+        <a
+          href="https://www.cfcskincare.shop/search"
+          target="_blank"
+          rel="noopener"
+          class="text-slate-400 hover:text-slate-700 transition-colors"
+          aria-label="Search"
+        >
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.75">
+            <circle cx="11" cy="11" r="8"/>
+            <path stroke-linecap="round" d="m21 21-4.35-4.35"/>
+          </svg>
+        </a>
+        <a
+          href="https://www.cfcskincare.shop/cart"
+          target="_blank"
+          rel="noopener"
+          class="text-slate-400 hover:text-slate-700 transition-colors"
+          aria-label="Cart"
+        >
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.75">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/>
+            <line x1="3" y1="6" x2="21" y2="6"/>
+            <path stroke-linecap="round" d="M16 10a4 4 0 0 1-8 0"/>
+          </svg>
+        </a>
+        <button
+          @click="open = !open"
+          class="p-1.5 text-slate-600 hover:text-slate-900 transition-colors"
+          aria-label="Menu"
+        >
+          <span x-show="!open" class="block space-y-1.5">
+            <span class="block h-px w-6 bg-current"></span>
+            <span class="block h-px w-4 bg-current ml-auto"></span>
+          </span>
+          <svg x-show="open" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M6 18L18 6M6 6l12 12"/>
+          </svg>
+        </button>
+      </div>
+    </nav>
+
+    <!-- Mobile drawer -->
+    <div
+      x-show="open"
+      x-transition:enter="transition ease-out duration-200"
+      x-transition:enter-start="opacity-0 -translate-y-2"
+      x-transition:enter-end="opacity-100 translate-y-0"
+      x-transition:leave="transition ease-in duration-150"
+      x-transition:leave-start="opacity-100"
+      x-transition:leave-end="opacity-0"
+      class="lg:hidden bg-white border-t border-slate-100 px-6 pb-8 pt-4"
+    >
+      {[
+        ['The System', '#system'],
+        ['Shop', '#products'],
+        ['About', '#about'],
+        ['Contact', '#contact'],
+      ].map(([label, href]) => (
+        <a
+          href={href}
+          @click="open=false"
+          class="block py-3.5 text-[11px] font-bold tracking-[0.25em] uppercase text-slate-500 hover:text-slate-900 border-b border-slate-100 last:border-0 transition-colors"
+        >
+          {label}
+        </a>
+      ))}
+      <div class="mt-5 flex gap-3">
+        <a
+          href="https://www.cfcskincare.shop/account"
+          target="_blank"
+          rel="noopener"
+          class="flex-1 text-center py-3 border border-slate-200 text-slate-600 text-[11px] font-bold tracking-widest uppercase rounded-full hover:border-slate-400 transition-colors"
+        >
+          Account
+        </a>
+        <a
+          href="https://www.cfcskincare.shop/collections/all"
+          target="_blank"
+          rel="noopener"
+          class="flex-1 text-center py-3 bg-[#B8950A] hover:bg-[#9A7D08] text-white text-[11px] font-bold tracking-widest uppercase rounded-full transition-colors"
+        >
+          Shop Now
+        </a>
+      </div>
+    </div>
+  </header>
+</div>
