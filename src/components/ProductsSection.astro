@@ -1,22 +1,33 @@
 ---
-import { getProducts } from '../lib/shopify';
+import { getFeaturedProducts, getProducts } from '../lib/shopify';
 import ProductCard from './ProductCard.astro';
 import { ArrowRight } from '@lucide/astro';
 
-const products = await getProducts(12);
-const hasProducts = products.length > 0;
+export interface Props {
+  variant?: 'featured' | 'complete';
+}
+
+const { variant = 'featured' } = Astro.props;
+const isFeatured = variant === 'featured';
+const products = isFeatured ? await getFeaturedProducts() : await getProducts(12);
+const hasProducts = isFeatured ? products.length >= 4 : products.length > 0;
 
 const fallbackProducts = [
   { id: '1', title: 'Apple Stem Wrinkle Eraser', handle: 'apple-stem-wrinkle-eraser', description: 'Advanced wrinkle treatment with plant stem cell technology.', priceRange: { minVariantPrice: { amount: '65.00', currencyCode: 'USD' } }, images: { edges: [] }, variants: { edges: [{ node: { id: '1', title: 'Default', price: { amount: '65.00' } } }] }, tags: ['treat'], collections: { edges: [] } },
   { id: '2', title: 'Color Correction C&E Serum', handle: 'color-correction-ce-serum', description: 'Brightening serum with Vitamins C and E for even skin tone.', priceRange: { minVariantPrice: { amount: '58.00', currencyCode: 'USD' } }, images: { edges: [] }, variants: { edges: [{ node: { id: '2', title: 'Default', price: { amount: '58.00' } } }] }, tags: ['treat'], collections: { edges: [] } },
   { id: '3', title: 'Pure Hydration Hyaluronic Acid Serum', handle: 'pure-hydration-hyaluronic-acid-serum', description: 'Deep cellular hydration with multi-weight hyaluronic acid.', priceRange: { minVariantPrice: { amount: '52.00', currencyCode: 'USD' } }, images: { edges: [] }, variants: { edges: [{ node: { id: '3', title: 'Default', price: { amount: '52.00' } } }] }, tags: ['treat'], collections: { edges: [] } },
-  { id: '4', title: 'Pure Sun Defense SPF 50+', handle: 'pure-sun-defense-spf-50', description: 'Medical-grade broad spectrum protection, no white cast.', priceRange: { minVariantPrice: { amount: '45.00', currencyCode: 'USD' } }, images: { edges: [] }, variants: { edges: [{ node: { id: '4', title: 'Default', price: { amount: '45.00' } } }] }, tags: ['protect'], collections: { edges: [] } },
-  { id: '5', title: 'Age Defying Brightening Cleanser', handle: 'age-defying-brightening-cleanser', description: 'Gentle yet effective cleansing with brightening botanicals.', priceRange: { minVariantPrice: { amount: '38.00', currencyCode: 'USD' } }, images: { edges: [] }, variants: { edges: [{ node: { id: '5', title: 'Default', price: { amount: '38.00' } } }] }, tags: ['cleanse'], collections: { edges: [] } },
-  { id: '6', title: 'Sun Kissed Protection Tinted SPF 30', handle: 'sun-kissed-protection-tinted-spf-30', description: 'Tinted SPF with a natural finish for all skin tones.', priceRange: { minVariantPrice: { amount: '42.00', currencyCode: 'USD' } }, images: { edges: [] }, variants: { edges: [{ node: { id: '6', title: 'Default', price: { amount: '42.00' } } }] }, tags: ['protect'], collections: { edges: [] } },
+  { id: '4', title: 'NAD+ Bamboo Firming Cleanser', handle: 'nad-bamboo-firming-cleanser', description: 'Firming cleanser with NAD+ and bamboo for a fresh, resilient cleanse.', priceRange: { minVariantPrice: { amount: '48.00', currencyCode: 'USD' } }, images: { edges: [] }, variants: { edges: [{ node: { id: '4', title: 'Default', price: { amount: '48.00' } } }] }, tags: ['cleanse'], collections: { edges: [] } },
+  { id: '5', title: 'Pure Sun Defense SPF 50+', handle: 'pure-sun-defense-spf-50', description: 'Medical-grade broad spectrum protection, no white cast.', priceRange: { minVariantPrice: { amount: '45.00', currencyCode: 'USD' } }, images: { edges: [] }, variants: { edges: [{ node: { id: '5', title: 'Default', price: { amount: '45.00' } } }] }, tags: ['protect'], collections: { edges: [] } },
+  { id: '6', title: 'Age Defying Brightening Cleanser', handle: 'age-defying-brightening-cleanser', description: 'Gentle yet effective cleansing with brightening botanicals.', priceRange: { minVariantPrice: { amount: '38.00', currencyCode: 'USD' } }, images: { edges: [] }, variants: { edges: [{ node: { id: '6', title: 'Default', price: { amount: '38.00' } } }] }, tags: ['cleanse'], collections: { edges: [] } },
+  { id: '7', title: 'Sun Kissed Protection Tinted SPF 30', handle: 'sun-kissed-protection-tinted-spf-30', description: 'Tinted SPF with a natural finish for all skin tones.', priceRange: { minVariantPrice: { amount: '42.00', currencyCode: 'USD' } }, images: { edges: [] }, variants: { edges: [{ node: { id: '7', title: 'Default', price: { amount: '42.00' } } }] }, tags: ['protect'], collections: { edges: [] } },
 ];
 
-const displayProducts = hasProducts ? products : fallbackProducts;
+const displayProducts = hasProducts ? products : (isFeatured ? fallbackProducts.slice(0, 4) : fallbackProducts);
 const filters = ['All', 'Cleanse', 'Treat', 'Protect'];
+const heading = isFeatured ? 'Featured collection.' : 'The complete system.';
+const ctaHref = isFeatured ? '/shop' : 'https://www.cfcskincare.shop/collections/all';
+const ctaLabel = isFeatured ? 'Shop Complete System' : 'View All Products';
+const ctaTarget = isFeatured ? undefined : '_blank';
 ---
 
 <section class="py-24 lg:py-32 bg-slate-50 border-t border-slate-100" id="products">
@@ -34,16 +45,16 @@ const filters = ['All', 'Cleanse', 'Treat', 'Protect'];
           <span class="text-[#B8950A] text-xs font-semibold tracking-[0.2em] uppercase">Shop CFC</span>
         </span>
         <h2 class="font-bold text-3xl lg:text-4xl text-slate-900">
-          The complete system.
+          {heading}
         </h2>
       </div>
       <a
-        href="https://www.cfcskincare.shop/collections/all"
-        target="_blank"
-        rel="noopener"
+        href={ctaHref}
+        target={ctaTarget}
+        rel={isFeatured ? undefined : 'noopener'}
         class="inline-flex items-center gap-2 text-sm font-semibold text-[#B8950A] hover:text-[#9A7D08] transition-colors shrink-0"
       >
-        View All Products <ArrowRight class="w-4 h-4" />
+        {ctaLabel} <ArrowRight class="w-4 h-4" />
       </a>
     </div>
 

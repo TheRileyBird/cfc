@@ -76,17 +76,17 @@ export async function getProducts(first = 24): Promise<ShopifyProduct[]> {
 
 export async function getFeaturedProducts(): Promise<ShopifyProduct[]> {
   const all = await getProducts(30);
-  // Hero products for the 3-step system
-  const heroHandles = [
-    'apple-stem-wrinkle-eraser',
-    'color-correction-c-e-serum',
-    'pure-hydration-hyaluronic-acid-serum',
-    'pure-sun-defense-spf-50',
+  const featuredProducts = [
+    { title: 'Apple Stem Wrinkle Eraser', handles: ['apple-stem-wrinkle-eraser'] },
+    { title: 'Color Correction C&E Serum', handles: ['color-correction-ce-serum', 'color-correction-c-e-serum'] },
+    { title: 'Pure Hydration Hyaluronic Acid Serum', handles: ['pure-hydration-hyaluronic-acid-serum'] },
+    { title: 'NAD+ Bamboo Firming Cleanser', handles: ['nad-bamboo-firming-cleanser', 'nad-plus-bamboo-firming-cleanser'] },
   ];
-  const featured = heroHandles
-    .map(h => all.find(p => p.handle === h))
+
+  const featured = featuredProducts
+    .map(({ title, handles }) => all.find(p => handles.includes(p.handle) || p.title === title))
     .filter(Boolean) as ShopifyProduct[];
-  return featured.length >= 3 ? featured : all.slice(0, 6);
+  return featured;
 }
 
 export function formatPrice(amount: string, currency = 'USD'): string {
