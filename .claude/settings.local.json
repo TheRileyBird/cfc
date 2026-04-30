@@ -5,7 +5,12 @@
       "Bash(bd update *)",
       "Bash(cp -f /Users/joshuariley/Sites/cfc/src/assets/images/*.jpg /Users/joshuariley/Sites/cfc/public/images/)",
       "Bash(cp -f /Users/joshuariley/Sites/cfc/src/assets/images/*.png /Users/joshuariley/Sites/cfc/public/images/)",
-      "Bash(cp -f /Users/joshuariley/Sites/cfc/src/assets/videos/stock-video.mp4 /Users/joshuariley/Sites/cfc/public/video/)"
+      "Bash(cp -f /Users/joshuariley/Sites/cfc/src/assets/videos/stock-video.mp4 /Users/joshuariley/Sites/cfc/public/video/)",
+      "Bash(npm run *)",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\" http://localhost:4322)",
+      "Bash(bd dolt *)",
+      "Bash(git add *)",
+      "Bash(git commit -m ' *)"
     ]
   }
 }
