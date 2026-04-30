@@ -2,16 +2,22 @@
 import { getFeaturedProducts, getProducts } from '../lib/shopify';
 import type { ShopifyProduct } from '../lib/shopify';
 import ProductCard from './ProductCard.astro';
-import { ArrowRight } from '@lucide/astro';
+import { ArrowLeft, ArrowRight } from '@lucide/astro';
 
 export interface Props {
   variant?: 'featured' | 'complete';
+  products?: ShopifyProduct[];
+  pagination?: {
+    currentPage: number;
+    totalPages: number;
+    totalProducts: number;
+  };
 }
 
-const { variant = 'featured' } = Astro.props;
+const { variant = 'featured', products: providedProducts, pagination } = Astro.props;
 const isFeatured = variant === 'featured';
-const products = isFeatured ? await getFeaturedProducts() : await getProducts(12);
-const hasProducts = isFeatured ? products.length >= 4 : products.length > 0;
+const products = providedProducts ?? (isFeatured ? await getFeaturedProducts() : await getProducts(16));
+const hasProducts = products.length > 0;
 
 const displayProducts = products;
 const filters = ['All', 'Cleanse', 'Treat', 'Protect'];
@@ -30,6 +36,10 @@ function getProductStep(product: ShopifyProduct): 'cleanse' | 'treat' | 'protect
   if (text.includes('cleanser') || text.includes('cleanse')) return 'cleanse';
   if (text.includes('spf') || text.includes('sunscreen') || text.includes('sun protection')) return 'protect';
   return 'treat';
+}
+
+function getShopPageHref(page: number): string {
+  return page === 1 ? '/shop' : `/shop/page/${page}`;
 }
 ---
 
@@ -77,25 +87,74 @@ function getProductStep(product: ShopifyProduct): 'cleanse' | 'treat' | 'protect
 
       <!-- Products grid -->
       {hasProducts ? (
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
-          {displayProducts.map((product, i) => {
-            const step = getProductStep(product);
-            return (
-              <div
-                x-show={`active === 'All' || active.toLowerCase() === '${step}'`}
-                x-transition:enter="transition ease-out duration-200"
-                x-transition:enter-start="opacity-0 scale-95"
-                x-transition:enter-end="opacity-100 scale-100"
-                x-data
-                x-intersect.once="$el.classList.add('opacity-100', 'translate-y-0')"
-                class="opacity-0 translate-y-6 transition-all duration-500"
-                style={`transition-delay: ${(i % 4) * 80}ms`}
-              >
-                <ProductCard product={product} />
-              </div>
-            );
-          })}
-        </div>
+        <>
+          {pagination && (
+            <div class="flex items-center justify-between gap-4 mb-6 text-sm text-slate-500">
+              <p>
+                Showing page {pagination.currentPage} of {pagination.totalPages}
+              </p>
+              <p>{pagination.totalProducts} products</p>
+            </div>
+          )}
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
+            {displayProducts.map((product, i) => {
+              const step = getProductStep(product);
+              return (
+                <div
+                  x-show={`active === 'All' || active.toLowerCase() === '${step}'`}
+                  x-transition:enter="transition ease-out duration-200"
+                  x-transition:enter-start="opacity-0 scale-95"
+                  x-transition:enter-end="opacity-100 scale-100"
+                  x-data
+                  x-intersect.once="$el.classList.add('opacity-100', 'translate-y-0')"
+                  class="opacity-0 translate-y-6 transition-all duration-500"
+                  style={`transition-delay: ${(i % 4) * 80}ms`}
+                >
+                  <ProductCard product={product} />
+                </div>
+              );
+            })}
+          </div>
+
+          {pagination && pagination.totalPages > 1 && (
+            <nav class="mt-12 flex flex-wrap items-center justify-center gap-2" aria-label="Product pagination">
+              {pagination.currentPage > 1 && (
+                <a
+                  href={getShopPageHref(pagination.currentPage - 1)}
+                  class="inline-flex h-10 items-center gap-2 rounded-full border border-slate-200 bg-white px-4 text-sm font-semibold text-slate-600 transition-colors hover:border-[#B8950A] hover:text-[#B8950A]"
+                >
+                  <ArrowLeft class="w-4 h-4" />
+                  Previous
+                </a>
+              )}
+
+              {Array.from({ length: pagination.totalPages }, (_, index) => index + 1).map(page => (
+                <a
+                  href={getShopPageHref(page)}
+                  aria-current={page === pagination.currentPage ? 'page' : undefined}
+                  class={`inline-flex h-10 min-w-10 items-center justify-center rounded-full px-3 text-sm font-semibold transition-colors ${
+                    page === pagination.currentPage
+                      ? 'bg-slate-900 text-white'
+                      : 'border border-slate-200 bg-white text-slate-600 hover:border-[#B8950A] hover:text-[#B8950A]'
+                  }`}
+                >
+                  {page}
+                </a>
+              ))}
+
+              {pagination.currentPage < pagination.totalPages && (
+                <a
+                  href={getShopPageHref(pagination.currentPage + 1)}
+                  class="inline-flex h-10 items-center gap-2 rounded-full border border-slate-200 bg-white px-4 text-sm font-semibold text-slate-600 transition-colors hover:border-[#B8950A] hover:text-[#B8950A]"
+                >
+                  Next
+                  <ArrowRight class="w-4 h-4" />
+                </a>
+              )}
+            </nav>
+          )}
+        </>
       ) : (
         <p class="text-sm text-slate-500">
           Products are temporarily unavailable.

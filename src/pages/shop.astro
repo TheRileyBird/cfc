@@ -3,6 +3,12 @@ import Layout from '../layouts/Layout.astro';
 import Nav from '../components/Nav.astro';
 import ProductsSection from '../components/ProductsSection.astro';
 import Footer from '../components/Footer.astro';
+import { getAllProducts } from '../lib/shopify';
+
+const PRODUCTS_PER_PAGE = 16;
+const allProducts = await getAllProducts();
+const totalPages = Math.max(1, Math.ceil(allProducts.length / PRODUCTS_PER_PAGE));
+const products = allProducts.slice(0, PRODUCTS_PER_PAGE);
 ---
 
 <Layout
@@ -11,7 +17,15 @@ import Footer from '../components/Footer.astro';
 >
   <Nav />
   <main class="pt-[104px]">
-    <ProductsSection variant="complete" />
+    <ProductsSection
+      variant="complete"
+      products={products}
+      pagination={{
+        currentPage: 1,
+        totalPages,
+        totalProducts: allProducts.length,
+      }}
+    />
   </main>
   <Footer />
 </Layout>

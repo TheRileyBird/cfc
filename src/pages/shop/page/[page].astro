@@ -1,0 +1,60 @@
+---
+import Layout from '../../../layouts/Layout.astro';
+import Nav from '../../../components/Nav.astro';
+import ProductsSection from '../../../components/ProductsSection.astro';
+import Footer from '../../../components/Footer.astro';
+import { getAllProducts } from '../../../lib/shopify';
+import type { ShopifyProduct } from '../../../lib/shopify';
+
+export async function getStaticPaths() {
+  const productsPerPage = 16;
+  const allProducts = await getAllProducts();
+  const totalPages = Math.ceil(allProducts.length / productsPerPage);
+
+  return Array.from({ length: Math.max(0, totalPages - 1) }, (_, index) => {
+    const currentPage = index + 2;
+    const start = (currentPage - 1) * productsPerPage;
+
+    return {
+      params: { page: String(currentPage) },
+      props: {
+        products: allProducts.slice(start, start + productsPerPage),
+        currentPage,
+        totalPages,
+        totalProducts: allProducts.length,
+      },
+    };
+  });
+}
+
+const {
+  products,
+  currentPage,
+  totalPages,
+  totalProducts,
+} = Astro.props as {
+  products: ShopifyProduct[];
+  currentPage: number;
+  totalPages: number;
+  totalProducts: number;
+};
+---
+
+<Layout
+  title={`Shop CFC Skincare — Page ${currentPage}`}
+  description="Shop the complete CFC Skincare cleanse, treat, and protect system."
+>
+  <Nav />
+  <main class="pt-[104px]">
+    <ProductsSection
+      variant="complete"
+      products={products}
+      pagination={{
+        currentPage,
+        totalPages,
+        totalProducts,
+      }}
+    />
+  </main>
+  <Footer />
+</Layout>

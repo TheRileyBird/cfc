@@ -34,34 +34,6 @@ export interface ShopifyProduct {
   collections: { edges: Array<{ node: { title: string } }> };
 }
 
-const PRODUCTS_QUERY = `
-  query GetProducts($first: Int!) {
-    products(first: $first) {
-      edges {
-        node {
-          id
-          title
-          handle
-          description
-          tags
-          priceRange {
-            minVariantPrice { amount currencyCode }
-          }
-          images(first: 1) {
-            edges { node { url altText } }
-          }
-          variants(first: 1) {
-            edges { node { id title price { amount } } }
-          }
-          collections(first: 3) {
-            edges { node { title } }
-          }
-        }
-      }
-    }
-  }
-`;
-
 const PRODUCT_FIELDS = `
   id
   title
@@ -79,6 +51,23 @@ const PRODUCT_FIELDS = `
   }
   collections(first: 3) {
     edges { node { title } }
+  }
+`;
+
+const PRODUCTS_QUERY = `
+  query GetProducts($first: Int!, $after: String) {
+    products(first: $first, after: $after) {
+      edges {
+        cursor
+        node {
+          ${PRODUCT_FIELDS}
+        }
+      }
+      pageInfo {
+        hasNextPage
+        endCursor
+      }
+    }
   }
 `;
 
@@ -100,12 +89,40 @@ export async function getProducts(first = 24): Promise<ShopifyProduct[]> {
   try {
     const data = await shopifyFetch<{ products: { edges: Array<{ node: ShopifyProduct }> } }>(
       PRODUCTS_QUERY,
-      { first }
+      { first, after: null }
     );
     return data.products.edges.map(e => e.node);
   } catch {
     return [];
   }
+}
+
+export async function getAllProducts(): Promise<ShopifyProduct[]> {
+  const products: ShopifyProduct[] = [];
+  let after: string | null = null;
+  let hasNextPage = true;
+
+  while (hasNextPage) {
+    try {
+      const data = await shopifyFetch<{
+        products: {
+          edges: Array<{ node: ShopifyProduct }>;
+          pageInfo: { hasNextPage: boolean; endCursor: string | null };
+        };
+      }>(
+        PRODUCTS_QUERY,
+        { first: 100, after }
+      );
+
+      products.push(...data.products.edges.map(e => e.node));
+      hasNextPage = data.products.pageInfo.hasNextPage;
+      after = data.products.pageInfo.endCursor;
+    } catch {
+      return products;
+    }
+  }
+
+  return products;
 }
 
 export async function getCollectionProducts(handle: string, first = 24): Promise<ShopifyProduct[]> {
