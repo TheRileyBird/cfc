@@ -23,7 +23,7 @@ const problems = [
 ];
 ---
 
-<section class="bg-[#FDFCF8]" id="problem">
+<section class="bg-white" id="problem">
   <div class="max-w-7xl mx-auto px-6 lg:px-16 py-24 lg:py-32">
 
     <div class="grid lg:grid-cols-12 gap-12 lg:gap-20">
@@ -32,36 +32,40 @@ const problems = [
       <div
         x-data
         x-intersect.once="$el.classList.add('opacity-100', 'translate-y-0')"
-        class="opacity-0 translate-y-4 transition-all duration-700 lg:col-span-4 lg:sticky lg:top-32 lg:self-start"
+        class="opacity-0 translate-y-4 transition-all duration-700 lg:col-span-4 lg:sticky lg:top-24 lg:self-start"
       >
-        <span class="block w-px h-10 bg-[#C9A84C] mb-6"></span>
-        <p class="text-[#B8950A] text-sm tracking-[0.25em] uppercase font-medium mb-5">The Problem</p>
-        <h2 class="font-serif text-[clamp(2rem,3vw,2.75rem)] font-light text-charcoal-800 leading-tight mb-7">
-          You haven't found<br/>the right skincare.<br/>
-          <em class="italic text-charcoal-400">The industry hasn't<br/>built it — until now.</em>
+        <span class="inline-flex items-center gap-2 px-3 py-1.5 bg-slate-100 rounded-full mb-6">
+          <span class="w-1.5 h-1.5 rounded-full bg-[#B8950A] shrink-0"></span>
+          <span class="text-[#B8950A] text-xs font-semibold tracking-[0.2em] uppercase">The Problem</span>
+        </span>
+        <h2 class="font-bold text-3xl lg:text-[2.6rem] text-slate-900 leading-tight mb-5">
+          You haven't found the right skincare.
         </h2>
-        <p class="text-charcoal-400 text-base leading-relaxed">
+        <p class="font-serif text-xl italic text-slate-400 leading-relaxed mb-6">
+          "The industry hasn't built it — until now."
+        </p>
+        <p class="text-slate-500 text-base leading-relaxed">
           Women in their 30s, 40s, 50s, and beyond are being failed at every turn. Here is why nothing has worked.
         </p>
       </div>
 
       <!-- Right: numbered list -->
-      <div class="lg:col-span-8 space-y-0">
+      <div class="lg:col-span-8 divide-y divide-slate-100">
         {problems.map(({ number, title, body }, i) => (
           <div
             x-data
             x-intersect.once="$el.classList.add('opacity-100', 'translate-x-0')"
-            class="opacity-0 translate-x-4 transition-all duration-700 flex gap-8 py-10 border-b border-[#E8E0D5] last:border-0 group hover:pl-2 transition-all"
+            class="opacity-0 translate-x-4 transition-all duration-700 flex gap-6 py-8 group"
             style={`transition-delay: ${i * 80}ms`}
           >
-            <span class="font-serif text-[#C9A84C]/40 text-4xl font-light leading-none mt-1 select-none shrink-0 w-10 group-hover:text-[#C9A84C]/70 transition-colors duration-300">
+            <span class="text-slate-200 text-4xl font-bold leading-none mt-0.5 select-none shrink-0 w-14 group-hover:text-[#C9A84C]/40 transition-colors duration-300 tabular-nums">
               {number}
             </span>
             <div>
-              <h3 class="font-serif text-xl font-light text-charcoal-800 mb-3 group-hover:text-[#B8950A] transition-colors duration-300">
+              <h3 class="font-semibold text-lg text-slate-900 mb-2.5 group-hover:text-[#B8950A] transition-colors duration-300">
                 {title}
               </h3>
-              <p class="text-charcoal-500 leading-relaxed text-base">{body}</p>
+              <p class="text-slate-500 leading-relaxed text-base">{body}</p>
             </div>
           </div>
         ))}
@@ -72,11 +76,11 @@ const problems = [
     <div
       x-data
       x-intersect.once="$el.classList.add('opacity-100', 'translate-y-0')"
-      class="opacity-0 translate-y-4 transition-all duration-700 mt-20 lg:mt-28 border-t border-[#E8E0D5] pt-14 text-center"
+      class="opacity-0 translate-y-4 transition-all duration-700 mt-20 lg:mt-28 border-t border-slate-100 pt-14 text-center"
     >
-      <p class="font-serif text-[clamp(1.4rem,3vw,2.25rem)] font-light text-charcoal-700 leading-relaxed max-w-3xl mx-auto">
+      <p class="font-serif text-2xl lg:text-[1.9rem] italic text-slate-600 leading-relaxed max-w-3xl mx-auto">
         "This is not a vanity problem. It is a confidence problem — and confidence touches
-        <em class="italic text-[#B8950A]">every area of a woman's life.</em>"
+        <span class="text-[#B8950A]"> every area of a woman's life.</span>"
       </p>
     </div>
 

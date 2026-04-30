@@ -15,15 +15,15 @@ const price = formatPrice(product.priceRange.minVariantPrice.amount);
 const checkoutUrl = variant ? getCheckoutUrl(variant.id) : `https://www.cfcskincare.shop/products/${product.handle}`;
 const step = product.tags.find(t => ['cleanse','treat','protect'].includes(t.toLowerCase()));
 const stepColors: Record<string, string> = {
-  cleanse: 'bg-sage-200 text-sage-600',
-  treat:   'bg-gold-100 text-gold-600',
-  protect: 'bg-charcoal-100 text-charcoal-600',
+  cleanse: 'bg-slate-100 text-slate-600',
+  treat:   'bg-gold-50 text-gold-600',
+  protect: 'bg-slate-100 text-slate-600',
 };
 ---
 
-<article class="group flex flex-col bg-white rounded-2xl overflow-hidden shadow-card hover:shadow-lift transition-all duration-300 hover:-translate-y-1">
+<article class="group flex flex-col bg-white rounded-2xl overflow-hidden border border-slate-200 shadow-card hover:shadow-lift transition-all duration-300 hover:-translate-y-1">
   <!-- Product image -->
-  <a href={`https://www.cfcskincare.shop/products/${product.handle}`} target="_blank" rel="noopener" class="block relative overflow-hidden aspect-square bg-cream-200">
+  <a href={`https://www.cfcskincare.shop/products/${product.handle}`} target="_blank" rel="noopener" class="block relative overflow-hidden aspect-square bg-slate-50">
     {image ? (
       <img
         src={image.url}
@@ -33,11 +33,11 @@ const stepColors: Record<string, string> = {
       />
     ) : (
       <div class="w-full h-full flex items-center justify-center">
-        <span class="font-serif text-4xl text-charcoal-300">CFC</span>
+        <span class="font-serif text-4xl text-slate-300">CFC</span>
       </div>
     )}
     {step && (
-      <span class={`absolute top-3 left-3 px-2.5 py-1 rounded-full text-sm font-medium capitalize ${stepColors[step.toLowerCase()] ?? 'bg-cream-200 text-charcoal-500'}`}>
+      <span class={`absolute top-3 left-3 px-2.5 py-1 rounded-full text-xs font-semibold capitalize tracking-wide ${stepColors[step.toLowerCase()] ?? 'bg-slate-100 text-slate-500'}`}>
         {step}
       </span>
     )}
@@ -46,20 +46,20 @@ const stepColors: Record<string, string> = {
   <!-- Product info -->
   <div class="p-5 flex flex-col flex-1">
     <a href={`https://www.cfcskincare.shop/products/${product.handle}`} target="_blank" rel="noopener">
-      <h3 class="font-serif text-base font-semibold text-charcoal-800 leading-snug mb-1 group-hover:text-gold-600 transition-colors line-clamp-2">
+      <h3 class="font-semibold text-sm text-slate-900 leading-snug mb-1.5 group-hover:text-[#B8950A] transition-colors line-clamp-2">
         {product.title}
       </h3>
     </a>
-    <p class="text-charcoal-400 text-sm leading-relaxed line-clamp-2 mb-4 flex-1">
+    <p class="text-slate-400 text-sm leading-relaxed line-clamp-2 mb-4 flex-1">
       {product.description}
     </p>
     <div class="flex items-center justify-between mt-auto">
-      <span class="font-semibold text-charcoal-800">{price}</span>
+      <span class="font-bold text-slate-900 text-sm">{price}</span>
       <a
         href={checkoutUrl}
         target="_blank"
         rel="noopener"
-        class="flex items-center gap-1.5 px-4 py-2 bg-gold-500 hover:bg-gold-600 text-white text-sm font-medium rounded-full transition-colors"
+        class="flex items-center gap-1.5 px-4 py-2 bg-[#B8950A] hover:bg-[#9A7D08] text-white text-xs font-semibold rounded-full transition-colors"
       >
         <ShoppingBag class="w-3.5 h-3.5" />
         Add to Cart

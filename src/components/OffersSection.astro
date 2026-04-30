@@ -55,7 +55,7 @@ const offers = [
 ];
 ---
 
-<section class="bg-[#FAF7F2]" id="offers">
+<section class="bg-white border-t border-slate-100" id="offers">
   <div class="max-w-7xl mx-auto px-6 lg:px-16 py-24 lg:py-32">
 
     <!-- Header -->
@@ -64,17 +64,19 @@ const offers = [
       x-intersect.once="$el.classList.add('opacity-100', 'translate-y-0')"
       class="opacity-0 translate-y-4 transition-all duration-700 text-center max-w-xl mx-auto mb-16 lg:mb-20"
     >
-      <span class="block w-px h-10 bg-[#C9A84C] mx-auto mb-6"></span>
-      <p class="text-[#B8950A] text-sm tracking-[0.25em] uppercase font-medium mb-4">Choose Your System</p>
-      <h2 class="font-serif text-[clamp(2rem,4vw,3rem)] font-light text-charcoal-800 leading-tight mb-4">
-        Start where you are.<br/>
-        <em class="italic text-[#B8950A]">Scale as you grow.</em>
+      <span class="inline-flex items-center gap-2 px-3 py-1.5 bg-slate-100 rounded-full mb-6">
+        <span class="w-1.5 h-1.5 rounded-full bg-[#B8950A] shrink-0"></span>
+        <span class="text-[#B8950A] text-xs font-semibold tracking-[0.2em] uppercase">Choose Your System</span>
+      </span>
+      <h2 class="font-bold text-4xl lg:text-5xl text-slate-900 leading-tight mb-4">
+        Start where you are.
       </h2>
-      <p class="text-charcoal-400 text-base">Save 30% when you subscribe — and never run out of what your skin needs.</p>
+      <p class="font-serif text-2xl italic text-slate-400 mb-4">Scale as you grow.</p>
+      <p class="text-slate-500 text-base">Save 30% when you subscribe — and never run out of what your skin needs.</p>
     </div>
 
     <!-- Cards -->
-    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-5 items-start">
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-5 lg:gap-4 items-start">
       {offers.map(({ name, tagline, price, priceTo, savingsPrice, description, includes, cta, href, featured }, i) => (
         <div
           x-data
@@ -84,24 +86,24 @@ const offers = [
         >
           <div class={`relative rounded-2xl p-8 lg:p-10 h-full flex flex-col ${
             featured
-              ? 'bg-charcoal-800 text-white shadow-[0_8px_48px_rgba(0,0,0,0.18)] lg:scale-105 lg:-translate-y-2'
-              : 'bg-white border border-[#E8E0D5]'
+              ? 'bg-slate-900 text-white shadow-strong lg:scale-105 lg:-translate-y-2'
+              : 'bg-white border border-slate-200 shadow-card'
           }`}>
 
             {featured && (
               <div class="absolute -top-3.5 left-1/2 -translate-x-1/2">
-                <span class="px-5 py-1 bg-[#C9A84C] text-white text-sm tracking-[0.15em] uppercase font-medium rounded-full">
+                <span class="px-5 py-1.5 bg-[#B8950A] text-white text-xs tracking-[0.15em] uppercase font-bold rounded-full whitespace-nowrap">
                   Most Popular
                 </span>
               </div>
             )}
 
             <!-- Name + tagline -->
-            <div class="mb-6 pb-6" style={`border-bottom: 1px solid ${featured ? 'rgba(255,255,255,0.1)' : '#E8E0D5'}`}>
-              <p class={`text-sm tracking-[0.2em] uppercase font-medium mb-2 ${featured ? 'text-[#C9A84C]' : 'text-[#B8950A]'}`}>
+            <div class={`mb-6 pb-6 border-b ${featured ? 'border-white/10' : 'border-slate-100'}`}>
+              <p class={`text-xs tracking-[0.2em] uppercase font-semibold mb-2 ${featured ? 'text-[#C9A84C]' : 'text-[#B8950A]'}`}>
                 {tagline}
               </p>
-              <h3 class={`font-serif text-2xl font-light ${featured ? 'text-white' : 'text-charcoal-800'}`}>
+              <h3 class={`font-bold text-xl ${featured ? 'text-white' : 'text-slate-900'}`}>
                 {name}
               </h3>
             </div>
@@ -109,24 +111,24 @@ const offers = [
             <!-- Price -->
             <div class="mb-5">
               <div class="flex items-baseline gap-1.5 mb-1">
-                <span class={`font-serif text-4xl font-light ${featured ? 'text-white' : 'text-charcoal-800'}`}>{price}</span>
-                <span class={`text-sm ${featured ? 'text-white/60' : 'text-charcoal-400'}`}>– {priceTo}</span>
+                <span class={`font-bold text-4xl ${featured ? 'text-white' : 'text-slate-900'}`}>{price}</span>
+                <span class={`text-sm font-medium ${featured ? 'text-white/50' : 'text-slate-400'}`}>– {priceTo}</span>
               </div>
-              <p class={`text-sm ${featured ? 'text-white/50' : 'text-charcoal-400'}`}>
+              <p class={`text-sm ${featured ? 'text-white/45' : 'text-slate-400'}`}>
                 {savingsPrice} with Subscribe & Save 30%
               </p>
             </div>
 
             <!-- Description -->
-            <p class={`text-base leading-relaxed mb-7 ${featured ? 'text-white/70' : 'text-charcoal-500'}`}>
+            <p class={`text-sm leading-relaxed mb-7 ${featured ? 'text-white/65' : 'text-slate-500'}`}>
               {description}
             </p>
 
             <!-- Includes -->
             <ul class="space-y-2.5 mb-8 flex-1">
               {includes.map(item => (
-                <li class={`flex items-start gap-3 text-sm ${featured ? 'text-white/80' : 'text-charcoal-600'}`}>
-                  <span class={`mt-1.5 w-1 h-1 rounded-full shrink-0 ${featured ? 'bg-[#C9A84C]' : 'bg-[#C9A84C]'}`}></span>
+                <li class={`flex items-start gap-3 text-sm ${featured ? 'text-white/75' : 'text-slate-600'}`}>
+                  <span class="mt-1.5 w-1.5 h-1.5 rounded-full shrink-0 bg-[#C9A84C]"></span>
                   {item}
                 </li>
               ))}
@@ -137,10 +139,10 @@ const offers = [
               href={href}
               target="_blank"
               rel="noopener"
-              class={`block text-center py-3.5 text-sm tracking-[0.18em] uppercase font-medium rounded-full transition-all duration-300 ${
+              class={`block text-center py-3.5 text-sm font-semibold rounded-full transition-all duration-200 ${
                 featured
-                  ? 'bg-[#C9A84C] text-white hover:bg-[#B8950A]'
-                  : 'border border-[#C9A84C] text-[#B8950A] hover:bg-[#C9A84C] hover:text-white'
+                  ? 'bg-[#B8950A] text-white hover:bg-[#9A7D08]'
+                  : 'border border-slate-200 text-slate-700 hover:border-[#B8950A] hover:text-[#B8950A]'
               }`}
             >
               {cta}

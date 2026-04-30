@@ -29,42 +29,44 @@ const testimonials = [
 ];
 ---
 
-<section class="bg-[#FDFCF8]" id="testimonials">
+<section class="bg-white border-t border-slate-100" id="testimonials">
 
-  <!-- Pull quote header -->
+  <!-- Header -->
   <div class="max-w-7xl mx-auto px-6 lg:px-16 pt-24 lg:pt-32 pb-16 text-center">
     <div
       x-data
       x-intersect.once="$el.classList.add('opacity-100', 'translate-y-0')"
       class="opacity-0 translate-y-4 transition-all duration-700"
     >
-      <span class="block w-px h-10 bg-[#C9A84C] mx-auto mb-6"></span>
-      <p class="text-[#B8950A] text-sm tracking-[0.25em] uppercase font-medium mb-4">Real Women. Real Skin.</p>
-      <h2 class="font-serif text-[clamp(2rem,4vw,3.25rem)] font-light text-charcoal-800 leading-tight max-w-2xl mx-auto">
-        The results speak<br/><em class="italic text-[#B8950A]">for themselves.</em>
+      <span class="inline-flex items-center gap-2 px-3 py-1.5 bg-slate-100 rounded-full mb-6">
+        <span class="w-1.5 h-1.5 rounded-full bg-[#B8950A] shrink-0"></span>
+        <span class="text-[#B8950A] text-xs font-semibold tracking-[0.2em] uppercase">Real Women. Real Skin.</span>
+      </span>
+      <h2 class="font-bold text-4xl lg:text-5xl text-slate-900 leading-tight">
+        The results speak for themselves.
       </h2>
     </div>
   </div>
 
-  <!-- Testimonial grid + photos interspersed -->
+  <!-- Grid: testimonials + photos -->
   <div class="max-w-7xl mx-auto px-6 lg:px-16 pb-24 lg:pb-32">
 
-    <!-- Row 1: 2 testimonials + 1 image -->
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-5 mb-5">
+    <!-- Row 1 -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
       {testimonials.slice(0, 2).map(({ quote, name, detail }, i) => (
         <div
           x-data
           x-intersect.once="$el.classList.add('opacity-100', 'translate-y-0')"
-          class="opacity-0 translate-y-6 transition-all duration-700 flex flex-col justify-between bg-[#FAF7F2] rounded-2xl p-8"
+          class="opacity-0 translate-y-6 transition-all duration-700 flex flex-col justify-between bg-slate-50 rounded-2xl p-7 border border-slate-100"
           style={`transition-delay: ${i * 100}ms`}
         >
           <div>
             <div class="flex gap-0.5 text-[#C9A84C] text-sm mb-5">★★★★★</div>
-            <p class="font-serif text-charcoal-700 text-lg leading-relaxed italic mb-6">"{quote}"</p>
+            <p class="font-serif text-slate-700 text-lg leading-relaxed italic mb-6">"{quote}"</p>
           </div>
           <div>
-            <p class="text-charcoal-800 text-sm font-semibold">{name}</p>
-            <p class="text-charcoal-400 text-sm tracking-wide mt-0.5">{detail}</p>
+            <p class="text-slate-900 text-sm font-semibold">{name}</p>
+            <p class="text-slate-400 text-sm mt-0.5">{detail}</p>
           </div>
         </div>
       ))}
@@ -74,7 +76,7 @@ const testimonials = [
         x-data
         x-intersect.once="$el.classList.add('opacity-100', 'translate-y-0')"
         class="opacity-0 translate-y-6 transition-all duration-700 delay-200 rounded-2xl overflow-hidden"
-        style="min-height: 320px;"
+        style="min-height: 300px;"
       >
         <Image
           src={womanTreatingImg}
@@ -86,15 +88,13 @@ const testimonials = [
       </div>
     </div>
 
-    <!-- Row 2: 1 image + 2 testimonials -->
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-5 mb-5">
-
-      <!-- Wide image tile -->
+    <!-- Row 2 -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
       <div
         x-data
         x-intersect.once="$el.classList.add('opacity-100', 'translate-y-0')"
         class="opacity-0 translate-y-6 transition-all duration-700 rounded-2xl overflow-hidden"
-        style="min-height: 320px;"
+        style="min-height: 300px;"
       >
         <Image
           src={youngWomanImg}
@@ -109,28 +109,28 @@ const testimonials = [
         <div
           x-data
           x-intersect.once="$el.classList.add('opacity-100', 'translate-y-0')"
-          class="opacity-0 translate-y-6 transition-all duration-700 flex flex-col justify-between bg-[#FAF7F2] rounded-2xl p-8"
+          class="opacity-0 translate-y-6 transition-all duration-700 flex flex-col justify-between bg-slate-50 rounded-2xl p-7 border border-slate-100"
           style={`transition-delay: ${(i + 1) * 100}ms`}
         >
           <div>
             <div class="flex gap-0.5 text-[#C9A84C] text-sm mb-5">★★★★★</div>
-            <p class="font-serif text-charcoal-700 text-lg leading-relaxed italic mb-6">"{quote}"</p>
+            <p class="font-serif text-slate-700 text-lg leading-relaxed italic mb-6">"{quote}"</p>
           </div>
           <div>
-            <p class="text-charcoal-800 text-sm font-semibold">{name}</p>
-            <p class="text-charcoal-400 text-sm tracking-wide mt-0.5">{detail}</p>
+            <p class="text-slate-900 text-sm font-semibold">{name}</p>
+            <p class="text-slate-400 text-sm mt-0.5">{detail}</p>
           </div>
         </div>
       ))}
     </div>
 
-    <!-- Row 3: full-width family/lifestyle image -->
+    <!-- Row 3: lifestyle images -->
     <div
       x-data
       x-intersect.once="$el.classList.add('opacity-100', 'translate-y-0')"
-      class="opacity-0 translate-y-6 transition-all duration-700 grid md:grid-cols-2 gap-5"
+      class="opacity-0 translate-y-6 transition-all duration-700 grid md:grid-cols-2 gap-4"
     >
-      <div class="rounded-2xl overflow-hidden" style="min-height: 340px;">
+      <div class="rounded-2xl overflow-hidden" style="min-height: 320px;">
         <Image
           src={familyImg}
           alt="CFC — skincare for the whole family"
@@ -139,7 +139,7 @@ const testimonials = [
           sizes="(max-width: 768px) 100vw, 50vw"
         />
       </div>
-      <div class="rounded-2xl overflow-hidden" style="min-height: 340px;">
+      <div class="rounded-2xl overflow-hidden" style="min-height: 320px;">
         <Image
           src={kidsImg}
           alt="CFC skincare for teens and tweens"

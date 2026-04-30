@@ -13,7 +13,8 @@ const steps = [
     products: ['Age Defying Brightening Cleanser', 'Brightening Glyco Glow Cleanser', 'NAD+ Bamboo Firming Cleanser', 'Jamin Jasmine Cleanser'],
     image: cleanseImg,
     imageAlt: 'Woman cleansing face at sink with CFC products',
-    imagePosition: 'right',
+    imagePosition: 'right' as const,
+    bg: 'bg-white',
   },
   {
     number: '02',
@@ -23,7 +24,8 @@ const steps = [
     products: ['Apple Stem Wrinkle Eraser', 'Color Correction C&E Serum', 'Pure Hydration Hyaluronic Acid Serum'],
     image: treatImg,
     imageAlt: 'Woman applying CFC treatment serum',
-    imagePosition: 'left',
+    imagePosition: 'left' as const,
+    bg: 'bg-slate-50',
   },
   {
     number: '03',
@@ -33,69 +35,75 @@ const steps = [
     products: ['Pure Sun Defense SPF 50+', 'Sun Kissed Protection Tinted SPF 30'],
     image: protectImg,
     imageAlt: 'Woman at sink with CFC skincare routine',
-    imagePosition: 'right',
+    imagePosition: 'right' as const,
+    bg: 'bg-white',
   },
 ];
 ---
 
-<section class="bg-[#FAF7F2]" id="system">
+<section id="system">
 
   <!-- Section header -->
-  <div class="max-w-7xl mx-auto px-6 lg:px-16 pt-24 lg:pt-32 pb-16 lg:pb-20 text-center">
-    <div
-      x-data
-      x-intersect.once="$el.classList.add('opacity-100', 'translate-y-0')"
-      class="opacity-0 translate-y-4 transition-all duration-700"
-    >
-      <span class="block w-px h-10 bg-[#C9A84C] mx-auto mb-6"></span>
-      <p class="text-[#B8950A] text-sm tracking-[0.25em] uppercase font-medium mb-4">The Solution</p>
-      <h2 class="font-serif text-[clamp(2rem,4vw,3.5rem)] font-light text-charcoal-800 leading-tight">
-        Three steps. Under five minutes.<br/>
-        <em class="italic text-[#B8950A]">Real results.</em>
-      </h2>
+  <div class="bg-slate-50 border-y border-slate-100">
+    <div class="max-w-7xl mx-auto px-6 lg:px-16 py-16 lg:py-20 text-center">
+      <div
+        x-data
+        x-intersect.once="$el.classList.add('opacity-100', 'translate-y-0')"
+        class="opacity-0 translate-y-4 transition-all duration-700"
+      >
+        <span class="inline-flex items-center gap-2 px-3 py-1.5 bg-white border border-slate-200 rounded-full mb-6">
+          <span class="w-1.5 h-1.5 rounded-full bg-[#B8950A] shrink-0"></span>
+          <span class="text-[#B8950A] text-xs font-semibold tracking-[0.2em] uppercase">The Solution</span>
+        </span>
+        <h2 class="font-bold text-4xl lg:text-5xl text-slate-900 leading-tight mb-3">
+          Three steps. Under five minutes.
+        </h2>
+        <p class="font-serif text-2xl italic text-slate-400">Real results.</p>
+      </div>
     </div>
   </div>
 
-  <!-- Steps — full-bleed editorial -->
-  {steps.map(({ number, step, headline, body, products, image, imageAlt, imagePosition }, i) => (
+  <!-- Steps — alternating image/text -->
+  {steps.map(({ number, step, headline, body, products, image, imageAlt, imagePosition, bg }, i) => (
     <div
       x-data
       x-intersect.once="$el.classList.add('opacity-100')"
-      class="opacity-0 transition-all duration-1000 grid lg:grid-cols-2"
-      style={`transition-delay: ${i * 100}ms`}
+      class={`opacity-0 transition-all duration-1000 grid lg:grid-cols-2 ${bg}`}
+      style={`transition-delay: ${i * 80}ms`}
     >
+
       <!-- Image -->
       <div class={`relative overflow-hidden ${imagePosition === 'left' ? 'lg:order-first' : 'lg:order-last'} order-first`}>
         <Image
           src={image}
           alt={imageAlt}
-          class="w-full h-64 lg:h-full object-cover object-center"
+          class="w-full h-72 lg:h-full object-cover object-center"
+          style="min-height: 520px;"
           widths={[600, 900, 1200]}
           sizes="(max-width: 1024px) 100vw, 50vw"
         />
-        <!-- Step number watermark -->
-        <div class="absolute top-8 left-8 lg:top-12 lg:left-12">
-          <span class="font-serif text-[5rem] lg:text-[8rem] font-light leading-none text-white/20 select-none">{number}</span>
+        <!-- Step badge -->
+        <div class="absolute top-6 left-6">
+          <span class="inline-flex items-center gap-2.5 px-4 py-2 bg-white/95 backdrop-blur-sm rounded-full shadow-card">
+            <span class="text-[#B8950A] text-xs font-bold tracking-[0.15em] uppercase">{step}</span>
+            <span class="text-slate-300 text-xs">·</span>
+            <span class="text-slate-400 text-xs font-medium tabular-nums">{number}</span>
+          </span>
         </div>
       </div>
 
       <!-- Content -->
-      <div class={`flex flex-col justify-center px-8 lg:px-16 xl:px-24 py-16 lg:py-24 bg-[#FDFCF8] ${imagePosition === 'left' ? 'lg:order-last' : 'lg:order-first'}`}>
+      <div class={`flex flex-col justify-center px-8 lg:px-16 xl:px-20 py-16 lg:py-24 ${imagePosition === 'left' ? 'lg:order-last' : 'lg:order-first'}`}>
         <div class="max-w-md">
-          <div class="flex items-center gap-4 mb-8">
-            <span class="w-8 h-px bg-[#C9A84C]"></span>
-            <span class="text-[#B8950A] text-sm tracking-[0.25em] uppercase font-medium">{step}</span>
-          </div>
-
-          <h3 class="font-serif text-[clamp(1.75rem,3vw,2.5rem)] font-light text-charcoal-800 leading-snug mb-5">
+          <h3 class="font-bold text-3xl lg:text-4xl text-slate-900 leading-snug mb-5">
             {headline}
           </h3>
-          <p class="text-charcoal-500 leading-relaxed mb-8 text-base">{body}</p>
+          <p class="text-slate-500 leading-relaxed mb-8 text-base">{body}</p>
 
           <ul class="space-y-3 mb-10">
             {products.map(p => (
-              <li class="flex items-center gap-3 text-charcoal-600 text-sm">
-                <span class="w-1 h-1 rounded-full bg-[#C9A84C] shrink-0"></span>
+              <li class="flex items-center gap-3 text-slate-600 text-sm">
+                <span class="w-1.5 h-1.5 rounded-full bg-[#C9A84C] shrink-0"></span>
                 {p}
               </li>
             ))}
@@ -103,10 +111,12 @@ const steps = [
 
           <a
             href="#products"
-            class="inline-flex items-center gap-3 text-sm tracking-[0.18em] uppercase font-medium text-[#B8950A] hover:gap-5 transition-all duration-300 group"
+            class="inline-flex items-center gap-2 text-sm font-semibold text-[#B8950A] hover:text-[#9A7D08] transition-colors group"
           >
             Shop {step}
-            <span class="w-8 h-px bg-[#C9A84C] group-hover:w-12 transition-all duration-300"></span>
+            <svg class="w-4 h-4 group-hover:translate-x-0.5 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7"/>
+            </svg>
           </a>
         </div>
       </div>

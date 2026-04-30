@@ -2,43 +2,35 @@
 import cfcLogo from '../assets/images/cfc-logo.png';
 ---
 <header
-  x-data="{ open: false, scrolled: window.scrollY > 60 }"
-  x-init="window.addEventListener('scroll', () => { scrolled = window.scrollY > 60 }, { passive: true })"
-  :class="scrolled
-    ? 'bg-[#FAF7F2]/95 backdrop-blur-md shadow-[0_1px_0_0_rgba(0,0,0,0.06)]'
-    : 'bg-transparent'"
-  class="fixed top-0 inset-x-0 z-50 transition-all duration-300"
+  x-data="{ open: false }"
+  class="fixed top-0 inset-x-0 z-50 bg-white border-b border-slate-100"
 >
-  <nav
-    :class="scrolled ? 'h-14 lg:h-16' : 'h-16 lg:h-20'"
-    class="max-w-7xl mx-auto px-6 lg:px-16 flex items-center justify-between transition-all duration-300"
-  >
+  <nav class="max-w-7xl mx-auto px-6 lg:px-16 flex items-center justify-between h-16">
 
-    <!-- Logo -->
-    <a href="/" class="flex items-center">
+    <!-- Logo: circle icon + text wordmark -->
+    <a href="/" class="flex items-center gap-2.5">
       <img
         src={cfcLogo.src}
         alt="CFC Skincare"
-        class="h-8 w-auto lg:h-10 transition-all duration-300"
+        class="h-8 w-8 rounded-full object-cover shrink-0"
       />
+      <span class="text-[11px] font-bold tracking-[0.28em] uppercase text-slate-900 leading-none">
+        CFC Skincare
+      </span>
     </a>
 
     <!-- Desktop links -->
-    <ul class="hidden lg:flex items-center gap-10">
-      {['The System', 'Shop', 'About', 'Contact'].map((label, i) => {
-        const hrefs = ['#system', '#products', '#about', '#contact'];
-        return (
-          <li>
-            <a
-              href={hrefs[i]}
-              :class="scrolled ? 'text-charcoal-600 hover:text-charcoal-900' : 'text-white/80 hover:text-white'"
-              class="text-sm tracking-[0.15em] uppercase font-medium transition-colors duration-300 relative after:absolute after:bottom-0 after:left-0 after:w-0 after:h-px after:bg-[#C9A84C] hover:after:w-full after:transition-all after:duration-300"
-            >
-              {label}
-            </a>
-          </li>
-        );
-      })}
+    <ul class="hidden lg:flex items-center gap-8">
+      {[['The System', '#system'], ['Shop', '#products'], ['About', '#about'], ['Contact', '#contact']].map(([label, href]) => (
+        <li>
+          <a
+            href={href}
+            class="text-sm font-medium text-slate-500 hover:text-slate-900 transition-colors duration-200"
+          >
+            {label}
+          </a>
+        </li>
+      ))}
     </ul>
 
     <!-- CTA -->
@@ -47,24 +39,20 @@ import cfcLogo from '../assets/images/cfc-logo.png';
         href="https://www.cfcskincare.shop/collections/all"
         target="_blank"
         rel="noopener"
-        :class="scrolled
-          ? 'border-[#B8950A] text-[#B8950A] hover:bg-[#B8950A] hover:text-white'
-          : 'border-white/60 text-white hover:bg-white hover:text-charcoal-800'"
-        class="px-6 py-2.5 border text-sm tracking-[0.18em] uppercase font-medium transition-all duration-300 rounded-full"
+        class="inline-flex items-center px-5 py-2.5 bg-[#B8950A] hover:bg-[#9A7D08] text-white text-sm font-semibold rounded-full transition-colors duration-200"
       >
         Shop Now
       </a>
     </div>
 
-    <!-- Mobile toggle -->
+    <!-- Mobile hamburger -->
     <button
       @click="open = !open"
-      :class="scrolled ? 'text-charcoal-700' : 'text-white'"
-      class="lg:hidden p-2 transition-colors"
+      class="lg:hidden p-2 text-slate-600 hover:text-slate-900 transition-colors"
       aria-label="Menu"
     >
-      <span x-show="!open" class="block w-6 space-y-1.5">
-        <span class="block h-px w-full bg-current"></span>
+      <span x-show="!open" class="block space-y-1.5">
+        <span class="block h-px w-6 bg-current"></span>
         <span class="block h-px w-4 bg-current ml-auto"></span>
       </span>
       <svg x-show="open" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -82,7 +70,7 @@ import cfcLogo from '../assets/images/cfc-logo.png';
     x-transition:leave="transition ease-in duration-150"
     x-transition:leave-start="opacity-100"
     x-transition:leave-end="opacity-0"
-    class="lg:hidden bg-[#FAF7F2] border-t border-[#E8E0D5] px-6 pb-8 pt-5 space-y-1"
+    class="lg:hidden bg-white border-t border-slate-100 px-6 pb-8 pt-5"
   >
     {[
       ['The System', '#system'],
@@ -93,7 +81,7 @@ import cfcLogo from '../assets/images/cfc-logo.png';
       <a
         href={href}
         @click="open=false"
-        class="block py-3 text-sm tracking-[0.15em] uppercase text-charcoal-600 hover:text-[#B8950A] font-medium border-b border-[#E8E0D5] last:border-0 transition-colors"
+        class="block py-3.5 text-sm font-medium text-slate-600 hover:text-slate-900 border-b border-slate-100 last:border-0 transition-colors"
       >
         {label}
       </a>
@@ -102,7 +90,7 @@ import cfcLogo from '../assets/images/cfc-logo.png';
       href="https://www.cfcskincare.shop/collections/all"
       target="_blank"
       rel="noopener"
-      class="mt-4 block text-center py-3 border border-[#B8950A] text-[#B8950A] text-sm tracking-[0.18em] uppercase font-medium rounded-full hover:bg-[#B8950A] hover:text-white transition-all"
+      class="mt-5 block text-center py-3 bg-[#B8950A] hover:bg-[#9A7D08] text-white text-sm font-semibold rounded-full transition-colors"
     >
       Shop Now
     </a>

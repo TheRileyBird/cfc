@@ -4,34 +4,35 @@ import founderImg from '../assets/images/imgi_5_tt-206.jpg';
 import productsImg from '../assets/images/imgi_3_Body_care.png';
 ---
 
-<section class="bg-[#FAF7F2]" id="about">
+<section class="bg-slate-50 border-t border-slate-100" id="about">
   <div class="max-w-7xl mx-auto px-6 lg:px-16 py-24 lg:py-36">
 
-    <!-- Top: text + large founder image -->
-    <div class="grid lg:grid-cols-12 gap-12 lg:gap-20 items-end mb-24 lg:mb-36">
+    <!-- Top: text + founder image -->
+    <div class="grid lg:grid-cols-12 gap-12 lg:gap-20 items-center mb-24 lg:mb-32">
 
       <!-- Left: copy -->
       <div
         x-data
         x-intersect.once="$el.classList.add('opacity-100', 'translate-y-0')"
-        class="opacity-0 translate-y-6 transition-all duration-700 lg:col-span-5 lg:pb-12"
+        class="opacity-0 translate-y-6 transition-all duration-700 lg:col-span-5"
       >
-        <span class="block w-px h-10 bg-[#C9A84C] mb-6"></span>
-        <p class="text-[#B8950A] text-sm tracking-[0.25em] uppercase font-medium mb-5">About CFC</p>
+        <span class="inline-flex items-center gap-2 px-3 py-1.5 bg-white border border-slate-200 rounded-full mb-6">
+          <span class="w-1.5 h-1.5 rounded-full bg-[#B8950A] shrink-0"></span>
+          <span class="text-[#B8950A] text-xs font-semibold tracking-[0.2em] uppercase">About CFC</span>
+        </span>
 
-        <h2 class="font-serif text-[clamp(2rem,3.5vw,3rem)] font-light text-charcoal-800 leading-tight mb-7">
-          Built by someone who<br/>
-          <em class="italic text-[#B8950A]">actually understands<br/>your skin.</em>
+        <h2 class="font-bold text-3xl lg:text-[2.6rem] text-slate-900 leading-tight mb-5">
+          Built by someone who actually understands your skin.
         </h2>
 
-        <p class="text-charcoal-500 leading-relaxed mb-5 text-base">
+        <p class="text-slate-500 leading-relaxed mb-4 text-base">
           CFC Skincare is the bridge between clinical efficacy and clean beauty — a medical-grade, plant-based system created by a nurse practitioner, formulated with a licensed cosmetic chemist, and built for women who are done guessing.
         </p>
-        <p class="text-charcoal-500 leading-relaxed mb-10 text-base">
+        <p class="text-slate-500 leading-relaxed mb-10 text-base">
           Every formula is plant-based <em>and</em> medical-grade. Purity-tested. Locally produced in Louisiana. Designed around a protocol that works in under five minutes — at every age, every stage.
         </p>
 
-        <!-- 4 credential pills -->
+        <!-- Credential grid -->
         <div class="grid grid-cols-2 gap-3">
           {[
             ['NP Founded', 'Clinical knowledge, not marketing'],
@@ -39,15 +40,15 @@ import productsImg from '../assets/images/imgi_3_Body_care.png';
             ['Purity-Tested', 'Every batch, every time'],
             ['Louisiana-Made', 'Full quality control'],
           ].map(([title, desc]) => (
-            <div class="p-4 bg-white border border-[#E8E0D5] rounded-xl">
-              <p class="text-charcoal-800 text-sm font-semibold mb-1 tracking-wide">{title}</p>
-              <p class="text-charcoal-400 text-base leading-snug">{desc}</p>
+            <div class="p-4 bg-white rounded-xl border border-slate-200 shadow-card">
+              <p class="text-slate-900 text-sm font-semibold mb-1">{title}</p>
+              <p class="text-slate-400 text-sm leading-snug">{desc}</p>
             </div>
           ))}
         </div>
       </div>
 
-      <!-- Right: founder image — large, editorial -->
+      <!-- Right: founder image -->
       <div
         x-data
         x-intersect.once="$el.classList.add('opacity-100', 'translate-x-0')"
@@ -56,43 +57,46 @@ import productsImg from '../assets/images/imgi_3_Body_care.png';
         <Image
           src={founderImg}
           alt="CFC Skincare — real woman showing results"
-          class="w-full rounded-2xl object-cover object-top"
-          style="max-height: 620px;"
+          class="w-full rounded-2xl object-cover object-top shadow-lift"
+          style="max-height: 600px;"
           widths={[600, 900, 1200]}
           sizes="(max-width: 1024px) 100vw, 58vw"
         />
         <!-- Floating quote card -->
-        <div class="absolute -bottom-6 -left-4 lg:-left-10 max-w-xs bg-white rounded-2xl p-6 shadow-[0_4px_24px_rgba(0,0,0,0.08)]">
-          <div class="flex gap-1 text-[#C9A84C] mb-3 text-sm">★★★★★</div>
-          <p class="font-serif text-charcoal-700 text-base leading-relaxed italic">
+        <div class="absolute -bottom-6 -left-4 lg:-left-10 max-w-xs bg-white rounded-2xl p-6 shadow-strong">
+          <div class="flex gap-0.5 text-[#C9A84C] mb-3 text-sm">★★★★★</div>
+          <p class="font-serif text-slate-700 text-base leading-relaxed italic">
             "I stopped wearing foundation to work. I didn't even notice when it stopped feeling necessary."
           </p>
-          <p class="text-charcoal-400 text-sm mt-3 tracking-wide">— CFC Customer</p>
+          <p class="text-slate-400 text-sm mt-3 font-medium">— CFC Customer</p>
         </div>
       </div>
     </div>
 
-    <!-- Bottom: products held image — full width editorial -->
+    <!-- Bottom: products + USP -->
     <div
       x-data
       x-intersect.once="$el.classList.add('opacity-100', 'translate-y-0')"
       class="opacity-0 translate-y-6 transition-all duration-700 grid lg:grid-cols-2 gap-12 lg:gap-20 items-center"
     >
-      <div class="relative rounded-2xl overflow-hidden">
+      <div class="relative rounded-2xl overflow-hidden shadow-lift">
         <Image
           src={productsImg}
           alt="CFC Skincare product collection"
           class="w-full object-cover"
-          style="max-height: 500px;"
+          style="max-height: 480px;"
           widths={[500, 800]}
           sizes="(max-width: 1024px) 100vw, 50vw"
         />
       </div>
 
       <div>
-        <p class="text-[#B8950A] text-sm tracking-[0.25em] uppercase font-medium mb-5">The USP</p>
-        <h3 class="font-serif text-[clamp(1.6rem,2.5vw,2.25rem)] font-light text-charcoal-800 leading-tight mb-6">
-          "The only medical-grade, plant-based system created by a nurse practitioner — for women who want clinical results without clinical compromise."
+        <span class="inline-flex items-center gap-2 px-3 py-1.5 bg-white border border-slate-200 rounded-full mb-6">
+          <span class="w-1.5 h-1.5 rounded-full bg-[#B8950A] shrink-0"></span>
+          <span class="text-[#B8950A] text-xs font-semibold tracking-[0.2em] uppercase">The Difference</span>
+        </span>
+        <h3 class="font-bold text-2xl lg:text-3xl text-slate-900 leading-tight mb-6">
+          The only medical-grade, plant-based system created by a nurse practitioner.
         </h3>
         <div class="space-y-4 mb-10">
           {[
@@ -100,18 +104,20 @@ import productsImg from '../assets/images/imgi_3_Body_care.png';
             'vs. Clinical brands — plant-based, locally made, and accessible without a dermatologist referral.',
             'vs. Clean beauty — formulated by a medical professional for efficacy, not just ingredient safety.',
           ].map(line => (
-            <p class="flex gap-3 text-charcoal-500 text-base leading-relaxed">
-              <span class="text-[#C9A84C] mt-1 shrink-0">—</span>
+            <div class="flex gap-3 p-4 bg-white rounded-xl border border-slate-100 text-sm text-slate-600 leading-relaxed">
+              <span class="text-[#C9A84C] font-bold shrink-0 mt-0.5">—</span>
               {line}
-            </p>
+            </div>
           ))}
         </div>
         <a
           href="#contact"
-          class="inline-flex items-center gap-3 text-sm tracking-[0.18em] uppercase font-medium text-[#B8950A] group hover:gap-5 transition-all duration-300"
+          class="inline-flex items-center gap-2 text-sm font-semibold text-[#B8950A] hover:text-[#9A7D08] transition-colors group"
         >
           Request a consultation
-          <span class="w-8 h-px bg-[#C9A84C] group-hover:w-12 transition-all duration-300"></span>
+          <svg class="w-4 h-4 group-hover:translate-x-0.5 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7"/>
+          </svg>
         </a>
       </div>
     </div>

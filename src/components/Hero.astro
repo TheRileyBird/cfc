@@ -2,7 +2,7 @@
 import videoSrc from '../assets/videos/stock-video.mp4';
 ---
 
-<section class="relative h-screen min-h-[600px] flex items-end overflow-hidden">
+<section class="relative min-h-screen flex items-center justify-center overflow-hidden pt-16">
 
   <!-- Video background -->
   <video
@@ -15,82 +15,85 @@ import videoSrc from '../assets/videos/stock-video.mp4';
     <source src={videoSrc} type="video/mp4" />
   </video>
 
-  <!-- Layered overlays: subtle warm tint + strong bottom-up fade for text legibility -->
-  <div class="absolute inset-0 bg-gradient-to-t from-[#0d0b09]/85 via-[#0d0b09]/20 to-transparent"></div>
-  <div class="absolute inset-0 bg-gradient-to-r from-[#0d0b09]/40 to-transparent"></div>
+  <!-- Overlays -->
+  <div class="absolute inset-0 bg-slate-900/65"></div>
+  <div class="absolute inset-0 bg-gradient-to-t from-slate-900/50 via-transparent to-slate-900/20"></div>
 
-  <!-- Thin gold vertical rule — left editorial accent -->
-  <div class="absolute left-10 top-1/4 bottom-1/4 w-px bg-gradient-to-b from-transparent via-[#C9A84C]/60 to-transparent hidden lg:block"></div>
+  <!-- Content: centered -->
+  <div class="relative z-10 w-full max-w-4xl mx-auto px-6 lg:px-8 text-center">
 
-  <!-- Content — pinned to bottom -->
-  <div class="relative z-10 w-full max-w-7xl mx-auto px-6 lg:px-16 pb-16 lg:pb-24">
-
-    <!-- Eyebrow -->
+    <!-- Credential badge -->
     <div
       x-data
       x-intersect.once="$el.classList.add('opacity-100', 'translate-y-0')"
-      class="opacity-0 translate-y-3 transition-all duration-1000 ease-out flex items-center gap-4 mb-5"
+      class="opacity-0 translate-y-3 transition-all duration-700 flex justify-center mb-8"
     >
-      <span class="block w-10 h-px bg-[#C9A84C]"></span>
-      <span class="text-[#C9A84C] text-sm tracking-[0.25em] uppercase font-medium">Nurse Practitioner Created · Louisiana Made</span>
+      <span class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/10 backdrop-blur-sm border border-white/20">
+        <span class="w-1.5 h-1.5 rounded-full bg-[#C9A84C] shrink-0"></span>
+        <span class="text-white/90 text-xs font-semibold tracking-[0.18em] uppercase">
+          Nurse Practitioner Created · Louisiana Made
+        </span>
+      </span>
     </div>
 
     <!-- Headline -->
     <h1
       x-data
       x-intersect.once="$el.classList.add('opacity-100', 'translate-y-0')"
-      class="opacity-0 translate-y-5 transition-all duration-1000 ease-out delay-150 font-serif text-[clamp(2.8rem,6vw,5.5rem)] leading-[1.05] font-light text-white mb-6 max-w-3xl"
+      class="opacity-0 translate-y-5 transition-all duration-700 delay-100 font-bold text-5xl sm:text-6xl lg:text-[5.5rem] leading-[1.04] tracking-tight text-white mb-6"
     >
-      Confident Skin<br/>
-      <em class="italic text-[#E8D5A3]">That Grows</em><br/>
-      With You.
+      Clinical Skincare.<br/>
+      <span class="text-[#C9A84C]">Designed for You.</span>
     </h1>
 
-    <!-- Subline + CTA row -->
+    <!-- Subtext -->
+    <p
+      x-data
+      x-intersect.once="$el.classList.add('opacity-100', 'translate-y-0')"
+      class="opacity-0 translate-y-5 transition-all duration-700 delay-200 text-white/65 text-lg font-light max-w-sm mx-auto mb-10 leading-relaxed"
+    >
+      Medical-grade, plant-based.<br/>Three steps. Under five minutes.
+    </p>
+
+    <!-- CTAs -->
     <div
       x-data
       x-intersect.once="$el.classList.add('opacity-100', 'translate-y-0')"
-      class="opacity-0 translate-y-5 transition-all duration-1000 ease-out delay-300 flex flex-col sm:flex-row sm:items-end gap-8 max-w-3xl"
+      class="opacity-0 translate-y-5 transition-all duration-700 delay-300 flex flex-col sm:flex-row items-center justify-center gap-3"
     >
-      <p class="text-white/70 text-base leading-relaxed max-w-xs font-light">
-        Medical-grade. Plant-based. Three steps.<br/>Under five minutes.
-      </p>
-
-      <div class="flex items-center gap-5">
-        <a
-          href="#system"
-          class="group inline-flex items-center gap-3 px-7 py-3.5 bg-[#C9A84C] hover:bg-[#B8950A] text-white text-sm tracking-widest uppercase font-medium transition-all duration-300 rounded-full"
-        >
-          Discover The System
-          <span class="w-4 h-px bg-white group-hover:w-6 transition-all duration-300"></span>
-        </a>
-        <a
-          href="#products"
-          class="text-white/80 hover:text-white text-sm tracking-widest uppercase font-medium transition-colors border-b border-white/30 hover:border-white pb-px"
-        >
-          Shop
-        </a>
-      </div>
+      <a
+        href="#system"
+        class="px-8 py-3.5 bg-[#B8950A] hover:bg-[#9A7D08] text-white text-sm font-semibold rounded-full transition-colors duration-200 min-w-[200px]"
+      >
+        Discover the System
+      </a>
+      <a
+        href="#products"
+        class="px-8 py-3.5 bg-white/10 hover:bg-white/20 backdrop-blur-sm border border-white/25 text-white text-sm font-semibold rounded-full transition-all duration-200 min-w-[200px]"
+      >
+        Shop Products
+      </a>
     </div>
 
-    <!-- Step pills — bottom right -->
+    <!-- Step indicators -->
     <div
       x-data
       x-intersect.once="$el.classList.add('opacity-100')"
-      class="opacity-0 transition-all duration-1000 delay-500 absolute right-6 lg:right-16 bottom-16 lg:bottom-24 hidden md:flex flex-col gap-2 items-end"
+      class="opacity-0 transition-all duration-700 delay-500 mt-24 flex items-center justify-center gap-6 sm:gap-10"
     >
       {['Cleanse', 'Treat', 'Protect'].map((s, i) => (
-        <div class="flex items-center gap-3">
-          <span class="text-white/40 text-sm tracking-[0.2em] uppercase">0{i+1}</span>
-          <span class="text-white/80 text-sm tracking-[0.15em] uppercase">{s}</span>
+        <div class="flex items-center gap-2.5">
+          <span class="text-white/30 text-xs tracking-[0.2em] uppercase font-medium tabular-nums">0{i+1}</span>
+          <span class="text-white/55 text-xs tracking-[0.15em] uppercase font-semibold">{s}</span>
+          {i < 2 && <span class="hidden sm:block w-6 h-px bg-white/15 ml-2"></span>}
         </div>
       ))}
     </div>
   </div>
 
   <!-- Scroll nudge -->
-  <div class="absolute bottom-6 left-1/2 -translate-x-1/2 flex flex-col items-center gap-1.5 z-10">
-    <span class="text-white/30 text-sm tracking-[0.2em] uppercase">Scroll</span>
-    <div class="w-px h-8 bg-gradient-to-b from-white/40 to-transparent animate-pulse"></div>
+  <div class="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-1.5 z-10">
+    <span class="text-white/30 text-xs tracking-[0.2em] uppercase font-medium">Scroll</span>
+    <div class="w-px h-7 bg-gradient-to-b from-white/30 to-transparent animate-pulse mt-1"></div>
   </div>
 </section>
