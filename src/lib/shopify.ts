@@ -62,6 +62,40 @@ const PRODUCTS_QUERY = `
   }
 `;
 
+const PRODUCT_FIELDS = `
+  id
+  title
+  handle
+  description
+  tags
+  priceRange {
+    minVariantPrice { amount currencyCode }
+  }
+  images(first: 1) {
+    edges { node { url altText } }
+  }
+  variants(first: 1) {
+    edges { node { id title price { amount } } }
+  }
+  collections(first: 3) {
+    edges { node { title } }
+  }
+`;
+
+const COLLECTION_PRODUCTS_QUERY = `
+  query GetCollectionProducts($handle: String!, $first: Int!) {
+    collection(handle: $handle) {
+      products(first: $first) {
+        edges {
+          node {
+            ${PRODUCT_FIELDS}
+          }
+        }
+      }
+    }
+  }
+`;
+
 export async function getProducts(first = 24): Promise<ShopifyProduct[]> {
   try {
     const data = await shopifyFetch<{ products: { edges: Array<{ node: ShopifyProduct }> } }>(
@@ -74,19 +108,22 @@ export async function getProducts(first = 24): Promise<ShopifyProduct[]> {
   }
 }
 
-export async function getFeaturedProducts(): Promise<ShopifyProduct[]> {
-  const all = await getProducts(30);
-  const featuredProducts = [
-    { title: 'Apple Stem Wrinkle Eraser', handles: ['apple-stem-wrinkle-eraser'] },
-    { title: 'Color Correction C&E Serum', handles: ['color-correction-ce-serum', 'color-correction-c-e-serum'] },
-    { title: 'Pure Hydration Hyaluronic Acid Serum', handles: ['pure-hydration-hyaluronic-acid-serum'] },
-    { title: 'NAD+ Bamboo Firming Cleanser', handles: ['nad-bamboo-firming-cleanser', 'nad-plus-bamboo-firming-cleanser'] },
-  ];
+export async function getCollectionProducts(handle: string, first = 24): Promise<ShopifyProduct[]> {
+  try {
+    const data = await shopifyFetch<{
+      collection: { products: { edges: Array<{ node: ShopifyProduct }> } } | null;
+    }>(
+      COLLECTION_PRODUCTS_QUERY,
+      { handle, first }
+    );
+    return data.collection?.products.edges.map(e => e.node) ?? [];
+  } catch {
+    return [];
+  }
+}
 
-  const featured = featuredProducts
-    .map(({ title, handles }) => all.find(p => handles.includes(p.handle) || p.title === title))
-    .filter(Boolean) as ShopifyProduct[];
-  return featured;
+export async function getFeaturedProducts(): Promise<ShopifyProduct[]> {
+  return getCollectionProducts('featured', 4);
 }
 
 export function formatPrice(amount: string, currency = 'USD'): string {

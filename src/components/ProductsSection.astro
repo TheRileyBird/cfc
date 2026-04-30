@@ -1,5 +1,6 @@
 ---
 import { getFeaturedProducts, getProducts } from '../lib/shopify';
+import type { ShopifyProduct } from '../lib/shopify';
 import ProductCard from './ProductCard.astro';
 import { ArrowRight } from '@lucide/astro';
 
@@ -12,22 +13,24 @@ const isFeatured = variant === 'featured';
 const products = isFeatured ? await getFeaturedProducts() : await getProducts(12);
 const hasProducts = isFeatured ? products.length >= 4 : products.length > 0;
 
-const fallbackProducts = [
-  { id: '1', title: 'Apple Stem Wrinkle Eraser', handle: 'apple-stem-wrinkle-eraser', description: 'Advanced wrinkle treatment with plant stem cell technology.', priceRange: { minVariantPrice: { amount: '65.00', currencyCode: 'USD' } }, images: { edges: [] }, variants: { edges: [{ node: { id: '1', title: 'Default', price: { amount: '65.00' } } }] }, tags: ['treat'], collections: { edges: [] } },
-  { id: '2', title: 'Color Correction C&E Serum', handle: 'color-correction-ce-serum', description: 'Brightening serum with Vitamins C and E for even skin tone.', priceRange: { minVariantPrice: { amount: '58.00', currencyCode: 'USD' } }, images: { edges: [] }, variants: { edges: [{ node: { id: '2', title: 'Default', price: { amount: '58.00' } } }] }, tags: ['treat'], collections: { edges: [] } },
-  { id: '3', title: 'Pure Hydration Hyaluronic Acid Serum', handle: 'pure-hydration-hyaluronic-acid-serum', description: 'Deep cellular hydration with multi-weight hyaluronic acid.', priceRange: { minVariantPrice: { amount: '52.00', currencyCode: 'USD' } }, images: { edges: [] }, variants: { edges: [{ node: { id: '3', title: 'Default', price: { amount: '52.00' } } }] }, tags: ['treat'], collections: { edges: [] } },
-  { id: '4', title: 'NAD+ Bamboo Firming Cleanser', handle: 'nad-bamboo-firming-cleanser', description: 'Firming cleanser with NAD+ and bamboo for a fresh, resilient cleanse.', priceRange: { minVariantPrice: { amount: '48.00', currencyCode: 'USD' } }, images: { edges: [] }, variants: { edges: [{ node: { id: '4', title: 'Default', price: { amount: '48.00' } } }] }, tags: ['cleanse'], collections: { edges: [] } },
-  { id: '5', title: 'Pure Sun Defense SPF 50+', handle: 'pure-sun-defense-spf-50', description: 'Medical-grade broad spectrum protection, no white cast.', priceRange: { minVariantPrice: { amount: '45.00', currencyCode: 'USD' } }, images: { edges: [] }, variants: { edges: [{ node: { id: '5', title: 'Default', price: { amount: '45.00' } } }] }, tags: ['protect'], collections: { edges: [] } },
-  { id: '6', title: 'Age Defying Brightening Cleanser', handle: 'age-defying-brightening-cleanser', description: 'Gentle yet effective cleansing with brightening botanicals.', priceRange: { minVariantPrice: { amount: '38.00', currencyCode: 'USD' } }, images: { edges: [] }, variants: { edges: [{ node: { id: '6', title: 'Default', price: { amount: '38.00' } } }] }, tags: ['cleanse'], collections: { edges: [] } },
-  { id: '7', title: 'Sun Kissed Protection Tinted SPF 30', handle: 'sun-kissed-protection-tinted-spf-30', description: 'Tinted SPF with a natural finish for all skin tones.', priceRange: { minVariantPrice: { amount: '42.00', currencyCode: 'USD' } }, images: { edges: [] }, variants: { edges: [{ node: { id: '7', title: 'Default', price: { amount: '42.00' } } }] }, tags: ['protect'], collections: { edges: [] } },
-];
-
-const displayProducts = hasProducts ? products : (isFeatured ? fallbackProducts.slice(0, 4) : fallbackProducts);
+const displayProducts = products;
 const filters = ['All', 'Cleanse', 'Treat', 'Protect'];
 const heading = isFeatured ? 'Featured collection.' : 'The complete system.';
 const ctaHref = isFeatured ? '/shop' : 'https://www.cfcskincare.shop/collections/all';
 const ctaLabel = isFeatured ? 'Shop Complete System' : 'View All Products';
 const ctaTarget = isFeatured ? undefined : '_blank';
+
+function getProductStep(product: ShopifyProduct): 'cleanse' | 'treat' | 'protect' {
+  const text = [
+    product.title,
+    ...product.tags,
+    ...product.collections.edges.map(({ node }) => node.title),
+  ].join(' ').toLowerCase();
+
+  if (text.includes('cleanser') || text.includes('cleanse')) return 'cleanse';
+  if (text.includes('spf') || text.includes('sunscreen') || text.includes('sun protection')) return 'protect';
+  return 'treat';
+}
 ---
 
 <section class="py-24 lg:py-32 bg-slate-50 border-t border-slate-100" id="products">
@@ -73,25 +76,31 @@ const ctaTarget = isFeatured ? undefined : '_blank';
       </div>
 
       <!-- Products grid -->
-      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
-        {displayProducts.map((product, i) => {
-          const step = product.tags.find((t: string) => ['cleanse','treat','protect'].includes(t.toLowerCase())) ?? '';
-          return (
-            <div
-              x-show={`active === 'All' || active.toLowerCase() === '${step.toLowerCase()}'`}
-              x-transition:enter="transition ease-out duration-200"
-              x-transition:enter-start="opacity-0 scale-95"
-              x-transition:enter-end="opacity-100 scale-100"
-              x-data
-              x-intersect.once="$el.classList.add('opacity-100', 'translate-y-0')"
-              class="opacity-0 translate-y-6 transition-all duration-500"
-              style={`transition-delay: ${(i % 4) * 80}ms`}
-            >
-              <ProductCard product={product} />
-            </div>
-          );
-        })}
-      </div>
+      {hasProducts ? (
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
+          {displayProducts.map((product, i) => {
+            const step = getProductStep(product);
+            return (
+              <div
+                x-show={`active === 'All' || active.toLowerCase() === '${step}'`}
+                x-transition:enter="transition ease-out duration-200"
+                x-transition:enter-start="opacity-0 scale-95"
+                x-transition:enter-end="opacity-100 scale-100"
+                x-data
+                x-intersect.once="$el.classList.add('opacity-100', 'translate-y-0')"
+                class="opacity-0 translate-y-6 transition-all duration-500"
+                style={`transition-delay: ${(i % 4) * 80}ms`}
+              >
+                <ProductCard product={product} />
+              </div>
+            );
+          })}
+        </div>
+      ) : (
+        <p class="text-sm text-slate-500">
+          Products are temporarily unavailable.
+        </p>
+      )}
     </div>
   </div>
 </section>
