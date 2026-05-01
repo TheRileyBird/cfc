@@ -20,7 +20,7 @@ import cfcLogo from '../assets/images/cfc-logo.png';
               href="/shop"
               class="text-white/90 hover:text-[#C9A84C] transition-colors font-semibold"
           >
-            <span class="-scale-x-100">🌙</span> Subscribe &amp; Save
+            🌙 Subscribe &amp; Save
             <span class="text-[#C9A84C] font-bold">30% Off</span>
             &nbsp;—&nbsp;
             Shop Now 🌙
@@ -70,7 +70,7 @@ import cfcLogo from '../assets/images/cfc-logo.png';
 
       <!-- Right: icons + CTA -->
       <div class="hidden lg:flex items-center gap-4 ml-auto z-10">
-        <button @click="$store.search.open()" class="text-slate-400 hover:text-slate-700 transition-colors" aria-label="Search">
+        <button @click="$store.search.isOpen ? $store.search.close() : $store.search.open()" class="text-slate-400 hover:text-slate-700 transition-colors" aria-label="Search">
           <svg class="w-[18px] h-[18px]" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.75">
             <circle cx="11" cy="11" r="8"/>
             <path stroke-linecap="round" d="m21 21-4.35-4.35"/>
@@ -107,7 +107,7 @@ import cfcLogo from '../assets/images/cfc-logo.png';
 
       <!-- Mobile: icons + hamburger -->
       <div class="lg:hidden flex items-center gap-3.5 ml-auto">
-        <button @click="$store.search.open()" class="text-slate-400 hover:text-slate-700 transition-colors" aria-label="Search">
+        <button @click="$store.search.isOpen ? $store.search.close() : $store.search.open()" class="text-slate-400 hover:text-slate-700 transition-colors" aria-label="Search">
           <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.75">
             <circle cx="11" cy="11" r="8"/>
             <path stroke-linecap="round" d="m21 21-4.35-4.35"/>
@@ -196,7 +196,7 @@ import cfcLogo from '../assets/images/cfc-logo.png';
     @keydown.escape.window="$store.search.close()"
     class="bg-white border-b border-slate-200 shadow-xl"
   >
-    <div class="max-w-[1360px] mx-auto px-6 lg:px-10">
+    <div class="max-w-7xl mx-auto px-6 lg:px-10">
 
       <!-- Input row -->
       <div class="flex items-center gap-3 py-4">
