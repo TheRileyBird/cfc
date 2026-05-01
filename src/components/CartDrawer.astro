@@ -1,0 +1,167 @@
+---
+---
+
+<!-- Backdrop -->
+<div
+  x-data
+  x-cloak
+  x-show="$store.cart.isOpen"
+  x-transition:enter="transition-opacity ease-out duration-300"
+  x-transition:enter-start="opacity-0"
+  x-transition:enter-end="opacity-100"
+  x-transition:leave="transition-opacity ease-in duration-200"
+  x-transition:leave-start="opacity-100"
+  x-transition:leave-end="opacity-0"
+  @click="$store.cart.close()"
+  class="fixed inset-0 z-[99] bg-black/50 backdrop-blur-sm"
+  aria-hidden="true"
+></div>
+
+<!-- Drawer panel -->
+<div
+  x-data
+  x-cloak
+  x-show="$store.cart.isOpen"
+  x-transition:enter="transition ease-out duration-300"
+  x-transition:enter-start="translate-x-full"
+  x-transition:enter-end="translate-x-0"
+  x-transition:leave="transition ease-in duration-200"
+  x-transition:leave-start="translate-x-0"
+  x-transition:leave-end="translate-x-full"
+  @keydown.escape.window="$store.cart.close()"
+  class="fixed right-0 top-0 z-[100] h-full w-full max-w-[420px] bg-white shadow-2xl flex flex-col"
+  role="dialog"
+  aria-label="Shopping cart"
+>
+  <!-- Header -->
+  <div class="flex items-center justify-between px-6 py-5 border-b border-slate-100">
+    <div class="flex items-center gap-2.5">
+      <h2 class="text-sm font-black tracking-[0.18em] uppercase text-slate-900">Your Cart</h2>
+      <span
+        x-show="$store.cart.totalQuantity > 0"
+        x-text="`(${$store.cart.totalQuantity})`"
+        class="text-xs text-slate-400 font-medium"
+      ></span>
+    </div>
+    <button
+      @click="$store.cart.close()"
+      class="p-1.5 text-slate-400 hover:text-slate-700 transition-colors rounded-lg hover:bg-slate-100"
+      aria-label="Close cart"
+    >
+      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/>
+      </svg>
+    </button>
+  </div>
+
+  <!-- Loading overlay -->
+  <div
+    x-show="$store.cart.isLoading"
+    class="absolute inset-0 bg-white/70 flex items-center justify-center z-10"
+  >
+    <svg class="animate-spin w-8 h-8 text-[#B8950A]" fill="none" viewBox="0 0 24 24">
+      <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+      <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
+    </svg>
+  </div>
+
+  <!-- Empty state -->
+  <div
+    x-show="$store.cart.items.length === 0 && !$store.cart.isLoading"
+    class="flex-1 flex flex-col items-center justify-center px-6 text-center"
+  >
+    <svg class="w-16 h-16 text-slate-200 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1">
+      <path stroke-linecap="round" stroke-linejoin="round" d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/>
+      <line x1="3" y1="6" x2="21" y2="6"/>
+      <path stroke-linecap="round" d="M16 10a4 4 0 0 1-8 0"/>
+    </svg>
+    <p class="text-slate-500 text-sm font-medium mb-1">Your cart is empty</p>
+    <p class="text-slate-300 text-xs mb-6">Add some products to get started</p>
+    <button
+      @click="$store.cart.close()"
+      class="text-[11px] font-black tracking-[0.2em] uppercase text-[#B8950A] hover:text-[#9A7D08] transition-colors"
+    >
+      Continue Shopping
+    </button>
+  </div>
+
+  <!-- Items list -->
+  <div
+    x-show="$store.cart.items.length > 0"
+    class="flex-1 overflow-y-auto px-6 py-3 space-y-1"
+  >
+    <template x-for="item in $store.cart.items" :key="item.id">
+      <div class="flex gap-4 py-4 border-b border-slate-50 last:border-0">
+        <!-- Image -->
+        <div class="w-20 h-20 rounded-xl overflow-hidden bg-slate-50 shrink-0">
+          <img
+            :src="item.imageUrl"
+            :alt="item.productTitle"
+            class="w-full h-full object-cover"
+          />
+        </div>
+
+        <!-- Info -->
+        <div class="flex-1 min-w-0">
+          <p class="text-sm font-semibold text-slate-900 leading-snug line-clamp-2" x-text="item.productTitle"></p>
+          <p
+            class="text-xs text-slate-400 mt-0.5"
+            x-show="item.variantTitle && item.variantTitle !== 'Default Title'"
+            x-text="item.variantTitle"
+          ></p>
+          <p class="text-sm font-bold text-slate-900 mt-1.5" x-text="$store.cart.formatPrice(item.price)"></p>
+
+          <!-- Quantity controls -->
+          <div class="flex items-center gap-0.5 mt-2">
+            <button
+              @click="$store.cart.updateItem(item.id, item.quantity - 1)"
+              class="w-7 h-7 flex items-center justify-center rounded-lg border border-slate-200 text-slate-500 hover:border-slate-400 hover:text-slate-900 transition-colors text-base leading-none"
+              aria-label="Decrease quantity"
+            >−</button>
+            <span class="w-8 text-center text-sm font-medium text-slate-900" x-text="item.quantity"></span>
+            <button
+              @click="$store.cart.updateItem(item.id, item.quantity + 1)"
+              class="w-7 h-7 flex items-center justify-center rounded-lg border border-slate-200 text-slate-500 hover:border-slate-400 hover:text-slate-900 transition-colors text-base leading-none"
+              aria-label="Increase quantity"
+            >+</button>
+          </div>
+        </div>
+
+        <!-- Remove -->
+        <button
+          @click="$store.cart.removeItem(item.id)"
+          class="shrink-0 self-start p-1 text-slate-300 hover:text-red-400 transition-colors mt-0.5"
+          aria-label="Remove item"
+        >
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/>
+          </svg>
+        </button>
+      </div>
+    </template>
+  </div>
+
+  <!-- Footer -->
+  <div
+    x-show="$store.cart.items.length > 0"
+    class="px-6 py-5 border-t border-slate-100 space-y-4 bg-white"
+  >
+    <div class="flex items-center justify-between">
+      <span class="text-sm text-slate-500">Subtotal</span>
+      <span class="text-sm font-bold text-slate-900" x-text="$store.cart.formatPrice($store.cart.totalAmount)"></span>
+    </div>
+    <p class="text-xs text-slate-400 -mt-2">Shipping and taxes calculated at checkout.</p>
+    <a
+      :href="$store.cart.checkoutUrl"
+      class="block w-full text-center py-3.5 bg-[#B8950A] hover:bg-[#9A7D08] text-white text-[11px] font-black tracking-[0.2em] uppercase rounded-full transition-colors duration-200"
+    >
+      Checkout
+    </a>
+    <button
+      @click="$store.cart.close()"
+      class="block w-full text-center text-[11px] font-bold tracking-[0.15em] uppercase text-slate-400 hover:text-slate-700 transition-colors"
+    >
+      Continue Shopping
+    </button>
+  </div>
+</div>
