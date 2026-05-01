@@ -156,12 +156,14 @@ const lastVisibleIndex = firstVisibleIndex + 16;
         </div>
 
         <div class="flex flex-wrap items-center gap-3">
-          <label class="flex items-center gap-2">
+          <label for="product-sort" class="flex items-center gap-2">
             <span class="text-xs font-bold uppercase tracking-[0.18em] text-slate-500">Sort by</span>
             <select
+              id="product-sort"
+              name="sort"
               x-model="sortBy"
               @change="page = 1"
-              class="h-10 rounded-full border border-slate-200 bg-white px-4 text-sm font-semibold text-slate-600 shadow-card outline-none transition-colors focus:border-[#B8950A]"
+              class="h-10 rounded-full border border-slate-200 bg-white pl-4 pr-10 text-sm font-semibold text-slate-600 shadow-card outline-none transition-colors focus:border-[#B8950A]"
             >
               <option value="alpha">Alphabetical</option>
               <option value="best-selling">Best-selling</option>
