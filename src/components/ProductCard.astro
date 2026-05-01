@@ -21,7 +21,7 @@ const stepColors: Record<string, string> = {
 };
 ---
 
-<article class="group flex flex-col bg-white rounded-2xl overflow-hidden border border-slate-200 shadow-card hover:shadow-lift transition-all duration-300 hover:-translate-y-1">
+<article class="group flex h-full flex-col bg-white rounded-2xl overflow-hidden border border-slate-200 shadow-card hover:shadow-lift transition-all duration-300 hover:-translate-y-1">
   <!-- Product image -->
   <a href={`https://www.cfcskincare.shop/products/${product.handle}`} target="_blank" rel="noopener" class="block relative overflow-hidden aspect-square bg-slate-50">
     {image ? (
@@ -55,8 +55,8 @@ const stepColors: Record<string, string> = {
         {product.title}
       </h3>
     </a>
-    <p class="text-slate-400 text-sm leading-relaxed line-clamp-2 mb-4 flex-1">
-      {product.description}
+    <p class="min-h-[3rem] text-slate-400 text-sm leading-relaxed line-clamp-2 mb-4 flex-1">
+      {product.description || '\u00A0'}
     </p>
     <div class="flex items-center justify-between mt-auto">
       <span class="font-bold text-slate-900 text-sm">{price}</span>
