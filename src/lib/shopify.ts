@@ -25,6 +25,7 @@ export interface ShopifyProduct {
   title: string;
   handle: string;
   description: string;
+  availableForSale: boolean;
   priceRange: {
     minVariantPrice: { amount: string; currencyCode: string };
   };
@@ -39,6 +40,7 @@ const PRODUCT_FIELDS = `
   title
   handle
   description
+  availableForSale
   tags
   priceRange {
     minVariantPrice { amount currencyCode }
@@ -55,8 +57,8 @@ const PRODUCT_FIELDS = `
 `;
 
 const PRODUCTS_QUERY = `
-  query GetProducts($first: Int!, $after: String) {
-    products(first: $first, after: $after) {
+  query GetProducts($first: Int!, $after: String, $sortKey: ProductSortKeys) {
+    products(first: $first, after: $after, sortKey: $sortKey) {
       edges {
         cursor
         node {
@@ -85,11 +87,11 @@ const COLLECTION_PRODUCTS_QUERY = `
   }
 `;
 
-export async function getProducts(first = 24): Promise<ShopifyProduct[]> {
+export async function getProducts(first = 24, sortKey = 'BEST_SELLING'): Promise<ShopifyProduct[]> {
   try {
     const data = await shopifyFetch<{ products: { edges: Array<{ node: ShopifyProduct }> } }>(
       PRODUCTS_QUERY,
-      { first, after: null }
+      { first, after: null, sortKey }
     );
     return data.products.edges.map(e => e.node);
   } catch {
@@ -97,7 +99,7 @@ export async function getProducts(first = 24): Promise<ShopifyProduct[]> {
   }
 }
 
-export async function getAllProducts(): Promise<ShopifyProduct[]> {
+export async function getAllProducts(sortKey = 'BEST_SELLING'): Promise<ShopifyProduct[]> {
   const products: ShopifyProduct[] = [];
   let after: string | null = null;
   let hasNextPage = true;
@@ -111,7 +113,7 @@ export async function getAllProducts(): Promise<ShopifyProduct[]> {
         };
       }>(
         PRODUCTS_QUERY,
-        { first: 100, after }
+        { first: 100, after, sortKey }
       );
 
       products.push(...data.products.edges.map(e => e.node));

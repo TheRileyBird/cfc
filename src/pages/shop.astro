@@ -7,8 +7,10 @@ import { getAllProducts } from '../lib/shopify';
 
 const PRODUCTS_PER_PAGE = 16;
 const allProducts = await getAllProducts();
-const totalPages = Math.max(1, Math.ceil(allProducts.length / PRODUCTS_PER_PAGE));
-const products = allProducts.slice(0, PRODUCTS_PER_PAGE);
+const products = allProducts
+  .map((product, bestSellingRank) => ({ ...product, bestSellingRank }))
+  .sort((a, b) => a.title.localeCompare(b.title));
+const totalPages = Math.max(1, Math.ceil(products.length / PRODUCTS_PER_PAGE));
 ---
 
 <Layout
@@ -23,7 +25,7 @@ const products = allProducts.slice(0, PRODUCTS_PER_PAGE);
       pagination={{
         currentPage: 1,
         totalPages,
-        totalProducts: allProducts.length,
+        totalProducts: products.length,
       }}
     />
   </main>

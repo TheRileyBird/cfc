@@ -41,6 +41,27 @@ function getProductStep(product: ShopifyProduct): 'cleanse' | 'treat' | 'protect
 function getShopPageHref(page: number): string {
   return page === 1 ? '/shop' : `/shop/page/${page}`;
 }
+
+const productState = displayProducts.map((product, index) => {
+  const rankedProduct = product as ShopifyProduct & { bestSellingRank?: number };
+  const bestSellingRank = typeof rankedProduct.bestSellingRank === 'number'
+    ? rankedProduct.bestSellingRank
+    : index;
+
+  return {
+    id: product.id,
+    title: product.title,
+    category: getProductStep(product),
+    available: product.availableForSale,
+    price: Number(product.priceRange.minVariantPrice.amount),
+    bestSellingRank,
+  };
+});
+
+const initialPage = pagination?.currentPage ?? 1;
+const totalProductsLabel = pagination?.totalProducts ?? displayProducts.length;
+const firstVisibleIndex = (initialPage - 1) * 16;
+const lastVisibleIndex = firstVisibleIndex + 16;
 ---
 
 <section class="py-24 lg:py-32 bg-slate-50 border-t border-slate-100" id="products">
@@ -72,44 +93,138 @@ function getShopPageHref(page: number): string {
     </div>
 
     <!-- Filter tabs + grid -->
-    <div x-data="{ active: 'All' }">
-      <div class="flex gap-2 flex-wrap mb-10">
-        {filters.map(f => (
+    <div
+      x-data={`{
+        active: 'All',
+        availability: 'all',
+        sortBy: 'alpha',
+        page: ${initialPage},
+        perPage: 16,
+        products: ${JSON.stringify(productState)},
+        reset() {
+          this.active = 'All';
+          this.availability = 'all';
+          this.sortBy = 'alpha';
+          this.page = 1;
+        },
+        filteredProducts() {
+          return this.products.filter((product) => {
+            const categoryMatches = this.active === 'All' || product.category === this.active.toLowerCase();
+            const availabilityMatches = this.availability === 'all'
+              || (this.availability === 'in-stock' && product.available)
+              || (this.availability === 'out-of-stock' && !product.available);
+
+            return categoryMatches && availabilityMatches;
+          });
+        },
+        sortedProducts() {
+          return [...this.filteredProducts()].sort((a, b) => {
+            if (this.sortBy === 'best-selling') return a.bestSellingRank - b.bestSellingRank;
+            if (this.sortBy === 'reverse-alpha') return b.title.localeCompare(a.title);
+            if (this.sortBy === 'price-low-high') return a.price - b.price || a.title.localeCompare(b.title);
+            if (this.sortBy === 'price-high-low') return b.price - a.price || a.title.localeCompare(b.title);
+            return a.title.localeCompare(b.title);
+          });
+        },
+        visibleProducts() {
+          const currentTotalPages = this.totalPages();
+          if (this.page > currentTotalPages) this.page = currentTotalPages;
+          const start = (this.page - 1) * this.perPage;
+          return this.sortedProducts().slice(start, start + this.perPage);
+        },
+        visibleIds() {
+          return this.visibleProducts().map((product) => product.id);
+        },
+        productOrder(id) {
+          return this.visibleIds().indexOf(id);
+        },
+        totalPages() {
+          return Math.max(1, Math.ceil(this.filteredProducts().length / this.perPage));
+        },
+        totalResults() {
+          return this.filteredProducts().length;
+        },
+        setPage(nextPage) {
+          this.page = Math.min(Math.max(nextPage, 1), this.totalPages());
+        }
+      }`}
+    >
+      <div class="mb-10 flex flex-col gap-4">
+        <div class="flex flex-wrap items-end gap-3">
+          <label class="flex min-w-48 flex-col gap-2">
+            <span class="text-xs font-bold uppercase tracking-[0.18em] text-slate-500">Availability</span>
+            <select
+              x-model="availability"
+              @change="page = 1"
+              class="h-11 rounded-full border border-slate-200 bg-white px-4 text-sm font-semibold text-slate-600 shadow-card outline-none transition-colors focus:border-[#B8950A]"
+            >
+              <option value="all">All availability</option>
+              <option value="in-stock">In stock</option>
+              <option value="out-of-stock">Out of stock</option>
+            </select>
+          </label>
+
+          <label class="flex min-w-56 flex-col gap-2">
+            <span class="text-xs font-bold uppercase tracking-[0.18em] text-slate-500">Sort by</span>
+            <select
+              x-model="sortBy"
+              @change="page = 1"
+              class="h-11 rounded-full border border-slate-200 bg-white px-4 text-sm font-semibold text-slate-600 shadow-card outline-none transition-colors focus:border-[#B8950A]"
+            >
+              <option value="alpha">Alphabetical</option>
+              <option value="best-selling">Best-selling</option>
+              <option value="reverse-alpha">Reverse alphabetical</option>
+              <option value="price-low-high">Price, low to high</option>
+              <option value="price-high-low">Price, high to low</option>
+            </select>
+          </label>
+
           <button
-            @click={`active = '${f}'`}
-            :class={`active === '${f}' ? 'bg-slate-900 text-white' : 'bg-white text-slate-500 hover:text-slate-800 border border-slate-200'`}
-            class="px-5 py-2 rounded-full text-sm font-semibold transition-all duration-200 shadow-card"
+            type="button"
+            @click="reset()"
+            class="h-11 rounded-full border border-slate-200 bg-white px-5 text-sm font-semibold text-slate-600 shadow-card transition-colors hover:border-[#B8950A] hover:text-[#B8950A]"
           >
-            {f}
+            Reset
           </button>
-        ))}
+        </div>
+
+        <div class="flex gap-2 flex-wrap">
+          {filters.map(f => (
+            <button
+              @click={`active = '${f}'; page = 1`}
+              :class={`active === '${f}' ? 'bg-slate-900 text-white' : 'bg-white text-slate-500 hover:text-slate-800 border border-slate-200'`}
+              class="px-5 py-2 rounded-full text-sm font-semibold transition-all duration-200 shadow-card"
+            >
+              {f}
+            </button>
+          ))}
+        </div>
       </div>
 
       <!-- Products grid -->
       {hasProducts ? (
         <>
-          {pagination && (
-            <div class="flex items-center justify-between gap-4 mb-6 text-sm text-slate-500">
-              <p>
-                Showing page {pagination.currentPage} of {pagination.totalPages}
-              </p>
-              <p>{pagination.totalProducts} products</p>
-            </div>
-          )}
+          <div class="flex items-center justify-between gap-4 mb-6 text-sm text-slate-500">
+            <p>
+              Showing page <span x-text="page"></span> of <span x-text="totalPages()"></span>
+            </p>
+            <p>
+              <span x-text="totalResults()"></span> of {totalProductsLabel} products
+            </p>
+          </div>
 
           <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
             {displayProducts.map((product, i) => {
-              const step = getProductStep(product);
+              const isInitiallyVisible = i >= firstVisibleIndex && i < lastVisibleIndex;
               return (
                 <div
-                  x-show={`active === 'All' || active.toLowerCase() === '${step}'`}
+                  x-show={`visibleIds().includes(${JSON.stringify(product.id)})`}
                   x-transition:enter="transition ease-out duration-200"
                   x-transition:enter-start="opacity-0 scale-95"
                   x-transition:enter-end="opacity-100 scale-100"
-                  x-data
-                  x-intersect.once="$el.classList.add('opacity-100', 'translate-y-0')"
-                  class="opacity-0 translate-y-6 transition-all duration-500"
-                  style={`transition-delay: ${(i % 4) * 80}ms`}
+                  class="transition-all duration-200"
+                  style={isInitiallyVisible ? undefined : 'display: none;'}
+                  :style={`'order: ' + productOrder(${JSON.stringify(product.id)})`}
                 >
                   <ProductCard product={product} />
                 </div>
@@ -117,42 +232,83 @@ function getShopPageHref(page: number): string {
             })}
           </div>
 
+          <p x-show="totalResults() === 0" class="mt-8 text-center text-sm text-slate-500">
+            No products match the selected filters.
+          </p>
+
+          <nav x-show="totalPages() > 1" class="mt-12 flex flex-wrap items-center justify-center gap-2" aria-label="Product pagination">
+            <a
+              href={getShopPageHref(Math.max(initialPage - 1, 1))}
+              @click.prevent="setPage(page - 1)"
+              x-show="page > 1"
+              class="inline-flex h-10 items-center gap-2 rounded-full border border-slate-200 bg-white px-4 text-sm font-semibold text-slate-600 transition-colors hover:border-[#B8950A] hover:text-[#B8950A]"
+            >
+              <ArrowLeft class="w-4 h-4" />
+              Previous
+            </a>
+
+            <template x-for="pageNumber in totalPages()" :key="pageNumber">
+              <a
+                :href="pageNumber === 1 ? '/shop' : `/shop/page/${pageNumber}`"
+                @click.prevent="setPage(pageNumber)"
+                :aria-current="pageNumber === page ? 'page' : undefined"
+                class="inline-flex h-10 min-w-10 items-center justify-center rounded-full px-3 text-sm font-semibold transition-colors"
+                :class="pageNumber === page ? 'bg-slate-900 text-white' : 'border border-slate-200 bg-white text-slate-600 hover:border-[#B8950A] hover:text-[#B8950A]'"
+              >
+                <span x-text="pageNumber"></span>
+              </a>
+            </template>
+
+            <a
+              href={getShopPageHref(initialPage + 1)}
+              @click.prevent="setPage(page + 1)"
+              x-show="page < totalPages()"
+              class="inline-flex h-10 items-center gap-2 rounded-full border border-slate-200 bg-white px-4 text-sm font-semibold text-slate-600 transition-colors hover:border-[#B8950A] hover:text-[#B8950A]"
+            >
+              Next
+              <ArrowRight class="w-4 h-4" />
+            </a>
+          </nav>
+          {/*
+            Static fallback links for crawlers and no-JS users. Alpine takes over
+            the interactive pagination above.
+          */}
           {pagination && pagination.totalPages > 1 && (
-            <nav class="mt-12 flex flex-wrap items-center justify-center gap-2" aria-label="Product pagination">
-              {pagination.currentPage > 1 && (
-                <a
-                  href={getShopPageHref(pagination.currentPage - 1)}
-                  class="inline-flex h-10 items-center gap-2 rounded-full border border-slate-200 bg-white px-4 text-sm font-semibold text-slate-600 transition-colors hover:border-[#B8950A] hover:text-[#B8950A]"
-                >
-                  <ArrowLeft class="w-4 h-4" />
-                  Previous
-                </a>
-              )}
+            <noscript>
+              <nav class="mt-12 flex flex-wrap items-center justify-center gap-2" aria-label="Product pagination">
+                {pagination.currentPage > 1 && (
+                  <a
+                    href={getShopPageHref(pagination.currentPage - 1)}
+                    class="inline-flex h-10 items-center gap-2 rounded-full border border-slate-200 bg-white px-4 text-sm font-semibold text-slate-600 transition-colors hover:border-[#B8950A] hover:text-[#B8950A]"
+                  >
+                    Previous
+                  </a>
+                )}
 
-              {Array.from({ length: pagination.totalPages }, (_, index) => index + 1).map(page => (
-                <a
-                  href={getShopPageHref(page)}
-                  aria-current={page === pagination.currentPage ? 'page' : undefined}
-                  class={`inline-flex h-10 min-w-10 items-center justify-center rounded-full px-3 text-sm font-semibold transition-colors ${
-                    page === pagination.currentPage
-                      ? 'bg-slate-900 text-white'
-                      : 'border border-slate-200 bg-white text-slate-600 hover:border-[#B8950A] hover:text-[#B8950A]'
-                  }`}
-                >
-                  {page}
-                </a>
-              ))}
+                {Array.from({ length: pagination.totalPages }, (_, index) => index + 1).map(page => (
+                  <a
+                    href={getShopPageHref(page)}
+                    aria-current={page === pagination.currentPage ? 'page' : undefined}
+                    class={`inline-flex h-10 min-w-10 items-center justify-center rounded-full px-3 text-sm font-semibold transition-colors ${
+                      page === pagination.currentPage
+                        ? 'bg-slate-900 text-white'
+                        : 'border border-slate-200 bg-white text-slate-600 hover:border-[#B8950A] hover:text-[#B8950A]'
+                    }`}
+                  >
+                    {page}
+                  </a>
+                ))}
 
-              {pagination.currentPage < pagination.totalPages && (
-                <a
-                  href={getShopPageHref(pagination.currentPage + 1)}
-                  class="inline-flex h-10 items-center gap-2 rounded-full border border-slate-200 bg-white px-4 text-sm font-semibold text-slate-600 transition-colors hover:border-[#B8950A] hover:text-[#B8950A]"
-                >
-                  Next
-                  <ArrowRight class="w-4 h-4" />
-                </a>
-              )}
-            </nav>
+                {pagination.currentPage < pagination.totalPages && (
+                  <a
+                    href={getShopPageHref(pagination.currentPage + 1)}
+                    class="inline-flex h-10 items-center gap-2 rounded-full border border-slate-200 bg-white px-4 text-sm font-semibold text-slate-600 transition-colors hover:border-[#B8950A] hover:text-[#B8950A]"
+                  >
+                    Next
+                  </a>
+                )}
+              </nav>
+            </noscript>
           )}
         </>
       ) : (

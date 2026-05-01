@@ -12,7 +12,7 @@ const { product } = Astro.props;
 const image = product.images.edges[0]?.node;
 const variant = product.variants.edges[0]?.node;
 const price = formatPrice(product.priceRange.minVariantPrice.amount);
-const checkoutUrl = variant ? getCheckoutUrl(variant.id) : `https://www.cfcskincare.shop/products/${product.handle}`;
+const checkoutUrl = variant && product.availableForSale ? getCheckoutUrl(variant.id) : `https://www.cfcskincare.shop/products/${product.handle}`;
 const step = product.tags.find(t => ['cleanse','treat','protect'].includes(t.toLowerCase()));
 const stepColors: Record<string, string> = {
   cleanse: 'bg-slate-100 text-slate-600',
@@ -41,6 +41,11 @@ const stepColors: Record<string, string> = {
         {step}
       </span>
     )}
+    {!product.availableForSale && (
+      <span class="absolute top-3 right-3 px-2.5 py-1 rounded-full bg-slate-900 text-white text-xs font-semibold tracking-wide">
+        Out of stock
+      </span>
+    )}
   </a>
 
   <!-- Product info -->
@@ -59,10 +64,14 @@ const stepColors: Record<string, string> = {
         href={checkoutUrl}
         target="_blank"
         rel="noopener"
-        class="flex items-center gap-1.5 px-4 py-2 bg-[#B8950A] hover:bg-[#9A7D08] text-white text-xs font-semibold rounded-full transition-colors"
+        class={`flex items-center gap-1.5 px-4 py-2 text-white text-xs font-semibold rounded-full transition-colors ${
+          product.availableForSale
+            ? 'bg-[#B8950A] hover:bg-[#9A7D08]'
+            : 'bg-slate-400 hover:bg-slate-500'
+        }`}
       >
         <ShoppingBag class="w-3.5 h-3.5" />
-        Add to Cart
+        {product.availableForSale ? 'Add to Cart' : 'View Product'}
       </a>
     </div>
   </div>
