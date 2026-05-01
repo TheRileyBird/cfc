@@ -35,6 +35,28 @@ export interface ShopifyProduct {
   collections: { edges: Array<{ node: { title: string } }> };
 }
 
+function isRetailProduct(product: ShopifyProduct): boolean {
+  const text = [
+    product.title,
+    product.handle,
+    product.description,
+    ...product.tags,
+    ...product.collections.edges.map(({ node }) => node.title),
+  ]
+    .join(' ')
+    .toLowerCase();
+
+  return !(
+    text.includes('back bar') ||
+    text.includes('wholesale') ||
+    text.includes('whole sale')
+  );
+}
+
+function filterRetailProducts(products: ShopifyProduct[]): ShopifyProduct[] {
+  return products.filter(isRetailProduct);
+}
+
 const PRODUCT_FIELDS = `
   id
   title
@@ -93,7 +115,7 @@ export async function getProducts(first = 24, sortKey = 'BEST_SELLING'): Promise
       PRODUCTS_QUERY,
       { first, after: null, sortKey }
     );
-    return data.products.edges.map(e => e.node);
+    return filterRetailProducts(data.products.edges.map(e => e.node));
   } catch {
     return [];
   }
@@ -120,11 +142,11 @@ export async function getAllProducts(sortKey = 'BEST_SELLING'): Promise<ShopifyP
       hasNextPage = data.products.pageInfo.hasNextPage;
       after = data.products.pageInfo.endCursor;
     } catch {
-      return products;
+      return filterRetailProducts(products);
     }
   }
 
-  return products;
+  return filterRetailProducts(products);
 }
 
 export async function getCollectionProducts(handle: string, first = 24): Promise<ShopifyProduct[]> {
@@ -135,7 +157,7 @@ export async function getCollectionProducts(handle: string, first = 24): Promise
       COLLECTION_PRODUCTS_QUERY,
       { handle, first }
     );
-    return data.collection?.products.edges.map(e => e.node) ?? [];
+    return filterRetailProducts(data.collection?.products.edges.map(e => e.node) ?? []);
   } catch {
     return [];
   }
