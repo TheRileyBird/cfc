@@ -28,7 +28,7 @@ const stepColors: Record<string, string> = {
       <img
         src={image.url}
         alt={image.altText ?? product.title}
-        class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+        class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105 group-hover:duration-1000"
         loading="lazy"
       />
     ) : (
