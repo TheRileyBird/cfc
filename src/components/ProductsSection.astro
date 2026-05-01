@@ -96,25 +96,18 @@ const lastVisibleIndex = firstVisibleIndex + 16;
     <div
       x-data={`{
         active: 'All',
-        availability: 'all',
         sortBy: 'alpha',
         page: ${initialPage},
         perPage: 16,
         products: ${JSON.stringify(productState)},
         reset() {
           this.active = 'All';
-          this.availability = 'all';
           this.sortBy = 'alpha';
           this.page = 1;
         },
         filteredProducts() {
           return this.products.filter((product) => {
-            const categoryMatches = this.active === 'All' || product.category === this.active.toLowerCase();
-            const availabilityMatches = this.availability === 'all'
-              || (this.availability === 'in-stock' && product.available)
-              || (this.availability === 'out-of-stock' && !product.available);
-
-            return categoryMatches && availabilityMatches;
+            return this.active === 'All' || product.category === this.active.toLowerCase();
           });
         },
         sortedProducts() {
@@ -149,27 +142,26 @@ const lastVisibleIndex = firstVisibleIndex + 16;
         }
       }`}
     >
-      <div class="mb-10 flex flex-col gap-4">
-        <div class="flex flex-wrap items-end gap-3">
-          <label class="flex min-w-48 flex-col gap-2">
-            <span class="text-xs font-bold uppercase tracking-[0.18em] text-slate-500">Availability</span>
-            <select
-              x-model="availability"
-              @change="page = 1"
-              class="h-11 rounded-full border border-slate-200 bg-white px-4 text-sm font-semibold text-slate-600 shadow-card outline-none transition-colors focus:border-[#B8950A]"
+      <div class="mb-10 flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+        <div class="flex flex-wrap gap-2">
+          {filters.map(f => (
+            <button
+              @click={`active = '${f}'; page = 1`}
+              :class={`active === '${f}' ? 'bg-slate-900 text-white' : 'bg-white text-slate-500 hover:text-slate-800 border border-slate-200'`}
+              class="px-5 py-2 rounded-full text-sm font-semibold transition-all duration-200 shadow-card"
             >
-              <option value="all">All availability</option>
-              <option value="in-stock">In stock</option>
-              <option value="out-of-stock">Out of stock</option>
-            </select>
-          </label>
+              {f}
+            </button>
+          ))}
+        </div>
 
-          <label class="flex min-w-56 flex-col gap-2">
+        <div class="flex flex-wrap items-center gap-3">
+          <label class="flex items-center gap-2">
             <span class="text-xs font-bold uppercase tracking-[0.18em] text-slate-500">Sort by</span>
             <select
               x-model="sortBy"
               @change="page = 1"
-              class="h-11 rounded-full border border-slate-200 bg-white px-4 text-sm font-semibold text-slate-600 shadow-card outline-none transition-colors focus:border-[#B8950A]"
+              class="h-10 rounded-full border border-slate-200 bg-white px-4 text-sm font-semibold text-slate-600 shadow-card outline-none transition-colors focus:border-[#B8950A]"
             >
               <option value="alpha">Alphabetical</option>
               <option value="best-selling">Best-selling</option>
@@ -182,22 +174,10 @@ const lastVisibleIndex = firstVisibleIndex + 16;
           <button
             type="button"
             @click="reset()"
-            class="h-11 rounded-full border border-slate-200 bg-white px-5 text-sm font-semibold text-slate-600 shadow-card transition-colors hover:border-[#B8950A] hover:text-[#B8950A]"
+            class="h-10 rounded-full border border-slate-200 bg-white px-5 text-sm font-semibold text-slate-600 shadow-card transition-colors hover:border-[#B8950A] hover:text-[#B8950A]"
           >
             Reset
           </button>
-        </div>
-
-        <div class="flex gap-2 flex-wrap">
-          {filters.map(f => (
-            <button
-              @click={`active = '${f}'; page = 1`}
-              :class={`active === '${f}' ? 'bg-slate-900 text-white' : 'bg-white text-slate-500 hover:text-slate-800 border border-slate-200'`}
-              class="px-5 py-2 rounded-full text-sm font-semibold transition-all duration-200 shadow-card"
-            >
-              {f}
-            </button>
-          ))}
         </div>
       </div>
 
