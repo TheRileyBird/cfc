@@ -3,7 +3,7 @@ import { Image } from 'astro:assets';
 import womanTreatingImg from '../assets/images/imgi_27_alaina3.jpg';
 import familyImg from '../assets/images/imgi_10_IMG_7390_88e8c9d5-dc10-4a01-9401-b56afa617598.jpg';
 import kidsImg from '../assets/images/imgi_4_hp_bottom_1.jpg';
-import youngWomanImg from '../assets/images/imgi_17_tt-62_069ab971-1f75-4920-aa31-53f436d33e38_large.jpg';
+import youngWomanImg from '../assets/images/kid.jpg';
 
 const testimonials = [
   {
@@ -57,7 +57,7 @@ const testimonials = [
         <div
           x-data
           x-intersect.once="$el.classList.add('opacity-100', 'translate-y-0')"
-          class="opacity-0 translate-y-6 transition-all duration-700 flex flex-col justify-between bg-slate-50 rounded-2xl p-7 border border-slate-100"
+          class="opacity-0 translate-y-6 transition-all duration-700 aspect-square flex flex-col justify-between bg-slate-50 rounded-2xl p-7 border border-slate-100 overflow-hidden"
           style={`transition-delay: ${i * 100}ms`}
         >
           <div>
@@ -75,8 +75,7 @@ const testimonials = [
       <div
         x-data
         x-intersect.once="$el.classList.add('opacity-100', 'translate-y-0')"
-        class="opacity-0 translate-y-6 transition-all duration-700 delay-200 rounded-2xl overflow-hidden"
-        style="min-height: 300px;"
+        class="opacity-0 translate-y-6 transition-all duration-700 delay-200 aspect-square rounded-2xl overflow-hidden"
       >
         <Image
           src={womanTreatingImg}
@@ -93,8 +92,7 @@ const testimonials = [
       <div
         x-data
         x-intersect.once="$el.classList.add('opacity-100', 'translate-y-0')"
-        class="opacity-0 translate-y-6 transition-all duration-700 rounded-2xl overflow-hidden"
-        style="min-height: 300px;"
+        class="opacity-0 translate-y-6 transition-all duration-700 aspect-square rounded-2xl overflow-hidden"
       >
         <Image
           src={youngWomanImg}
@@ -109,7 +107,7 @@ const testimonials = [
         <div
           x-data
           x-intersect.once="$el.classList.add('opacity-100', 'translate-y-0')"
-          class="opacity-0 translate-y-6 transition-all duration-700 flex flex-col justify-between bg-slate-50 rounded-2xl p-7 border border-slate-100"
+          class="opacity-0 translate-y-6 transition-all duration-700 aspect-square flex flex-col justify-between bg-slate-50 rounded-2xl p-7 border border-slate-100 overflow-hidden"
           style={`transition-delay: ${(i + 1) * 100}ms`}
         >
           <div>
@@ -122,32 +120,6 @@ const testimonials = [
           </div>
         </div>
       ))}
-    </div>
-
-    <!-- Row 3: lifestyle images -->
-    <div
-      x-data
-      x-intersect.once="$el.classList.add('opacity-100', 'translate-y-0')"
-      class="opacity-0 translate-y-6 transition-all duration-700 grid md:grid-cols-2 gap-4"
-    >
-      <div class="rounded-2xl overflow-hidden" style="min-height: 320px;">
-        <Image
-          src={familyImg}
-          alt="CFC — skincare for the whole family"
-          class="w-full h-full object-cover object-top"
-          widths={[500, 900]}
-          sizes="(max-width: 768px) 100vw, 50vw"
-        />
-      </div>
-      <div class="rounded-2xl overflow-hidden" style="min-height: 320px;">
-        <Image
-          src={kidsImg}
-          alt="CFC skincare for teens and tweens"
-          class="w-full h-full object-cover object-center"
-          widths={[500, 900]}
-          sizes="(max-width: 768px) 100vw, 50vw"
-        />
-      </div>
     </div>
   </div>
 </section>

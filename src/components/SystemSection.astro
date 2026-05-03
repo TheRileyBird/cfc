@@ -1,8 +1,8 @@
 ---
 import { Image } from 'astro:assets';
 import cleanseImg from '../assets/images/imgi_13_tt-102_1500x.jpg';
-import treatImg from '../assets/images/imgi_27_alaina3.jpg';
-import protectImg from '../assets/images/imgi_12_tt-75_1500x.jpg';
+import treatImg from '../assets/images/protect.jpg';
+import protectImg from '../assets/images/imgi_27_alaina3.jpg';
 
 const steps = [
   {
@@ -45,7 +45,7 @@ const steps = [
 
   <!-- Section header -->
   <div class="bg-slate-50 border-y border-slate-100">
-    <div class="max-w-7xl mx-auto px-6 lg:px-16 py-16 lg:py-20 text-center">
+    <div class="max-w-4xl mx-auto px-6 lg:px-16 py-16 lg:py-20 text-center">
       <div
         x-data
         x-intersect.once="$el.classList.add('opacity-100', 'translate-y-0')"
@@ -56,9 +56,9 @@ const steps = [
           <span class="text-[#B8950A] text-xs font-semibold tracking-[0.2em] uppercase">The Solution</span>
         </span>
         <h2 class="font-bold text-4xl lg:text-5xl text-slate-900 leading-tight mb-3">
-          Three steps. Under five minutes.
+          3 Steps. 5 Minutes.
         </h2>
-        <p class="font-serif text-2xl italic text-slate-400">Real results.</p>
+        <p class="text-2xl text-slate-700">This is not a vanity problem. It is a confidence problem — and confidence touches <span class="text-[#B8950A]"> every area of a woman's life.</span></p>
       </div>
     </div>
   </div>
@@ -68,7 +68,7 @@ const steps = [
     <div
       x-data
       x-intersect.once="$el.classList.add('opacity-100')"
-      class={`opacity-0 transition-all duration-1000 grid lg:grid-cols-2 ${bg}`}
+      class={`opacity-0 transition-all duration-1000 grid lg:grid-cols-2 lg:h-[650px] overflow-hidden ${bg}`}
       style={`transition-delay: ${i * 80}ms`}
     >
 
@@ -78,7 +78,6 @@ const steps = [
           src={image}
           alt={imageAlt}
           class="w-full h-72 lg:h-full object-cover object-center"
-          style="min-height: 520px;"
           widths={[600, 900, 1200]}
           sizes="(max-width: 1024px) 100vw, 50vw"
         />
@@ -93,8 +92,10 @@ const steps = [
       </div>
 
       <!-- Content -->
-      <div class={`flex flex-col justify-center px-8 lg:px-16 xl:px-20 py-16 lg:py-24 ${imagePosition === 'left' ? 'lg:order-last' : 'lg:order-first'}`}>
-        <div class="max-w-md">
+      <div class={`relative overflow-hidden flex flex-col justify-center px-8 lg:px-16 xl:px-20 py-16 lg:py-24 ${imagePosition === 'left' ? 'lg:order-last' : 'lg:order-first'}`}>
+        <!-- Ghosted step number -->
+        <span aria-hidden="true" class="absolute -bottom-8 right-0 text-[18rem] font-bold leading-none text-slate-900/[0.04] select-none pointer-events-none tabular-nums">{number}</span>
+        <div class="max-w-md relative">
           <h3 class="font-bold text-3xl lg:text-4xl text-slate-900 leading-snug mb-5">
             {headline}
           </h3>

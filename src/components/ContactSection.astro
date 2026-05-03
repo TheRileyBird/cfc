@@ -1,4 +1,6 @@
 ---
+import founderImg from '../assets/images/brit.jpg';
+import {Image} from "astro:assets";
 ---
 <section class="py-24 lg:py-32 bg-slate-50 border-t border-slate-100" id="contact">
   <div class="max-w-7xl mx-auto px-6 lg:px-8">
@@ -23,10 +25,10 @@
 
         <!-- Founder note -->
         <div class="flex gap-4 p-5 bg-white rounded-2xl border border-slate-200 shadow-card">
-          <img
-            src="https://images.unsplash.com/photo-1559839734-2b71ea197ec2?w=56&h=56&q=80&fit=crop&crop=face"
-            alt="CFC Founder NP"
-            class="w-14 h-14 rounded-xl object-cover shrink-0"
+          <Image
+              src={founderImg}
+              alt="CFC Founder NP"
+              class="w-14 h-14 rounded-xl object-cover shrink-0"
           />
           <div>
             <p class="font-semibold text-slate-900 text-sm mb-1.5">Direct access to the NP who built it</p>

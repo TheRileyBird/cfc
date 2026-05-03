@@ -1,14 +1,14 @@
 ---
 import { Image } from 'astro:assets';
-import founderImg from '../assets/images/imgi_5_tt-206.jpg';
-import productsImg from '../assets/images/imgi_3_Body_care.png';
+import founderImg from '../assets/images/family.jpg';
+import productsImg from '../assets/images/group.jpg';
 ---
 
 <section class="bg-slate-50 border-t border-slate-100" id="about">
   <div class="max-w-7xl mx-auto px-6 lg:px-16 py-24 lg:py-36">
 
     <!-- Top: text + founder image -->
-    <div class="grid lg:grid-cols-12 gap-12 lg:gap-20 items-center mb-24 lg:mb-32">
+    <div class="grid lg:grid-cols-12 gap-12 lg:gap-20 items-stretch mb-16 lg:mb-20">
 
       <!-- Left: copy -->
       <div
@@ -52,25 +52,27 @@ import productsImg from '../assets/images/imgi_3_Body_care.png';
       <div
         x-data
         x-intersect.once="$el.classList.add('opacity-100', 'translate-x-0')"
-        class="opacity-0 translate-x-6 transition-all duration-700 delay-150 lg:col-span-7 relative"
+        class="opacity-0 translate-x-6 transition-all duration-700 delay-150 lg:col-span-7 relative h-full"
       >
-        <Image
-          src={founderImg}
-          alt="CFC Skincare — real woman showing results"
-          class="w-full rounded-2xl object-cover object-top shadow-lift"
-          style="max-height: 600px;"
-          widths={[600, 900, 1200]}
-          sizes="(max-width: 1024px) 100vw, 58vw"
-        />
-        <!-- Floating quote card -->
-        <div class="absolute -bottom-6 -left-4 lg:-left-10 max-w-xs bg-white rounded-2xl p-6 shadow-strong">
-          <div class="flex gap-0.5 text-[#C9A84C] mb-3 text-sm">★★★★★</div>
-          <p class="font-serif text-slate-700 text-base leading-relaxed italic">
-            "I stopped wearing foundation to work. I didn't even notice when it stopped feeling necessary."
-          </p>
-          <p class="text-slate-400 text-sm mt-3 font-medium">— CFC Customer</p>
+        <div class="rounded-2xl overflow-hidden shadow-lift h-full">
+          <Image
+            src={founderImg}
+            alt="CFC Skincare — real woman showing results"
+            class="w-full h-full object-cover object-top"
+            widths={[600, 900, 1200]}
+            sizes="(max-width: 1024px) 100vw, 58vw"
+          />
         </div>
       </div>
+    </div>
+
+    <!-- Full-width testimonial callout -->
+    <div class="-mx-6 lg:-mx-16 px-6 lg:px-16 py-12 lg:py-16 mb-16 lg:mb-20 text-center bg-white">
+      <div class="flex justify-center gap-0.5 text-[#C9A84C] text-sm mb-5">★★★★★</div>
+      <p class="font-serif text-2xl lg:text-3xl text-slate-700 leading-snug max-w-2xl mx-auto mb-4">
+        "I stopped wearing foundation to work. I didn't even notice when it stopped feeling necessary."
+      </p>
+      <p class="text-slate-400 text-sm font-medium">— CFC Customer</p>
     </div>
 
     <!-- Bottom: products + USP -->
@@ -105,7 +107,7 @@ import productsImg from '../assets/images/imgi_3_Body_care.png';
             'vs. Clean beauty — formulated by a medical professional for efficacy, not just ingredient safety.',
           ].map(line => (
             <div class="flex gap-3 p-4 bg-white rounded-xl border border-slate-100 text-sm text-slate-600 leading-relaxed">
-              <span class="text-[#C9A84C] font-bold shrink-0 mt-0.5">—</span>
+              <svg class="w-4 h-4 text-[#C9A84C] shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>
               {line}
             </div>
           ))}
