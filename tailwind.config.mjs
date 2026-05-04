@@ -4,22 +4,27 @@ export default {
   theme: {
     extend: {
       colors: {
-        gold: {
-          50:  '#FFFBEB',
-          100: '#FEF3C7',
-          200: '#FDE68A',
-          300: '#D4A843',
-          400: '#C9A84C',
-          500: '#B8950A',
-          600: '#9A7D08',
-          700: '#7D6607',
-          800: '#5F4F05',
-          900: '#423704',
+        ink: {
+          DEFAULT: 'oklch(13% 0.010 255)',
+          mid: 'oklch(30% 0.008 255)',
+          soft: 'oklch(50% 0.006 255)',
         },
+        parchment: {
+          DEFAULT: 'oklch(97.5% 0.008 75)',
+          2: 'oklch(95% 0.012 72)',
+        },
+        gold: {
+          DEFAULT: 'oklch(64% 0.115 72)',
+          light: 'oklch(80% 0.08 78)',
+          deep: 'oklch(52% 0.10 68)',
+        },
+        white: 'oklch(99.5% 0.003 75)',
+        rule: 'oklch(88% 0.006 72)',
       },
       fontFamily: {
-        serif: ['"Playfair Display"', 'Georgia', 'serif'],
-        sans: ['"Inter"', 'system-ui', 'sans-serif'],
+        display: ['Cormorant Garamond', 'Georgia', 'serif'],
+        sans: ['DM Sans', 'system-ui', 'sans-serif'],
+        mono: ['DM Mono', 'monospace'],
       },
       boxShadow: {
         'card':   '0 1px 3px rgba(0,0,0,0.06), 0 8px 20px rgba(0,0,0,0.04)',

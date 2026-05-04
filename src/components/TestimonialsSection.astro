@@ -1,9 +1,7 @@
 ---
 import { Image } from 'astro:assets';
-import womanTreatingImg from '../assets/images/imgi_27_alaina3.jpg';
-import familyImg from '../assets/images/imgi_10_IMG_7390_88e8c9d5-dc10-4a01-9401-b56afa617598.jpg';
-import kidsImg from '../assets/images/imgi_4_hp_bottom_1.jpg';
-import youngWomanImg from '../assets/images/kid.jpg';
+import alainaImg from '../assets/images/imgi_27_alaina3.jpg';
+import kidImg from '../assets/images/kid.jpg';
 
 const testimonials = [
   {
@@ -29,97 +27,123 @@ const testimonials = [
 ];
 ---
 
-<section class="bg-white border-t border-slate-100" id="testimonials">
+<section class="bg-ink" id="testimonials" style="padding: 140px 0;">
+  <div style="max-width: 1440px; margin: 0 auto; padding: 0 40px;">
 
-  <!-- Header -->
-  <div class="max-w-7xl mx-auto px-6 lg:px-16 pt-24 lg:pt-32 pb-16 text-center">
-    <div
-      x-data
-      x-intersect.once="$el.classList.add('opacity-100', 'translate-y-0')"
-      class="opacity-0 translate-y-4 transition-all duration-700"
-    >
-      <span class="inline-flex items-center gap-2 px-3 py-1.5 bg-slate-100 rounded-full mb-6">
-        <span class="w-1.5 h-1.5 rounded-full bg-[#B8950A] shrink-0"></span>
-        <span class="text-[#B8950A] text-xs font-semibold tracking-[0.2em] uppercase">Real Women. Real Skin.</span>
-      </span>
-      <h2 class="font-bold text-4xl lg:text-5xl text-slate-900 leading-tight">
-        The results speak for themselves.
-      </h2>
-    </div>
-  </div>
-
-  <!-- Grid: testimonials + photos -->
-  <div class="max-w-7xl mx-auto px-6 lg:px-16 pb-24 lg:pb-32">
-
-    <!-- Row 1 -->
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
-      {testimonials.slice(0, 2).map(({ quote, name, detail }, i) => (
-        <div
-          x-data
-          x-intersect.once="$el.classList.add('opacity-100', 'translate-y-0')"
-          class="opacity-0 translate-y-6 transition-all duration-700 aspect-square flex flex-col justify-between bg-slate-50 rounded-2xl p-7 border border-slate-100 overflow-hidden"
-          style={`transition-delay: ${i * 100}ms`}
-        >
-          <div>
-            <div class="flex gap-0.5 text-[#C9A84C] text-sm mb-5">★★★★★</div>
-            <p class="font-serif text-slate-700 text-lg leading-relaxed italic mb-6">"{quote}"</p>
-          </div>
-          <div>
-            <p class="text-slate-900 text-sm font-semibold">{name}</p>
-            <p class="text-slate-400 text-sm mt-0.5">{detail}</p>
-          </div>
+    <!-- Header: 2-column -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-16 mb-16 items-end">
+      <div class="reveal-left">
+        <div class="flex items-center gap-4 mb-7">
+          <div class="h-px" style="width: 24px; background: rgba(255,255,255,0.08);"></div>
+          <span class="font-mono text-[10px] tracking-[0.2em] uppercase text-gold">Real Women. Real Skin.</span>
         </div>
-      ))}
+        <h2 class="font-display font-light text-white" style="font-size: clamp(42px, 4.5vw, 68px); line-height: 1.0; letter-spacing: -0.02em;">
+          The results speak for themselves.
+        </h2>
+      </div>
+      <div class="reveal-right">
+        <p class="font-sans font-light text-[14px] leading-[1.7]" style="color: rgba(255,255,255,0.4);">
+          Women across the country are experiencing real, photographable results from the CFC protocol. Three steps. Five minutes. A lifetime of confidence.
+        </p>
+      </div>
+    </div>
 
-      <!-- Image tile -->
+    <!-- Grid: 3 cols, 6 cells, 2px gap -->
+    <!-- Order: text, image, text, image, text, text -->
+    <div class="grid grid-cols-1 md:grid-cols-3" style="gap: 2px;">
+
+      <!-- Cell 1: text -->
       <div
-        x-data
-        x-intersect.once="$el.classList.add('opacity-100', 'translate-y-0')"
-        class="opacity-0 translate-y-6 transition-all duration-700 delay-200 aspect-square rounded-2xl overflow-hidden"
+        class="reveal flex flex-col"
+        style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.05); padding: 48px 40px; transition-delay: 0ms;"
+        onmouseover="this.style.background='rgba(255,255,255,0.055)'"
+        onmouseout="this.style.background='rgba(255,255,255,0.03)'"
       >
+        <div class="text-gold mb-4" style="font-size: 12px; letter-spacing: 4px;">★★★★★</div>
+        <p class="font-display italic font-light flex-1 mb-6" style="font-size: 19px; line-height: 1.5; color: rgba(255,255,255,0.75);">
+          "{testimonials[0].quote}"
+        </p>
+        <div style="border-top: 1px solid rgba(255,255,255,0.08); padding-top: 20px;">
+          <p class="font-display text-[16px] font-normal text-white">{testimonials[0].name}</p>
+          <p class="font-mono uppercase" style="font-size: 9px; letter-spacing: 0.15em; color: rgba(255,255,255,0.3); margin-top: 4px;">{testimonials[0].detail}</p>
+        </div>
+      </div>
+
+      <!-- Cell 2: image -->
+      <div class="reveal overflow-hidden" style="min-height: 340px; transition-delay: 80ms;">
         <Image
-          src={womanTreatingImg}
+          src={alainaImg}
           alt="Woman applying CFC skincare"
           class="w-full h-full object-cover object-top"
+          style="min-height: 340px;"
           widths={[400, 700]}
           sizes="(max-width: 768px) 100vw, 33vw"
         />
       </div>
-    </div>
 
-    <!-- Row 2 -->
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+      <!-- Cell 3: text -->
       <div
-        x-data
-        x-intersect.once="$el.classList.add('opacity-100', 'translate-y-0')"
-        class="opacity-0 translate-y-6 transition-all duration-700 aspect-square rounded-2xl overflow-hidden"
+        class="reveal flex flex-col"
+        style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.05); padding: 48px 40px; transition-delay: 160ms;"
+        onmouseover="this.style.background='rgba(255,255,255,0.055)'"
+        onmouseout="this.style.background='rgba(255,255,255,0.03)'"
       >
+        <div class="text-gold mb-4" style="font-size: 12px; letter-spacing: 4px;">★★★★★</div>
+        <p class="font-display italic font-light flex-1 mb-6" style="font-size: 19px; line-height: 1.5; color: rgba(255,255,255,0.75);">
+          "{testimonials[1].quote}"
+        </p>
+        <div style="border-top: 1px solid rgba(255,255,255,0.08); padding-top: 20px;">
+          <p class="font-display text-[16px] font-normal text-white">{testimonials[1].name}</p>
+          <p class="font-mono uppercase" style="font-size: 9px; letter-spacing: 0.15em; color: rgba(255,255,255,0.3); margin-top: 4px;">{testimonials[1].detail}</p>
+        </div>
+      </div>
+
+      <!-- Cell 4: image -->
+      <div class="reveal overflow-hidden" style="min-height: 340px; transition-delay: 240ms;">
         <Image
-          src={youngWomanImg}
-          alt="Young woman with CFC serum"
+          src={kidImg}
+          alt="Young woman with radiant skin"
           class="w-full h-full object-cover object-top"
+          style="min-height: 340px;"
           widths={[400, 700]}
           sizes="(max-width: 768px) 100vw, 33vw"
         />
       </div>
 
-      {testimonials.slice(2, 4).map(({ quote, name, detail }, i) => (
-        <div
-          x-data
-          x-intersect.once="$el.classList.add('opacity-100', 'translate-y-0')"
-          class="opacity-0 translate-y-6 transition-all duration-700 aspect-square flex flex-col justify-between bg-slate-50 rounded-2xl p-7 border border-slate-100 overflow-hidden"
-          style={`transition-delay: ${(i + 1) * 100}ms`}
-        >
-          <div>
-            <div class="flex gap-0.5 text-[#C9A84C] text-sm mb-5">★★★★★</div>
-            <p class="font-serif text-slate-700 text-lg leading-relaxed italic mb-6">"{quote}"</p>
-          </div>
-          <div>
-            <p class="text-slate-900 text-sm font-semibold">{name}</p>
-            <p class="text-slate-400 text-sm mt-0.5">{detail}</p>
-          </div>
+      <!-- Cell 5: text -->
+      <div
+        class="reveal flex flex-col"
+        style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.05); padding: 48px 40px; transition-delay: 320ms;"
+        onmouseover="this.style.background='rgba(255,255,255,0.055)'"
+        onmouseout="this.style.background='rgba(255,255,255,0.03)'"
+      >
+        <div class="text-gold mb-4" style="font-size: 12px; letter-spacing: 4px;">★★★★★</div>
+        <p class="font-display italic font-light flex-1 mb-6" style="font-size: 19px; line-height: 1.5; color: rgba(255,255,255,0.75);">
+          "{testimonials[2].quote}"
+        </p>
+        <div style="border-top: 1px solid rgba(255,255,255,0.08); padding-top: 20px;">
+          <p class="font-display text-[16px] font-normal text-white">{testimonials[2].name}</p>
+          <p class="font-mono uppercase" style="font-size: 9px; letter-spacing: 0.15em; color: rgba(255,255,255,0.3); margin-top: 4px;">{testimonials[2].detail}</p>
         </div>
-      ))}
+      </div>
+
+      <!-- Cell 6: text -->
+      <div
+        class="reveal flex flex-col"
+        style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.05); padding: 48px 40px; transition-delay: 400ms;"
+        onmouseover="this.style.background='rgba(255,255,255,0.055)'"
+        onmouseout="this.style.background='rgba(255,255,255,0.03)'"
+      >
+        <div class="text-gold mb-4" style="font-size: 12px; letter-spacing: 4px;">★★★★★</div>
+        <p class="font-display italic font-light flex-1 mb-6" style="font-size: 19px; line-height: 1.5; color: rgba(255,255,255,0.75);">
+          "{testimonials[3].quote}"
+        </p>
+        <div style="border-top: 1px solid rgba(255,255,255,0.08); padding-top: 20px;">
+          <p class="font-display text-[16px] font-normal text-white">{testimonials[3].name}</p>
+          <p class="font-mono uppercase" style="font-size: 9px; letter-spacing: 0.15em; color: rgba(255,255,255,0.3); margin-top: 4px;">{testimonials[3].detail}</p>
+        </div>
+      </div>
+
     </div>
   </div>
 </section>

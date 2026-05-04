@@ -1,124 +1,130 @@
 ---
 import { Image } from 'astro:assets';
-import founderImg from '../assets/images/family.jpg';
+import founderImg from '../assets/images/brit.jpg';
 import productsImg from '../assets/images/group.jpg';
 ---
 
-<section class="bg-slate-50 border-t border-slate-100" id="about">
-  <div class="max-w-7xl mx-auto px-6 lg:px-16 py-24 lg:py-36">
+<section class="bg-white" id="about" style="padding: 140px 0;">
+  <div style="max-width: 1440px; margin: 0 auto; padding: 0 40px;">
 
-    <!-- Top: text + founder image -->
-    <div class="grid lg:grid-cols-12 gap-12 lg:gap-20 items-stretch mb-16 lg:mb-20">
+    <!-- Top grid: 6/6 -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-16 lg:gap-24 items-stretch mb-0">
 
-      <!-- Left: copy -->
-      <div
-        x-data
-        x-intersect.once="$el.classList.add('opacity-100', 'translate-y-0')"
-        class="opacity-0 translate-y-6 transition-all duration-700 lg:col-span-5"
-      >
-        <span class="inline-flex items-center gap-2 px-3 py-1.5 bg-white border border-slate-200 rounded-full mb-6">
-          <span class="w-1.5 h-1.5 rounded-full bg-[#B8950A] shrink-0"></span>
-          <span class="text-[#B8950A] text-xs font-semibold tracking-[0.2em] uppercase">About CFC</span>
-        </span>
+      <!-- Left: copy + credentials -->
+      <div class="reveal-left">
+        <div class="flex items-center gap-4 mb-7">
+          <div class="h-px bg-gold" style="width: 24px;"></div>
+          <span class="font-mono text-[10px] tracking-[0.2em] uppercase text-gold">About CFC</span>
+        </div>
 
-        <h2 class="font-bold text-3xl lg:text-[2.6rem] text-slate-900 leading-tight mb-5">
+        <h2 class="font-display font-light text-ink mb-6" style="font-size: clamp(38px, 4vw, 58px); line-height: 1.05; letter-spacing: -0.01em;">
           Built by someone who actually understands your skin.
         </h2>
 
-        <p class="text-slate-500 leading-relaxed mb-4 text-base">
+        <p class="font-sans font-light text-[15px] text-ink-soft mb-4 leading-[1.75]">
           CFC Skincare is the bridge between clinical efficacy and clean beauty — a medical-grade, plant-based system created by a nurse practitioner, formulated with a licensed cosmetic chemist, and built for women who are done guessing.
         </p>
-        <p class="text-slate-500 leading-relaxed mb-10 text-base">
+        <p class="font-sans font-light text-[15px] text-ink-soft mb-10 leading-[1.75]">
           Every formula is plant-based <em>and</em> medical-grade. Purity-tested. Locally produced in Louisiana. Designed around a protocol that works in under five minutes — at every age, every stage.
         </p>
 
-        <!-- Credential grid -->
-        <div class="grid grid-cols-2 gap-3">
+        <!-- Credential grid: outer border + 1px gap -->
+        <div
+          style="display: grid; grid-template-columns: 1fr 1fr; gap: 1px; border: 1px solid oklch(88% 0.006 72);"
+        >
           {[
             ['NP Founded', 'Clinical knowledge, not marketing'],
             ['Chemist Formulated', 'Medical-grade efficacy'],
             ['Purity-Tested', 'Every batch, every time'],
             ['Louisiana-Made', 'Full quality control'],
           ].map(([title, desc]) => (
-            <div class="p-4 bg-white rounded-xl border border-slate-200 shadow-card">
-              <p class="text-slate-900 text-sm font-semibold mb-1">{title}</p>
-              <p class="text-slate-400 text-sm leading-snug">{desc}</p>
+            <div class="bg-parchment p-6">
+              <p class="font-display text-[18px] font-normal text-ink mb-1">{title}</p>
+              <p class="font-sans font-light text-[12px] text-ink-soft">{desc}</p>
             </div>
           ))}
         </div>
       </div>
 
-      <!-- Right: founder image -->
-      <div
-        x-data
-        x-intersect.once="$el.classList.add('opacity-100', 'translate-x-0')"
-        class="opacity-0 translate-x-6 transition-all duration-700 delay-150 lg:col-span-7 relative h-full"
-      >
-        <div class="rounded-2xl overflow-hidden shadow-lift h-full">
+      <!-- Right: founder image with inset quote card -->
+      <div class="reveal-right relative">
+        <div class="relative overflow-hidden h-full" style="aspect-ratio: 3/4;">
           <Image
             src={founderImg}
-            alt="CFC Skincare — real woman showing results"
+            alt="CFC Founder — Brittany, NP"
             class="w-full h-full object-cover object-top"
             widths={[600, 900, 1200]}
-            sizes="(max-width: 1024px) 100vw, 58vw"
+            sizes="(max-width: 1024px) 100vw, 50vw"
           />
+          <!-- Inset quote card -->
+          <div
+            class="absolute bottom-6 right-6 bg-ink"
+            style="padding: 16px 20px; max-width: 240px;"
+          >
+            <p class="font-display italic font-light text-white mb-3" style="font-size: 15px; line-height: 1.4;">
+              "I built the system I wished existed when I was the patient."
+            </p>
+            <p class="font-mono text-gold uppercase" style="font-size: 9px; letter-spacing: 0.2em;">Brittany, NP-C · Founder</p>
+          </div>
         </div>
       </div>
     </div>
 
-    <!-- Full-width testimonial callout -->
-    <div class="-mx-6 lg:-mx-16 px-6 lg:px-16 py-12 lg:py-16 mb-16 lg:mb-20 text-center bg-white">
-      <div class="flex justify-center gap-0.5 text-[#C9A84C] text-sm mb-5">★★★★★</div>
-      <p class="font-serif text-2xl lg:text-3xl text-slate-700 leading-snug max-w-2xl mx-auto mb-4">
+    <!-- Full-width quote band -->
+    <div class="reveal text-center" style="background: oklch(97.5% 0.008 75); padding: 80px 40px; margin: 80px -40px;">
+      <div class="text-gold mb-5" style="font-size: 18px; letter-spacing: 6px;">★★★★★</div>
+      <p class="font-display italic font-light text-ink mx-auto mb-5" style="font-size: clamp(24px, 2.8vw, 40px); line-height: 1.2; max-width: 800px;">
         "I stopped wearing foundation to work. I didn't even notice when it stopped feeling necessary."
       </p>
-      <p class="text-slate-400 text-sm font-medium">— CFC Customer</p>
+      <p class="font-mono text-[10px] tracking-[0.2em] uppercase text-ink-soft">— CFC Customer</p>
     </div>
 
-    <!-- Bottom: products + USP -->
-    <div
-      x-data
-      x-intersect.once="$el.classList.add('opacity-100', 'translate-y-0')"
-      class="opacity-0 translate-y-6 transition-all duration-700 grid lg:grid-cols-2 gap-12 lg:gap-20 items-center"
-    >
-      <div class="relative rounded-2xl overflow-hidden shadow-lift">
+    <!-- Bottom grid: 5/7 -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-16 lg:gap-24 items-center" style="padding-top: 80px;">
+
+      <!-- Left: products image -->
+      <div class="reveal-left overflow-hidden group" style="aspect-ratio: 4/5;">
         <Image
           src={productsImg}
           alt="CFC Skincare product collection"
-          class="w-full object-cover"
-          style="max-height: 480px;"
+          class="w-full h-full object-cover transition-transform duration-[900ms] ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:scale-[1.03]"
           widths={[500, 800]}
           sizes="(max-width: 1024px) 100vw, 50vw"
         />
       </div>
 
-      <div>
-        <span class="inline-flex items-center gap-2 px-3 py-1.5 bg-white border border-slate-200 rounded-full mb-6">
-          <span class="w-1.5 h-1.5 rounded-full bg-[#B8950A] shrink-0"></span>
-          <span class="text-[#B8950A] text-xs font-semibold tracking-[0.2em] uppercase">The Difference</span>
-        </span>
-        <h3 class="font-bold text-2xl lg:text-3xl text-slate-900 leading-tight mb-6">
+      <!-- Right: differentiators -->
+      <div class="reveal-right">
+        <div class="flex items-center gap-4 mb-7">
+          <div class="h-px bg-gold" style="width: 24px;"></div>
+          <span class="font-mono text-[10px] tracking-[0.2em] uppercase text-gold">The Difference</span>
+        </div>
+
+        <h3 class="font-display font-light text-ink mb-8" style="font-size: clamp(30px, 3vw, 42px); line-height: 1.05; letter-spacing: -0.01em;">
           The only medical-grade, plant-based system created by a nurse practitioner.
         </h3>
-        <div class="space-y-4 mb-10">
+
+        <div style="border-top: 1px solid oklch(88% 0.006 72);">
           {[
-            'vs. Luxury brands — clinical results at a fraction of the price, with transparent ingredients and direct access to the NP who created them.',
-            'vs. Clinical brands — plant-based, locally made, and accessible without a dermatologist referral.',
-            'vs. Clean beauty — formulated by a medical professional for efficacy, not just ingredient safety.',
-          ].map(line => (
-            <div class="flex gap-3 p-4 bg-white rounded-xl border border-slate-100 text-sm text-slate-600 leading-relaxed">
-              <svg class="w-4 h-4 text-[#C9A84C] shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>
-              {line}
+            ['vs. Luxury brands', 'Clinical results at a fraction of the price, with transparent ingredients and direct access to the NP who created them.'],
+            ['vs. Clinical brands', 'Plant-based, locally made, and accessible without a dermatologist referral.'],
+            ['vs. Clean beauty', 'Formulated by a medical professional for efficacy, not just ingredient safety.'],
+          ].map(([label, desc]) => (
+            <div class="flex items-start gap-4 font-sans font-light text-[14px] text-ink-soft leading-relaxed" style="padding: 24px 0; border-bottom: 1px solid oklch(88% 0.006 72);">
+              <div class="shrink-0 flex items-center justify-center" style="width: 16px; height: 16px; border: 1px solid oklch(64% 0.115 72); margin-top: 1px;">
+                <svg class="text-gold" width="10" height="8" viewBox="0 0 10 8" fill="none" stroke="currentColor" stroke-width="1.5">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M1 4l2.5 2.5L9 1"/>
+                </svg>
+              </div>
+              <span><strong class="font-medium text-ink">{label}</strong> — {desc}</span>
             </div>
           ))}
         </div>
-        <a
-          href="#contact"
-          class="inline-flex items-center gap-2 text-sm font-semibold text-[#B8950A] hover:text-[#9A7D08] transition-colors group"
-        >
+
+        <a href="#contact" class="link-arrow font-mono text-[10px] tracking-[0.18em] uppercase text-gold mt-8 inline-flex">
           Request a consultation
-          <svg class="w-4 h-4 group-hover:translate-x-0.5 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7"/>
+          <svg class="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/>
           </svg>
         </a>
       </div>

@@ -2,22 +2,26 @@
 const items = [
   'Medical-Grade Efficacy',
   'Plant-Based Purity',
-  // 'Purity-Tested',
-  // 'Louisiana-Made',
   'NP-Founded',
   'Chemist-Formulated',
+  'Louisiana-Made',
+  'Purity-Tested',
+  'Clinical Results',
+  '5-Minute Protocol',
 ];
 ---
 
-<div class="bg-slate-50 border-b border-slate-200 py-4">
-  <div class="max-w-7xl mx-auto px-6 lg:px-16">
-    <div class="flex flex-wrap items-center justify-center gap-x-7 gap-y-2">
-      {items.map((item, i) => (
-        <>
-          <span class="text-slate-500 text-xs font-semibold tracking-[0.2em] uppercase">{item}</span>
-          {i < items.length - 1 && <span class="text-slate-300 hidden sm:block select-none">·</span>}
-        </>
-      ))}
-    </div>
+<div class="bg-ink overflow-hidden" style="padding: 18px 0;">
+  <div
+    class="flex gap-16"
+    style="animation: trustScroll 22s linear infinite; width: max-content;"
+  >
+    {/* Two copies for seamless loop */}
+    {[...items, ...items].map((item) => (
+      <div class="flex items-center gap-2.5 whitespace-nowrap">
+        <span class="w-1 h-1 rounded-full bg-gold shrink-0" style="width: 4px; height: 4px;"></span>
+        <span class="font-mono text-[10px] tracking-[0.18em] uppercase" style="color: rgba(255,255,255,0.45);">{item}</span>
+      </div>
+    ))}
   </div>
 </div>

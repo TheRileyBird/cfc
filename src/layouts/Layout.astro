@@ -39,15 +39,83 @@ const canonicalURL = new URL(Astro.url.pathname, Astro.site ?? 'https://cfcskinc
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;1,400&family=Inter:wght@300;400;500;600;700;800&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400;1,500&family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap"
       rel="stylesheet"
     />
-    <style>[x-cloak]{display:none!important}</style>
+
+    <style>
+      [x-cloak] { display: none !important; }
+
+      /* Scroll reveal */
+      .reveal {
+        opacity: 0;
+        transform: translateY(28px);
+        transition: opacity 0.85s cubic-bezier(0.16,1,0.3,1), transform 0.85s cubic-bezier(0.16,1,0.3,1);
+      }
+      .reveal-left {
+        opacity: 0;
+        transform: translateX(-32px);
+        transition: opacity 0.9s cubic-bezier(0.16,1,0.3,1), transform 0.9s cubic-bezier(0.16,1,0.3,1);
+      }
+      .reveal-right {
+        opacity: 0;
+        transform: translateX(32px);
+        transition: opacity 0.9s cubic-bezier(0.16,1,0.3,1), transform 0.9s cubic-bezier(0.16,1,0.3,1);
+      }
+      .reveal.visible,
+      .reveal-left.visible,
+      .reveal-right.visible {
+        opacity: 1;
+        transform: none;
+      }
+
+      /* Link arrow gap animation */
+      .link-arrow {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        transition: gap 0.2s;
+      }
+      .link-arrow:hover { gap: 14px; }
+
+      /* Trust bar marquee */
+      @keyframes trustScroll {
+        0%   { transform: translateX(0); }
+        100% { transform: translateX(-50%); }
+      }
+
+      /* Hero scroll nudge */
+      @keyframes scrollPulse {
+        0%, 100% { opacity: 0.3; transform: scaleY(1); }
+        50%       { opacity: 0.8; transform: scaleY(0.6) translateY(12px); }
+      }
+    </style>
   </head>
 
-  <body class="bg-white font-sans text-slate-900 antialiased">
+  <body class="bg-white font-sans text-ink antialiased overflow-x-hidden">
     <CartDrawer />
     <SearchModal />
     <slot />
+
+    <script>
+      // Scroll reveal via IntersectionObserver
+      const revealObserver = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((entry) => {
+            if (entry.isIntersecting) {
+              entry.target.classList.add('visible');
+              revealObserver.unobserve(entry.target);
+            }
+          });
+        },
+        { threshold: 0.1, rootMargin: '0px 0px -48px 0px' }
+      );
+
+      document.addEventListener('DOMContentLoaded', () => {
+        document.querySelectorAll('.reveal, .reveal-left, .reveal-right').forEach((el) => {
+          revealObserver.observe(el);
+        });
+      });
+    </script>
   </body>
 </html>

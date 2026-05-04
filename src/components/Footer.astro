@@ -21,8 +21,8 @@ const links = {
 };
 ---
 
-<footer class="bg-slate-900 text-slate-400">
-  <div class="max-w-7xl mx-auto px-6 lg:px-16 pt-16 lg:pt-20 pb-10">
+<footer class="bg-ink" style="padding: 80px 0 32px;">
+  <div style="max-width: 1440px; margin: 0 auto; padding: 0 40px;">
 
     <div class="grid grid-cols-2 lg:grid-cols-5 gap-10 mb-14">
 
@@ -30,13 +30,11 @@ const links = {
       <div class="col-span-2">
         <a href="/" class="mb-6 inline-flex items-center gap-3">
           <img src={cfcLogo.src} alt="CFC Skincare" class="h-10 w-10 rounded-full object-cover shrink-0" />
-          <span class="text-[11px] font-bold tracking-[0.28em] uppercase text-white">CFC Skincare</span>
+          <span class="font-mono text-[11px] tracking-[0.22em] uppercase" style="color: rgba(255,255,255,0.7);">CFC Skincare</span>
         </a>
-        <p class="text-sm leading-relaxed max-w-xs text-slate-400 mb-2">
-          Medical-grade, plant-based skincare created by a nurse practitioner.
-          Clean. Gentle. Clinically effective.
+        <p class="font-display italic font-light mb-6" style="font-size: 15px; color: rgba(255,255,255,0.3); max-width: 280px; line-height: 1.5;">
+          "Confident Skin That Grows With You."
         </p>
-        <p class="text-sm text-slate-500 font-serif italic mb-6">"Confident Skin That Grows With You."</p>
         <div class="flex gap-3">
           {[
             { label: 'IG', href: 'https://www.instagram.com/cfcskincare' },
@@ -46,7 +44,10 @@ const links = {
               href={href}
               target="_blank"
               rel="noopener"
-              class="w-9 h-9 rounded-full border border-slate-700 hover:border-[#C9A84C] hover:text-[#C9A84C] flex items-center justify-center text-xs tracking-widest uppercase font-semibold transition-all duration-200"
+              class="flex items-center justify-center font-mono text-[9px] tracking-widest uppercase transition-all duration-200"
+              style="width: 36px; height: 36px; border: 1px solid rgba(255,255,255,0.1); color: rgba(255,255,255,0.45);"
+              onmouseover="this.style.borderColor='oklch(64% 0.115 72)'; this.style.color='oklch(64% 0.115 72)'"
+              onmouseout="this.style.borderColor='rgba(255,255,255,0.1)'; this.style.color='rgba(255,255,255,0.45)'"
             >
               {label}
             </a>
@@ -57,11 +58,17 @@ const links = {
       <!-- Links -->
       {Object.entries(links).map(([group, items]) => (
         <div>
-          <h4 class="text-white text-xs tracking-[0.2em] uppercase font-bold mb-5">{group}</h4>
+          <h4 class="font-mono text-[9px] tracking-[0.2em] uppercase mb-5" style="color: rgba(255,255,255,0.3);">{group}</h4>
           <ul class="space-y-3">
             {items.map(({ label, href }) => (
               <li>
-                <a href={href} class="text-sm hover:text-[#C9A84C] transition-colors duration-200">{label}</a>
+                <a
+                  href={href}
+                  class="font-sans font-light text-[13px] transition-colors duration-200"
+                  style="color: rgba(255,255,255,0.45);"
+                  onmouseover="this.style.color='oklch(80% 0.08 78)'"
+                  onmouseout="this.style.color='rgba(255,255,255,0.45)'"
+                >{label}</a>
               </li>
             ))}
           </ul>
@@ -69,13 +76,28 @@ const links = {
       ))}
     </div>
 
-    <!-- Bottom -->
-    <div class="border-t border-slate-800 pt-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-sm text-slate-600">
-      <p>© {new Date().getFullYear()} CFC Skincare · Locally made in Louisiana</p>
+    <!-- Bottom bar -->
+    <div
+      class="flex flex-col sm:flex-row items-center justify-between gap-4"
+      style="border-top: 1px solid rgba(255,255,255,0.06); padding-top: 32px;"
+    >
+      <p class="font-mono text-[9px] tracking-[0.15em] uppercase" style="color: rgba(255,255,255,0.2);">
+        © {new Date().getFullYear()} CFC Skincare · Locally made in Louisiana
+      </p>
       <div class="flex gap-6">
-        <a href="https://www.cfcskincare.shop/policies/privacy-policy" class="hover:text-slate-400 transition-colors">Privacy</a>
-        <a href="https://www.cfcskincare.shop/policies/terms-of-service" class="hover:text-slate-400 transition-colors">Terms</a>
-        <a href="https://www.cfcskincare.shop/policies/refund-policy" class="hover:text-slate-400 transition-colors">Returns</a>
+        {[
+          ['Privacy', 'https://www.cfcskincare.shop/policies/privacy-policy'],
+          ['Terms', 'https://www.cfcskincare.shop/policies/terms-of-service'],
+          ['Returns', 'https://www.cfcskincare.shop/policies/refund-policy'],
+        ].map(([label, href]) => (
+          <a
+            href={href}
+            class="font-mono text-[9px] tracking-[0.15em] uppercase transition-colors duration-200"
+            style="color: rgba(255,255,255,0.2);"
+            onmouseover="this.style.color='rgba(255,255,255,0.45)'"
+            onmouseout="this.style.color='rgba(255,255,255,0.2)'"
+          >{label}</a>
+        ))}
       </div>
     </div>
 

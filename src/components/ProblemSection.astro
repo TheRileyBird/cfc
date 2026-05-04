@@ -23,49 +23,48 @@ const problems = [
 ];
 ---
 
-<section class="bg-white" id="problem">
-  <div class="max-w-7xl mx-auto px-6 lg:px-16 py-24 lg:py-32">
+<section class="bg-white" id="problem" style="padding: 140px 0;">
+  <div style="max-width: 1440px; margin: 0 auto; padding: 0 40px;">
+    <div class="grid grid-cols-1 lg:grid-cols-[5fr_7fr] gap-16 lg:gap-24">
 
-    <div class="grid lg:grid-cols-12 gap-12 lg:gap-20">
+      <!-- Left: sticky -->
+      <div class="reveal-left lg:sticky lg:self-start" style="top: 100px;">
+        <div class="flex items-center gap-4 mb-7">
+          <div class="h-px bg-gold" style="width: 24px;"></div>
+          <span class="font-mono text-[10px] tracking-[0.2em] uppercase text-gold">The Problem</span>
+        </div>
 
-      <!-- Left: sticky header -->
-      <div
-        x-data
-        x-intersect.once="$el.classList.add('opacity-100', 'translate-y-0')"
-        class="opacity-0 translate-y-4 transition-all duration-700 lg:col-span-4 lg:sticky lg:top-24 lg:self-start"
-      >
-        <span class="inline-flex items-center gap-2 px-3 py-1.5 bg-slate-100 rounded-full mb-6">
-          <span class="w-1.5 h-1.5 rounded-full bg-[#B8950A] shrink-0"></span>
-          <span class="text-[#B8950A] text-xs font-semibold tracking-[0.2em] uppercase">The Problem</span>
-        </span>
-        <h2 class="font-bold text-3xl lg:text-[2.6rem] text-slate-900 leading-tight mb-5">
+        <h2 class="font-display font-light text-ink mb-6" style="font-size: clamp(36px, 3.5vw, 52px); line-height: 1.05; letter-spacing: -0.01em;">
           You haven't found the right skincare.
         </h2>
-        <p class="font-serif text-xl italic text-slate-400 leading-relaxed mb-6">
+
+        <p class="font-display text-[22px] italic font-light text-ink-soft leading-relaxed mb-6">
           "The industry hasn't built it — until now."
         </p>
-        <p class="text-slate-500 text-base leading-relaxed">
+
+        <p class="font-sans font-light text-[14px] text-ink-soft leading-[1.7]">
           Women in their 30s, 40s, 50s, and beyond are being failed at every turn. Here is why nothing has worked.
         </p>
       </div>
 
       <!-- Right: numbered list -->
-      <div class="lg:col-span-8 divide-y divide-slate-100">
+      <div style="border-top: 1px solid oklch(88% 0.006 72);">
         {problems.map(({ number, title, body }, i) => (
           <div
-            x-data
-            x-intersect.once="$el.classList.add('opacity-100', 'translate-x-0')"
-            class="opacity-0 translate-x-4 transition-all duration-700 flex gap-6 py-8 group"
-            style={`transition-delay: ${i * 80}ms`}
+            class="reveal group"
+            style={`display: grid; grid-template-columns: 64px 1fr; gap: 24px; padding: 40px 0; border-bottom: 1px solid oklch(88% 0.006 72); transition-delay: ${i * 80}ms;`}
           >
-            <span class="text-slate-200 text-4xl font-bold leading-none mt-0.5 select-none shrink-0 w-14 group-hover:text-[#C9A84C]/40 transition-colors duration-300 tabular-nums">
+            <span
+              class="font-display font-light leading-none select-none transition-colors duration-300 group-hover:text-gold-light"
+              style="font-size: 60px; color: oklch(88% 0.006 72); margin-top: 2px;"
+            >
               {number}
             </span>
             <div>
-              <h3 class="font-semibold text-lg text-slate-900 mb-2.5 group-hover:text-[#B8950A] transition-colors duration-300">
+              <h3 class="font-display text-[24px] font-normal text-ink mb-3 transition-colors duration-300 group-hover:text-gold">
                 {title}
               </h3>
-              <p class="text-slate-500 leading-relaxed text-base">{body}</p>
+              <p class="font-sans font-light text-[14px] text-ink-soft leading-[1.7]">{body}</p>
             </div>
           </div>
         ))}

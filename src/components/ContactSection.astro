@@ -1,64 +1,68 @@
 ---
 import founderImg from '../assets/images/brit.jpg';
-import {Image} from "astro:assets";
+import { Image } from 'astro:assets';
 ---
-<section class="py-24 lg:py-32 bg-slate-50 border-t border-slate-100" id="contact">
-  <div class="max-w-7xl mx-auto px-6 lg:px-8">
-    <div class="grid lg:grid-cols-2 gap-16 items-start">
+
+<section class="bg-parchment" id="contact" style="padding: 140px 0;">
+  <div style="max-width: 1440px; margin: 0 auto; padding: 0 40px;">
+    <div class="grid grid-cols-1 lg:grid-cols-[5fr_7fr] gap-16 lg:gap-24 items-start">
 
       <!-- Left: content -->
-      <div
-        x-data
-        x-intersect.once="$el.classList.add('opacity-100', 'translate-y-0')"
-        class="opacity-0 translate-y-6 transition-all duration-700"
-      >
-        <span class="inline-flex items-center gap-2 px-3 py-1.5 bg-white border border-slate-200 rounded-full mb-6">
-          <span class="w-1.5 h-1.5 rounded-full bg-[#B8950A] shrink-0"></span>
-          <span class="text-[#B8950A] text-xs font-semibold tracking-[0.2em] uppercase">Get In Touch</span>
-        </span>
-        <h2 class="font-bold text-3xl lg:text-4xl text-slate-900 leading-tight mb-5">
+      <div class="reveal-left">
+        <div class="flex items-center gap-4 mb-7">
+          <div class="h-px bg-gold" style="width: 24px;"></div>
+          <span class="font-mono text-[10px] tracking-[0.2em] uppercase text-gold">Get In Touch</span>
+        </div>
+
+        <h2 class="font-display font-light text-ink mb-5" style="font-size: clamp(36px, 3.5vw, 52px); line-height: 1.05; letter-spacing: -0.01em;">
           Your skin deserves a personal conversation.
         </h2>
-        <p class="text-slate-500 leading-relaxed mb-8 max-w-md text-base">
+
+        <p class="font-sans font-light text-[14px] text-ink-soft leading-[1.7] mb-8" style="max-width: 400px;">
           The CFC founder — a nurse practitioner — is available for consultation. Tell us about your skin and we'll help you find the right protocol.
         </p>
 
         <!-- Founder note -->
-        <div class="flex gap-4 p-5 bg-white rounded-2xl border border-slate-200 shadow-card">
+        <div
+          class="bg-white grid gap-5 mb-8 items-start"
+          style="padding: 28px; border: 1px solid oklch(88% 0.006 72); grid-template-columns: 64px 1fr;"
+        >
           <Image
-              src={founderImg}
-              alt="CFC Founder NP"
-              class="w-14 h-14 rounded-xl object-cover shrink-0"
+            src={founderImg}
+            alt="CFC Founder NP"
+            class="object-cover object-top shrink-0"
+            style="width: 64px; height: 64px;"
+            widths={[128]}
+            sizes="64px"
           />
           <div>
-            <p class="font-semibold text-slate-900 text-sm mb-1.5">Direct access to the NP who built it</p>
-            <p class="text-slate-500 text-sm leading-relaxed">
+            <p class="font-display text-[17px] font-normal text-ink mb-1.5">Direct access to the NP who built it</p>
+            <p class="font-sans font-light text-[13px] text-ink-soft leading-relaxed">
               No chatbot. No corporate inbox. A medical professional who will actually read your message and respond.
             </p>
           </div>
         </div>
 
-        <!-- Trust signals -->
-        <div class="mt-8 grid grid-cols-3 gap-4">
+        <!-- Trust stats: 3 columns -->
+        <div class="grid grid-cols-3" style="border: 1px solid oklch(88% 0.006 72);">
           {[
             ['24h', 'Response time'],
             ['100%', 'Confidential'],
             ['Free', 'Consultation'],
-          ].map(([stat, label]) => (
-            <div class="text-center p-4 bg-white rounded-xl border border-slate-200 shadow-card">
-              <p class="font-bold text-2xl text-slate-900 mb-0.5">{stat}</p>
-              <p class="text-slate-400 text-xs font-medium">{label}</p>
+          ].map(([stat, label], i) => (
+            <div
+              class="text-center"
+              style={`padding: 20px; ${i < 2 ? 'border-right: 1px solid oklch(88% 0.006 72);' : ''}`}
+            >
+              <p class="font-display text-[30px] font-light text-ink leading-none mb-2">{stat}</p>
+              <p class="font-mono text-ink-soft uppercase" style="font-size: 9px; letter-spacing: 0.15em;">{label}</p>
             </div>
           ))}
         </div>
       </div>
 
       <!-- Right: form -->
-      <div
-        x-data
-        x-intersect.once="$el.classList.add('opacity-100', 'translate-y-0')"
-        class="opacity-0 translate-y-6 transition-all duration-700 delay-100"
-      >
+      <div class="reveal-right">
         <form
           name="consultation"
           method="POST"
@@ -72,7 +76,8 @@ import {Image} from "astro:assets";
               body: new URLSearchParams(new FormData($el)).toString()
             }).then(() => { submitted = true });
           "
-          class="bg-white rounded-2xl p-8 space-y-5 shadow-lift border border-slate-100"
+          class="bg-white"
+          style="border: 1px solid oklch(88% 0.006 72); padding: 56px;"
         >
           <input type="hidden" name="form-name" value="consultation" />
           <p class="hidden">
@@ -81,56 +86,60 @@ import {Image} from "astro:assets";
 
           <!-- Success state -->
           <div x-show="submitted" class="text-center py-8">
-            <div class="w-16 h-16 bg-slate-100 rounded-full flex items-center justify-center mx-auto mb-4">
-              <svg class="w-8 h-8 text-[#B8950A]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+            <div class="w-16 h-16 bg-parchment flex items-center justify-center mx-auto mb-4">
+              <svg class="w-8 h-8 text-gold" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M5 13l4 4L19 7" />
               </svg>
             </div>
-            <h3 class="font-bold text-xl text-slate-900 mb-2">Message received.</h3>
-            <p class="text-slate-500">We'll be in touch within 24 hours.</p>
+            <h3 class="font-display text-[24px] font-normal text-ink mb-2">Message received.</h3>
+            <p class="font-sans font-light text-[14px] text-ink-soft">We'll be in touch within 24 hours.</p>
           </div>
 
           <!-- Form fields -->
           <div x-show="!submitted" class="space-y-5">
             <div class="grid sm:grid-cols-2 gap-5">
               <div>
-                <label class="block text-xs font-semibold text-slate-600 mb-1.5 uppercase tracking-widest">First Name</label>
+                <label class="block font-mono text-[9px] tracking-[0.2em] uppercase text-ink-soft mb-2">First Name</label>
                 <input
                   type="text"
                   name="first_name"
                   required
-                  class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-slate-900 placeholder-slate-300 text-sm focus:outline-none focus:ring-2 focus:ring-[#B8950A]/30 focus:border-[#B8950A] transition-all"
+                  class="w-full font-sans text-[14px] text-ink bg-parchment border border-rule transition-colors duration-200 focus:outline-none focus:border-gold"
+                  style="padding: 14px 16px;"
                   placeholder="Sandra"
                 />
               </div>
               <div>
-                <label class="block text-xs font-semibold text-slate-600 mb-1.5 uppercase tracking-widest">Last Name</label>
+                <label class="block font-mono text-[9px] tracking-[0.2em] uppercase text-ink-soft mb-2">Last Name</label>
                 <input
                   type="text"
                   name="last_name"
                   required
-                  class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-slate-900 placeholder-slate-300 text-sm focus:outline-none focus:ring-2 focus:ring-[#B8950A]/30 focus:border-[#B8950A] transition-all"
+                  class="w-full font-sans text-[14px] text-ink bg-parchment border border-rule transition-colors duration-200 focus:outline-none focus:border-gold"
+                  style="padding: 14px 16px;"
                   placeholder="Mitchell"
                 />
               </div>
             </div>
 
             <div>
-              <label class="block text-xs font-semibold text-slate-600 mb-1.5 uppercase tracking-widest">Email</label>
+              <label class="block font-mono text-[9px] tracking-[0.2em] uppercase text-ink-soft mb-2">Email</label>
               <input
                 type="email"
                 name="email"
                 required
-                class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-slate-900 placeholder-slate-300 text-sm focus:outline-none focus:ring-2 focus:ring-[#B8950A]/30 focus:border-[#B8950A] transition-all"
+                class="w-full font-sans text-[14px] text-ink bg-parchment border border-rule transition-colors duration-200 focus:outline-none focus:border-gold"
+                style="padding: 14px 16px;"
                 placeholder="sandra@example.com"
               />
             </div>
 
             <div>
-              <label class="block text-xs font-semibold text-slate-600 mb-1.5 uppercase tracking-widest">Primary Skin Concern</label>
+              <label class="block font-mono text-[9px] tracking-[0.2em] uppercase text-ink-soft mb-2">Primary Skin Concern</label>
               <select
                 name="concern"
-                class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-slate-900 text-sm focus:outline-none focus:ring-2 focus:ring-[#B8950A]/30 focus:border-[#B8950A] transition-all"
+                class="w-full font-sans text-[14px] text-ink bg-parchment border border-rule transition-colors duration-200 focus:outline-none focus:border-gold appearance-none"
+                style="padding: 14px 16px;"
               >
                 <option value="">Select a concern...</option>
                 <option>Pigmentation / Dark Spots</option>
@@ -145,18 +154,20 @@ import {Image} from "astro:assets";
             </div>
 
             <div>
-              <label class="block text-xs font-semibold text-slate-600 mb-1.5 uppercase tracking-widest">Tell Us About Your Skin</label>
+              <label class="block font-mono text-[9px] tracking-[0.2em] uppercase text-ink-soft mb-2">Tell Us About Your Skin</label>
               <textarea
                 name="message"
                 rows="4"
-                class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-slate-900 placeholder-slate-300 text-sm focus:outline-none focus:ring-2 focus:ring-[#B8950A]/30 focus:border-[#B8950A] transition-all resize-none"
+                class="w-full font-sans text-[14px] text-ink bg-parchment border border-rule transition-colors duration-200 focus:outline-none focus:border-gold resize-none"
+                style="padding: 14px 16px;"
                 placeholder="What have you tried? What's working? What isn't?"
               ></textarea>
             </div>
 
             <button
               type="submit"
-              class="w-full py-4 bg-[#B8950A] hover:bg-[#9A7D08] text-white font-semibold text-sm rounded-full transition-all duration-200"
+              class="w-full bg-ink text-white font-mono text-[11px] tracking-[0.2em] uppercase transition-colors duration-200 hover:bg-gold-deep"
+              style="padding: 18px;"
             >
               Request a Consultation
             </button>

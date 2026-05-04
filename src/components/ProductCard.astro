@@ -1,7 +1,6 @@
 ---
 import type { ShopifyProduct } from '../lib/shopify';
 import { formatPrice, getCheckoutUrl } from '../lib/shopify';
-import { ShoppingBag } from '@lucide/astro';
 
 export interface Props {
   product: ShopifyProduct;
@@ -14,77 +13,84 @@ const variant = product.variants.edges[0]?.node;
 const price = formatPrice(product.priceRange.minVariantPrice.amount);
 const checkoutUrl = variant && product.availableForSale ? getCheckoutUrl(variant.id) : `https://www.cfcskincare.shop/products/${product.handle}`;
 const step = product.tags.find(t => ['cleanse','treat','protect'].includes(t.toLowerCase()));
-const stepColors: Record<string, string> = {
-  cleanse: 'bg-slate-100 text-slate-600',
-  treat:   'bg-gold-50 text-gold-600',
-  protect: 'bg-slate-100 text-slate-600',
-};
 ---
 
-<article x-data class="group flex h-full flex-col bg-white rounded-2xl overflow-hidden border border-slate-200 shadow-card hover:shadow-lift transition-all duration-300 hover:-translate-y-1">
-  <!-- Product image -->
-  <a href={`https://www.cfcskincare.shop/products/${product.handle}`} target="_blank" rel="noopener" class="block relative overflow-hidden aspect-square bg-slate-50">
+<article
+  x-data="{ adding: false, added: false }"
+  class="group flex flex-col bg-white hover:bg-parchment-2 transition-colors duration-300 overflow-hidden"
+>
+  <!-- Product image: 3/4 aspect -->
+  <a
+    href={`https://www.cfcskincare.shop/products/${product.handle}`}
+    target="_blank"
+    rel="noopener"
+    class="block relative overflow-hidden bg-parchment"
+    style="aspect-ratio: 3/4;"
+  >
     {image ? (
       <img
         src={image.url}
         alt={image.altText ?? product.title}
-        class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105 group-hover:duration-1000"
+        class="w-full h-full object-cover transition-transform duration-[800ms] cubic-bezier(0.16,1,0.3,1) group-hover:scale-[1.06]"
         loading="lazy"
       />
     ) : (
       <div class="w-full h-full flex items-center justify-center">
-        <span class="font-serif text-4xl text-slate-300">CFC</span>
+        <span class="font-display text-4xl text-rule">CFC</span>
       </div>
     )}
+
     {step && (
-      <span class={`absolute top-3 left-3 px-2.5 py-1 rounded-full text-xs font-semibold capitalize tracking-wide ${stepColors[step.toLowerCase()] ?? 'bg-slate-100 text-slate-500'}`}>
+      <span class="absolute top-4 left-4 bg-white text-gold-deep font-mono text-[9px] tracking-[0.12em] uppercase px-2 py-1">
         {step}
       </span>
     )}
     {!product.availableForSale && (
-      <span class="absolute top-3 right-3 px-2.5 py-1 rounded-full bg-slate-900 text-white text-xs font-semibold tracking-wide">
-        Out of stock
+      <span class="absolute top-4 right-4 bg-ink text-white font-mono text-[9px] tracking-[0.12em] uppercase px-2 py-1">
+        Sold Out
       </span>
     )}
   </a>
 
   <!-- Product info -->
   <div class="p-5 flex flex-col flex-1">
-    <a href={`https://www.cfcskincare.shop/products/${product.handle}`} target="_blank" rel="noopener">
-      <h3 class="font-semibold text-sm text-slate-900 leading-snug mb-1.5 group-hover:text-[#B8950A] transition-colors line-clamp-2">
+    <a
+      href={`https://www.cfcskincare.shop/products/${product.handle}`}
+      target="_blank"
+      rel="noopener"
+    >
+      <h3 class="font-display text-[18px] font-normal text-ink leading-snug mb-1.5 line-clamp-2">
         {product.title}
       </h3>
     </a>
-    <p class="min-h-[3rem] text-slate-400 text-sm leading-relaxed line-clamp-2 mb-4 flex-1">
-      {product.description || '\u00A0'}
+    <p class="font-sans font-light text-[12px] text-ink-soft leading-relaxed line-clamp-2 mb-4 flex-1">
+      {product.description || ' '}
     </p>
     <div class="flex items-center justify-between mt-auto">
-      <span class="font-bold text-slate-900 text-sm">{price}</span>
+      <span class="font-display text-[20px] font-normal text-ink">{price}</span>
+
       {product.availableForSale && variant ? (
         <button
-          x-data="{ adding: false }"
-          @click={`if (!adding) { adding = true; await $store.cart.addItem('${variant.id}'); adding = false; }`}
-          class="flex items-center gap-1.5 px-4 py-2 text-white text-xs font-semibold rounded-full transition-colors bg-[#B8950A] hover:bg-[#9A7D08] disabled:opacity-60"
+          @click={`if (!adding && !added) {
+            adding = true;
+            await $store.cart.addItem('${variant.id}');
+            adding = false;
+            added = true;
+            setTimeout(() => { added = false; }, 1800);
+          }`}
+          :class="added ? 'bg-ink text-white border-ink' : 'bg-white text-ink border-ink hover:bg-ink hover:text-white'"
+          class="font-mono text-[9px] tracking-[0.12em] uppercase border px-3 py-2 transition-all duration-200"
           :disabled="adding"
         >
-          <span x-show="!adding" class="flex items-center gap-1.5">
-            <ShoppingBag class="w-3.5 h-3.5" />
-            Add to Cart
-          </span>
-          <span x-show="adding" class="flex items-center gap-1.5">
-            <svg class="animate-spin w-3.5 h-3.5" fill="none" viewBox="0 0 24 24">
-              <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/>
-              <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/>
-            </svg>
-            Adding…
-          </span>
+          <span x-show="!adding && !added">Add to Cart</span>
+          <span x-show="adding">Adding…</span>
+          <span x-show="added">Added ✓</span>
         </button>
       ) : (
         <a
           href={`https://www.cfcskincare.shop/products/${product.handle}`}
-          class="flex items-center gap-1.5 px-4 py-2 text-white text-xs font-semibold rounded-full transition-colors bg-slate-400 hover:bg-slate-500"
+          class="font-mono text-[9px] tracking-[0.12em] uppercase border border-rule text-ink-soft px-3 py-2 hover:border-ink hover:text-ink transition-colors duration-200"
         >
-          <ShoppingBag class="w-3.5 h-3.5" />
           View Product
         </a>
       )}

@@ -4,8 +4,7 @@ const offers = [
     name: 'Starter System',
     tagline: 'Begin here.',
     price: '$130',
-    priceTo: '150',
-    savingsPrice: '$110–$130',
+    priceRange: '$110–$130 with Subscribe & Save',
     description: 'One cleanser, one treatment, one SPF. The foundation of the CFC protocol — clinically designed, simple to use, results within weeks.',
     includes: [
       'Age Defying Brightening Cleanser',
@@ -20,8 +19,7 @@ const offers = [
     name: 'Complete Treatment System',
     tagline: 'The full transformation.',
     price: '$250',
-    priceTo: '300',
-    savingsPrice: '$175–$210',
+    priceRange: '$175–$210 with Subscribe & Save',
     description: 'The full Cleanse-Treat-Protect protocol. Five products, three steps — this is the system our clients use when they stop wearing foundation.',
     includes: [
       'Brightening Glyco Glow Cleanser',
@@ -38,8 +36,7 @@ const offers = [
     name: 'Premium Collection',
     tagline: 'For women who are serious.',
     price: '$450',
-    priceTo: '600+',
-    savingsPrice: '$315–$420',
+    priceRange: '$315–$420 with Subscribe & Save',
     description: 'The complete system plus advanced NAD+ formulations and the Quad Glow Elite LED Mask. At-home results that rival in-office treatments.',
     includes: [
       'Complete System — all 5 products',
@@ -55,96 +52,98 @@ const offers = [
 ];
 ---
 
-<section class="bg-white border-t border-slate-100" id="offers">
-  <div class="max-w-7xl mx-auto px-6 lg:px-16 py-24 lg:py-32">
+<section class="bg-parchment" id="offers" style="padding: 140px 0;">
+  <div style="max-width: 1440px; margin: 0 auto; padding: 0 40px;">
 
     <!-- Header -->
-    <div
-      x-data
-      x-intersect.once="$el.classList.add('opacity-100', 'translate-y-0')"
-      class="opacity-0 translate-y-4 transition-all duration-700 text-center max-w-3xl mx-auto mb-16 lg:mb-20"
-    >
-      <span class="inline-flex items-center gap-2 px-3 py-1.5 bg-slate-100 rounded-full mb-6">
-        <span class="w-1.5 h-1.5 rounded-full bg-[#B8950A] shrink-0"></span>
-        <span class="text-[#B8950A] text-xs font-semibold tracking-[0.2em] uppercase">Choose Your System</span>
-      </span>
-      <h2 class="font-bold text-4xl lg:text-5xl text-slate-900 leading-tight mb-4">
-        Start where you are.
+    <div class="reveal text-center mx-auto mb-16" style="max-width: 560px;">
+      <div class="flex items-center justify-center gap-4 mb-7">
+        <div class="h-px bg-gold" style="width: 24px;"></div>
+        <span class="font-mono text-[10px] tracking-[0.2em] uppercase text-gold">Choose Your System</span>
+      </div>
+      <h2 class="font-display font-light text-ink mb-4" style="font-size: clamp(38px, 4vw, 58px); line-height: 1.0; letter-spacing: -0.02em;">
+        Start where<br/>you are.
       </h2>
-      <p class="text-slate-500 text-base">Save 30% when you subscribe — and never run out of what your skin needs.</p>
+      <p class="font-sans font-light text-[14px] text-ink-soft">Save 30% when you subscribe — and never run out of what your skin needs.</p>
     </div>
 
-    <!-- Cards -->
-    <div class="grid grid-cols-1 lg:grid-cols-3 gap-5 lg:gap-4 items-start">
-      {offers.map(({ name, tagline, price, priceTo, savingsPrice, description, includes, cta, href, featured }, i) => (
+    <!-- Cards grid: 2px gap -->
+    <div class="grid grid-cols-1 lg:grid-cols-3" style="gap: 2px;">
+      {offers.map(({ name, tagline, price, priceRange, description, includes, cta, href, featured }, i) => (
         <div
-          x-data
-          x-intersect.once="$el.classList.add('opacity-100', 'translate-y-0')"
-          class="opacity-0 translate-y-8 transition-all duration-700"
-          style={`transition-delay: ${i * 100}ms`}
+          class="reveal relative flex flex-col"
+          style={`
+            ${featured ? 'background: oklch(13% 0.010 255);' : 'background: oklch(99.5% 0.003 75);'}
+            padding: 52px 48px;
+            transition-delay: ${i * 100}ms;
+          `}
         >
-          <div class={`relative rounded-2xl p-8 lg:p-10 h-full flex flex-col ${
-            featured
-              ? 'bg-slate-900 text-white shadow-strong lg:scale-105 lg:-translate-y-2'
-              : 'bg-white border border-slate-200 shadow-card'
-          }`}>
-
-            {featured && (
-              <div class="absolute -top-3.5 left-1/2 -translate-x-1/2">
-                <span class="px-5 py-1.5 bg-[#B8950A] text-white text-xs tracking-[0.15em] uppercase font-bold rounded-full whitespace-nowrap">
-                  Most Popular
-                </span>
-              </div>
-            )}
-
-            <!-- Name + tagline -->
-            <div class={`mb-6 pb-6 border-b ${featured ? 'border-white/10' : 'border-slate-100'}`}>
-              <p class={`text-xs tracking-[0.2em] uppercase font-semibold mb-2 ${featured ? 'text-[#C9A84C]' : 'text-[#B8950A]'}`}>
-                {tagline}
-              </p>
-              <h3 class={`font-bold text-xl ${featured ? 'text-white' : 'text-slate-900'}`}>
-                {name}
-              </h3>
+          {featured && (
+            <div class="absolute -top-[18px] left-1/2 -translate-x-1/2">
+              <span class="bg-gold text-ink font-mono text-[9px] tracking-[0.15em] uppercase px-4 py-1.5 whitespace-nowrap">
+                Most Popular
+              </span>
             </div>
+          )}
 
-            <!-- Price -->
-            <div class="mb-5">
-              <div class="flex items-baseline gap-1.5 mb-1">
-                <span class={`font-bold text-4xl ${featured ? 'text-white' : 'text-slate-900'}`}>{price}</span>
-                <span class={`text-sm font-medium ${featured ? 'text-white/50' : 'text-slate-400'}`}>– {priceTo}</span>
-              </div>
-              <p class={`text-sm ${featured ? 'text-white/45' : 'text-slate-400'}`}>
-                {savingsPrice} with Subscribe & Save 30%
-              </p>
-            </div>
+          <!-- Tagline -->
+          <p class="font-mono text-[10px] tracking-[0.2em] uppercase mb-3" style={featured ? 'color: oklch(64% 0.115 72);' : 'color: oklch(64% 0.115 72);'}>
+            {tagline}
+          </p>
 
-            <!-- Description -->
-            <p class={`text-sm leading-relaxed mb-7 ${featured ? 'text-white/65' : 'text-slate-500'}`}>
-              {description}
+          <!-- Name -->
+          <h3 class="font-display text-[28px] font-normal mb-5" style={featured ? 'color: oklch(99.5% 0.003 75);' : 'color: oklch(13% 0.010 255);'}>
+            {name}
+          </h3>
+
+          <!-- Divider -->
+          <div class="mb-6" style={featured ? 'border-top: 1px solid rgba(255,255,255,0.08);' : 'border-top: 1px solid oklch(88% 0.006 72);'}></div>
+
+          <!-- Price -->
+          <div class="mb-5">
+            <span
+              class="font-display font-light"
+              style={`font-size: 52px; line-height: 1; ${featured ? 'color: oklch(99.5% 0.003 75);' : 'color: oklch(13% 0.010 255);'}`}
+            >{price}</span>
+            <p class="font-mono text-[10px] tracking-[0.1em] mt-2" style={featured ? 'color: rgba(255,255,255,0.4);' : 'color: oklch(50% 0.006 255);'}>
+              {priceRange}
             </p>
-
-            <!-- Includes -->
-            <ul class="space-y-2.5 mb-8 flex-1">
-              {includes.map(item => (
-                <li class={`flex items-start gap-3 text-sm ${featured ? 'text-white/75' : 'text-slate-600'}`}>
-                  <span class="mt-1.5 w-1.5 h-1.5 rounded-full shrink-0 bg-[#C9A84C]"></span>
-                  {item}
-                </li>
-              ))}
-            </ul>
-
-            <!-- CTA -->
-            <a
-              href={href}
-              class={`block text-center py-3.5 text-sm font-semibold rounded-full transition-all duration-200 ${
-                featured
-                  ? 'bg-[#B8950A] text-white hover:bg-[#9A7D08]'
-                  : 'border border-slate-200 text-slate-700 hover:border-[#B8950A] hover:text-[#B8950A]'
-              }`}
-            >
-              {cta}
-            </a>
           </div>
+
+          <!-- Divider -->
+          <div class="mb-6" style={featured ? 'border-top: 1px solid rgba(255,255,255,0.08);' : 'border-top: 1px solid oklch(88% 0.006 72);'}></div>
+
+          <!-- Description -->
+          <p class="font-sans font-light text-[13px] leading-relaxed mb-7" style={featured ? 'color: rgba(255,255,255,0.6);' : 'color: oklch(50% 0.006 255);'}>
+            {description}
+          </p>
+
+          <!-- Includes -->
+          <ul class="space-y-2.5 mb-8 flex-1">
+            {includes.map(item => (
+              <li class="flex items-start gap-3 font-sans font-light text-[13px]" style={featured ? 'color: rgba(255,255,255,0.65);' : 'color: oklch(50% 0.006 255);'}>
+                <span class="h-px bg-gold shrink-0 mt-2" style="width: 14px;"></span>
+                {item}
+              </li>
+            ))}
+          </ul>
+
+          <!-- CTA -->
+          <a
+            href={href}
+            class="block text-center font-mono text-[10px] tracking-[0.18em] uppercase py-4 transition-all duration-200"
+            style={featured
+              ? 'background: oklch(64% 0.115 72); color: oklch(13% 0.010 255);'
+              : 'border: 1px solid oklch(13% 0.010 255); color: oklch(13% 0.010 255);'}
+            onmouseover={featured
+              ? "this.style.background='oklch(80% 0.08 78)'"
+              : "this.style.background='oklch(13% 0.010 255)'; this.style.color='oklch(99.5% 0.003 75)'"}
+            onmouseout={featured
+              ? "this.style.background='oklch(64% 0.115 72)'"
+              : "this.style.background='transparent'; this.style.color='oklch(13% 0.010 255)'"}
+          >
+            {cta}
+          </a>
         </div>
       ))}
     </div>

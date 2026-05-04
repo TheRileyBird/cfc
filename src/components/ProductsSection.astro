@@ -21,7 +21,7 @@ const hasProducts = products.length > 0;
 
 const displayProducts = products;
 const filters = ['All', 'Cleanse', 'Treat', 'Protect'];
-const heading = isFeatured ? 'Featured collection.' : 'The complete system.';
+const heading = isFeatured ? 'Featured\ncollection.' : 'The complete system.';
 const ctaHref = isFeatured ? '/shop' : 'https://www.cfcskincare.shop/collections/all';
 const ctaLabel = isFeatured ? 'Shop Complete System' : 'View All Products';
 const ctaTarget = isFeatured ? undefined : '_blank';
@@ -64,21 +64,26 @@ const firstVisibleIndex = (initialPage - 1) * 16;
 const lastVisibleIndex = firstVisibleIndex + 16;
 ---
 
-<section class="py-24 lg:py-32 bg-slate-50 border-t border-slate-100" id="products">
-  <div class="max-w-7xl mx-auto px-6 lg:px-8">
+<section
+  class="bg-parchment"
+  id="products"
+  style="padding: 120px 0 100px;"
+>
+  <div style="max-width: 1440px; margin: 0 auto; padding: 0 40px;">
 
     <!-- Header -->
     <div
-      x-data
-      x-intersect.once="$el.classList.add('opacity-100', 'translate-y-0')"
-      class="opacity-0 translate-y-6 transition-all duration-700 flex flex-col sm:flex-row sm:items-end justify-between gap-6 mb-12"
+      class="reveal flex flex-col sm:flex-row sm:items-end justify-between gap-6 mb-16"
     >
       <div>
-        <span class="inline-flex items-center gap-2 px-3 py-1.5 bg-white border border-slate-200 rounded-full mb-5">
-          <span class="w-1.5 h-1.5 rounded-full bg-[#B8950A] shrink-0"></span>
-          <span class="text-[#B8950A] text-xs font-semibold tracking-[0.2em] uppercase">Shop CFC</span>
-        </span>
-        <h2 class="font-bold text-3xl lg:text-4xl text-slate-900">
+        <div class="flex items-center gap-4 mb-5">
+          <div class="h-px bg-gold" style="width: 24px;"></div>
+          <span class="font-mono text-[10px] tracking-[0.2em] uppercase text-gold">Shop CFC</span>
+        </div>
+        <h2
+          class="font-display font-light text-ink"
+          style="font-size: clamp(42px, 4.5vw, 68px); line-height: 1.0; letter-spacing: -0.02em; white-space: pre-line;"
+        >
           {heading}
         </h2>
       </div>
@@ -86,13 +91,16 @@ const lastVisibleIndex = firstVisibleIndex + 16;
         href={ctaHref}
         target={ctaTarget}
         rel={isFeatured ? undefined : 'noopener'}
-        class="inline-flex items-center gap-2 text-sm font-semibold text-[#B8950A] hover:text-[#9A7D08] transition-colors shrink-0"
+        class="link-arrow font-mono text-[10px] tracking-[0.18em] uppercase text-gold shrink-0"
       >
-        {ctaLabel} <ArrowRight class="w-4 h-4" />
+        {ctaLabel}
+        <svg class="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/>
+        </svg>
       </a>
     </div>
 
-    <!-- Filter tabs + grid -->
+    <!-- Filter tabs + grid (state) -->
     <div
       x-data={`{
         active: 'All',
@@ -142,70 +150,73 @@ const lastVisibleIndex = firstVisibleIndex + 16;
         }
       }`}
     >
-      <div class="mb-10 flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
-        <div class="flex flex-wrap gap-2">
-          {filters.map(f => (
-            <button
-              @click={`active = '${f}'; page = 1`}
-              :class={`active === '${f}' ? 'bg-slate-900 text-white' : 'bg-white text-slate-500 hover:text-slate-800 border border-slate-200'`}
-              class="px-5 py-2 rounded-full text-sm font-semibold transition-all duration-200 shadow-card"
-            >
-              {f}
-            </button>
-          ))}
-        </div>
-
-        <div class="flex flex-wrap items-center gap-3">
-          <label for="product-sort" class="flex items-center gap-2">
-            <span class="text-xs font-bold uppercase tracking-[0.18em] text-slate-500">Sort by</span>
-            <span class="relative inline-flex items-center">
-              <select
-                id="product-sort"
-                name="sort"
-                x-model="sortBy"
-                @change="page = 1"
-                class="h-10 appearance-none rounded-full border border-slate-200 bg-white pl-4 pr-11 text-sm font-semibold text-slate-600 shadow-card outline-none transition-colors focus:border-[#B8950A]"
+      {/* Filter + sort — only for complete variant */}
+      {!isFeatured && (
+        <div class="mb-10 flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+          <div class="flex flex-wrap gap-0.5">
+            {filters.map(f => (
+              <button
+                @click={`active = '${f}'; page = 1`}
+                :class={`active === '${f}' ? 'bg-ink text-white' : 'bg-white text-ink-soft hover:text-ink border border-rule'`}
+                class="px-5 py-2.5 font-mono text-[10px] tracking-[0.15em] uppercase transition-all duration-200"
               >
-                <option value="alpha">Alphabetical</option>
-                <option value="best-selling">Best-selling</option>
-                <option value="reverse-alpha">Reverse alphabetical</option>
-                <option value="price-low-high">Price, low to high</option>
-                <option value="price-high-low">Price, high to low</option>
-              </select>
-              <svg
-                class="pointer-events-none absolute right-4 h-4 w-4 text-slate-400"
-                viewBox="0 0 20 20"
-                fill="currentColor"
-                aria-hidden="true"
-              >
-                <path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 0 1 1.06.02L10 11.17l3.71-3.94a.75.75 0 1 1 1.08 1.04l-4.25 4.5a.75.75 0 0 1-1.08 0l-4.25-4.5a.75.75 0 0 1 .02-1.06Z" clip-rule="evenodd" />
-              </svg>
-            </span>
-          </label>
-
-          <button
-            type="button"
-            @click="reset()"
-            class="h-10 rounded-full border border-slate-200 bg-white px-5 text-sm font-semibold text-slate-600 shadow-card transition-colors hover:border-[#B8950A] hover:text-[#B8950A]"
-          >
-            Reset
-          </button>
-        </div>
-      </div>
-
-      <!-- Products grid -->
-      {hasProducts ? (
-        <>
-          <div class="flex items-center justify-between gap-4 mb-6 text-sm text-slate-500">
-            <p>
-              Showing page <span x-text="page"></span> of <span x-text="totalPages()"></span>
-            </p>
-            <p>
-              <span x-text="totalResults()"></span> of {totalProductsLabel} products
-            </p>
+                {f}
+              </button>
+            ))}
           </div>
 
-          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
+          <div class="flex flex-wrap items-center gap-3">
+            <label for="product-sort" class="flex items-center gap-3">
+              <span class="font-mono text-[10px] tracking-[0.18em] uppercase text-ink-soft">Sort by</span>
+              <span class="relative inline-flex items-center">
+                <select
+                  id="product-sort"
+                  name="sort"
+                  x-model="sortBy"
+                  @change="page = 1"
+                  class="h-10 appearance-none border border-rule bg-white font-mono text-[10px] tracking-[0.1em] text-ink-soft outline-none transition-colors focus:border-gold"
+                  style="padding: 0 36px 0 14px;"
+                >
+                  <option value="alpha">Alphabetical</option>
+                  <option value="best-selling">Best-selling</option>
+                  <option value="reverse-alpha">Reverse alphabetical</option>
+                  <option value="price-low-high">Price, low to high</option>
+                  <option value="price-high-low">Price, high to low</option>
+                </select>
+                <svg
+                  class="pointer-events-none absolute right-3 h-3 w-3 text-ink-soft"
+                  viewBox="0 0 20 20"
+                  fill="currentColor"
+                  aria-hidden="true"
+                >
+                  <path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 0 1 1.06.02L10 11.17l3.71-3.94a.75.75 0 1 1 1.08 1.04l-4.25 4.5a.75.75 0 0 1-1.08 0l-4.25-4.5a.75.75 0 0 1 .02-1.06Z" clip-rule="evenodd" />
+                </svg>
+              </span>
+            </label>
+
+            <button
+              type="button"
+              @click="reset()"
+              class="h-10 border border-rule bg-white font-mono text-[10px] tracking-[0.15em] uppercase text-ink-soft transition-colors hover:border-ink hover:text-ink"
+              style="padding: 0 18px;"
+            >
+              Reset
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* Products grid — 2px gap mosaic */}
+      {hasProducts ? (
+        <>
+          {!isFeatured && (
+            <div class="flex items-center justify-between gap-4 mb-6 font-mono text-[10px] tracking-[0.1em] uppercase text-ink-soft">
+              <p>Page <span x-text="page"></span> of <span x-text="totalPages()"></span></p>
+              <p><span x-text="totalResults()"></span> of {totalProductsLabel} products</p>
+            </div>
+          )}
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4" style="gap: 2px;">
             {displayProducts.map((product, i) => {
               const isInitiallyVisible = i >= firstVisibleIndex && i < lastVisibleIndex;
               return (
@@ -224,54 +235,53 @@ const lastVisibleIndex = firstVisibleIndex + 16;
             })}
           </div>
 
-          <p x-show="totalResults() === 0" class="mt-8 text-center text-sm text-slate-500">
+          <p x-show="totalResults() === 0" class="mt-8 text-center font-sans font-light text-[14px] text-ink-soft">
             No products match the selected filters.
           </p>
 
-          <nav x-show="totalPages() > 1" class="mt-12 flex flex-wrap items-center justify-center gap-2" aria-label="Product pagination">
-            <a
-              href={getShopPageHref(Math.max(initialPage - 1, 1))}
-              @click.prevent="setPage(page - 1)"
-              x-show="page > 1"
-              class="inline-flex h-10 items-center gap-2 rounded-full border border-slate-200 bg-white px-4 text-sm font-semibold text-slate-600 transition-colors hover:border-[#B8950A] hover:text-[#B8950A]"
-            >
-              <ArrowLeft class="w-4 h-4" />
-              Previous
-            </a>
-
-            <template x-for="pageNumber in totalPages()" :key="pageNumber">
+          {!isFeatured && (
+            <nav x-show="totalPages() > 1" class="mt-12 flex flex-wrap items-center justify-center gap-1" aria-label="Product pagination">
               <a
-                :href="pageNumber === 1 ? '/shop' : `/shop/page/${pageNumber}`"
-                @click.prevent="setPage(pageNumber)"
-                :aria-current="pageNumber === page ? 'page' : undefined"
-                class="inline-flex h-10 min-w-10 items-center justify-center rounded-full px-3 text-sm font-semibold transition-colors"
-                :class="pageNumber === page ? 'bg-slate-900 text-white' : 'border border-slate-200 bg-white text-slate-600 hover:border-[#B8950A] hover:text-[#B8950A]'"
+                href={getShopPageHref(Math.max(initialPage - 1, 1))}
+                @click.prevent="setPage(page - 1)"
+                x-show="page > 1"
+                class="inline-flex h-10 items-center gap-2 border border-rule bg-white px-4 font-mono text-[10px] tracking-[0.1em] uppercase text-ink-soft transition-colors hover:border-ink hover:text-ink"
               >
-                <span x-text="pageNumber"></span>
+                <ArrowLeft class="w-3.5 h-3.5" />
+                Prev
               </a>
-            </template>
 
-            <a
-              href={getShopPageHref(initialPage + 1)}
-              @click.prevent="setPage(page + 1)"
-              x-show="page < totalPages()"
-              class="inline-flex h-10 items-center gap-2 rounded-full border border-slate-200 bg-white px-4 text-sm font-semibold text-slate-600 transition-colors hover:border-[#B8950A] hover:text-[#B8950A]"
-            >
-              Next
-              <ArrowRight class="w-4 h-4" />
-            </a>
-          </nav>
-          {/*
-            Static fallback links for crawlers and no-JS users. Alpine takes over
-            the interactive pagination above.
-          */}
+              <template x-for="pageNumber in totalPages()" :key="pageNumber">
+                <a
+                  :href="pageNumber === 1 ? '/shop' : `/shop/page/${pageNumber}`"
+                  @click.prevent="setPage(pageNumber)"
+                  :aria-current="pageNumber === page ? 'page' : undefined"
+                  class="inline-flex h-10 min-w-[40px] items-center justify-center px-3 font-mono text-[10px] tracking-[0.1em] uppercase transition-colors"
+                  :class="pageNumber === page ? 'bg-ink text-white' : 'border border-rule bg-white text-ink-soft hover:border-ink hover:text-ink'"
+                >
+                  <span x-text="pageNumber"></span>
+                </a>
+              </template>
+
+              <a
+                href={getShopPageHref(initialPage + 1)}
+                @click.prevent="setPage(page + 1)"
+                x-show="page < totalPages()"
+                class="inline-flex h-10 items-center gap-2 border border-rule bg-white px-4 font-mono text-[10px] tracking-[0.1em] uppercase text-ink-soft transition-colors hover:border-ink hover:text-ink"
+              >
+                Next
+                <ArrowRight class="w-3.5 h-3.5" />
+              </a>
+            </nav>
+          )}
+
           {pagination && pagination.totalPages > 1 && (
             <noscript>
-              <nav class="mt-12 flex flex-wrap items-center justify-center gap-2" aria-label="Product pagination">
+              <nav class="mt-12 flex flex-wrap items-center justify-center gap-1" aria-label="Product pagination">
                 {pagination.currentPage > 1 && (
                   <a
                     href={getShopPageHref(pagination.currentPage - 1)}
-                    class="inline-flex h-10 items-center gap-2 rounded-full border border-slate-200 bg-white px-4 text-sm font-semibold text-slate-600 transition-colors hover:border-[#B8950A] hover:text-[#B8950A]"
+                    class="inline-flex h-10 items-center gap-2 border border-rule bg-white px-4 font-mono text-[10px] tracking-[0.1em] uppercase text-ink-soft"
                   >
                     Previous
                   </a>
@@ -281,10 +291,10 @@ const lastVisibleIndex = firstVisibleIndex + 16;
                   <a
                     href={getShopPageHref(page)}
                     aria-current={page === pagination.currentPage ? 'page' : undefined}
-                    class={`inline-flex h-10 min-w-10 items-center justify-center rounded-full px-3 text-sm font-semibold transition-colors ${
+                    class={`inline-flex h-10 min-w-[40px] items-center justify-center px-3 font-mono text-[10px] tracking-[0.1em] uppercase ${
                       page === pagination.currentPage
-                        ? 'bg-slate-900 text-white'
-                        : 'border border-slate-200 bg-white text-slate-600 hover:border-[#B8950A] hover:text-[#B8950A]'
+                        ? 'bg-ink text-white'
+                        : 'border border-rule bg-white text-ink-soft'
                     }`}
                   >
                     {page}
@@ -294,7 +304,7 @@ const lastVisibleIndex = firstVisibleIndex + 16;
                 {pagination.currentPage < pagination.totalPages && (
                   <a
                     href={getShopPageHref(pagination.currentPage + 1)}
-                    class="inline-flex h-10 items-center gap-2 rounded-full border border-slate-200 bg-white px-4 text-sm font-semibold text-slate-600 transition-colors hover:border-[#B8950A] hover:text-[#B8950A]"
+                    class="inline-flex h-10 items-center gap-2 border border-rule bg-white px-4 font-mono text-[10px] tracking-[0.1em] uppercase text-ink-soft"
                   >
                     Next
                   </a>
@@ -304,7 +314,7 @@ const lastVisibleIndex = firstVisibleIndex + 16;
           )}
         </>
       ) : (
-        <p class="text-sm text-slate-500">
+        <p class="font-sans font-light text-[14px] text-ink-soft">
           Products are temporarily unavailable.
         </p>
       )}
