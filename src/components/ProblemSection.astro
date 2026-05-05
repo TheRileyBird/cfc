@@ -74,7 +74,7 @@ const problems = [
 
       <!-- Ghost leaf — fades in as section scrolls into view -->
       <div
-        x-data="{ op: 0.04 }"
+        x-data="{ op: 0.15 }"
         x-init="
           const section = $el.closest('section');
           const update = () => {
@@ -83,7 +83,7 @@ const problems = [
             const start = vh;
             const end = -(section.offsetHeight / 2);
             const progress = Math.max(0, Math.min(1, (start - rect.top) / (start - end)));
-            op = 0.15 - progress * 0.10;
+            op = 0.15 - progress * 0.14;
           };
           window.addEventListener('scroll', update, { passive: true });
           update();

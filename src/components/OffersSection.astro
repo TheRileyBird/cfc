@@ -70,7 +70,7 @@ const offers = [
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-px">
       {offers.map(({ name, tagline, price, priceRange, description, includes, cta, href, featured }, i) => (
         <div
-          class={`reveal relative flex flex-col ${featured ? 'bg-ink' : 'bg-white'}`}
+          class={`reveal relative flex flex-col ${featured ? 'bg-ink' : 'bg-white'} offer-card${featured ? ' offer-card--featured' : ''}`}
           style={`padding: 52px 48px; transition-delay: ${i * 100}ms;`}
         >
           {featured && (
@@ -155,3 +155,12 @@ const offers = [
     </div>
   </div>
 </section>
+
+<style>
+  @media (min-width: 1024px) {
+    .offer-card--featured {
+      transform: scale(1.05);
+      z-index: 1;
+    }
+  }
+</style>
