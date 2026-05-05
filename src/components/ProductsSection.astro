@@ -227,7 +227,7 @@ const lastVisibleIndex = firstVisibleIndex + 16;
                   x-transition:enter-end="opacity-100 scale-100"
                   class="transition-all duration-200"
                   style={isInitiallyVisible ? undefined : 'display: none;'}
-                  :style={`'order: ' + productOrder(${JSON.stringify(product.id)})`}
+                  :style={`{ order: productOrder(${JSON.stringify(product.id)}) }`}
                 >
                   <ProductCard product={product} />
                 </div>

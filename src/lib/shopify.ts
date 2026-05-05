@@ -137,7 +137,7 @@ function getMockProducts(): ShopifyProduct[] {
 
 const PRODUCTS_QUERY = `
   query GetProducts($first: Int!, $after: String, $sortKey: ProductSortKeys) {
-    products(first: $first, after: $after, sortKey: $sortKey) {
+    products(first: $first, after: $after, sortKey: $sortKey, query: "NOT tag:wholesale") {
       edges {
         cursor
         node {
