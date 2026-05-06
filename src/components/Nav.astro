@@ -154,12 +154,11 @@ const { position = 'fixed' } = Astro.props;
       </a>
     </div>
 
-    <!-- Mobile right — always visible, color adapts to hero/scrolled -->
+    <!-- Mobile right — always dark (nav is sticky on mobile, never overlays hero) -->
     <div class="lg:hidden flex items-center gap-4 ml-auto">
       <button
         @click="$store.search.isOpen ? $store.search.close() : $store.search.open()"
-        class="transition-colors"
-        :class="scrolled ? 'text-ink-soft hover:text-ink' : 'text-[rgba(255,255,255,0.7)] hover:text-white'"
+        class="text-ink-soft hover:text-ink transition-colors"
         aria-label="Search"
       >
         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5">
@@ -169,8 +168,7 @@ const { position = 'fixed' } = Astro.props;
       </button>
       <button
         @click="$store.cart.open()"
-        class="relative transition-colors"
-        :class="scrolled ? 'text-ink-soft hover:text-ink' : 'text-[rgba(255,255,255,0.7)] hover:text-white'"
+        class="relative text-ink-soft hover:text-ink transition-colors"
         aria-label="Cart"
       >
         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5">
@@ -186,8 +184,7 @@ const { position = 'fixed' } = Astro.props;
       </button>
       <button
         @click="open = !open"
-        class="p-1.5 transition-colors"
-        :class="scrolled ? 'text-ink-soft hover:text-ink' : 'text-[rgba(255,255,255,0.7)] hover:text-white'"
+        class="p-1.5 text-ink-soft hover:text-ink transition-colors"
         aria-label="Menu"
       >
         <span x-show="!open" class="block space-y-1.5">
