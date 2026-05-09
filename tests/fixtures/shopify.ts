@@ -3,6 +3,7 @@ import type { ShopifyProduct } from '../../src/lib/shopify';
 
 export const variantId = 'gid://shopify/ProductVariant/2001';
 export const alternateVariantId = 'gid://shopify/ProductVariant/2002';
+export const sellingPlanId = 'gid://shopify/SellingPlan/3001';
 
 export const productFixture: ShopifyProduct = {
   id: 'gid://shopify/Product/1001',
@@ -27,6 +28,7 @@ export function rawCart(quantity = 1, id = 'gid://shopify/Cart/cart-1') {
         node: {
           id: 'gid://shopify/CartLine/line-1',
           quantity,
+          sellingPlanAllocation: null,
           merchandise: {
             id: variantId,
             title: 'Default Title',
@@ -60,6 +62,8 @@ export function cartFixture(quantity = 1): Cart {
       productHandle: 'gentle-cleanser',
       imageUrl: 'https://cdn.example.com/cleanser.jpg',
       imageAlt: 'Cleanser bottle',
+      sellingPlanId: '',
+      sellingPlanName: '',
     }] : [],
   };
 }

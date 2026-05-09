@@ -68,7 +68,7 @@ export function createCartStore(api: CartApi = {
       }
     },
 
-    async addItem(variantId: string, quantity = 1) {
+    async addItem(variantId: string, quantity = 1, sellingPlanId?: string) {
       this.errorMessage = '';
       if (!variantId || quantity < 1) {
         this.errorMessage = 'This product is not available right now.';
@@ -78,7 +78,9 @@ export function createCartStore(api: CartApi = {
       if (!this.id) return;
       this.isLoading = true;
       try {
-        const cart = await api.addToCart(this.id, variantId, quantity);
+        const cart = sellingPlanId
+          ? await api.addToCart(this.id, variantId, quantity, sellingPlanId)
+          : await api.addToCart(this.id, variantId, quantity);
         this.applyCart(cart);
         this.isOpen = true;
       } catch {

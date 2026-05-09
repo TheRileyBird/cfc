@@ -117,6 +117,11 @@
             x-show="item.variantTitle && item.variantTitle !== 'Default Title'"
             x-text="item.variantTitle"
           ></p>
+          <p
+            class="text-xs text-[#B8950A] mt-0.5"
+            x-show="item.sellingPlanName"
+            x-text="item.sellingPlanName"
+          ></p>
           <p class="text-sm font-bold text-slate-900 mt-1.5" x-text="$store.cart.formatPrice(item.price)"></p>
 
           <!-- Quantity controls -->

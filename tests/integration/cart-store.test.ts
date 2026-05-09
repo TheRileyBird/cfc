@@ -1,12 +1,12 @@
 import { describe, expect, it, vi } from 'vitest';
 import { createCartStore } from '../../src/lib/cart-store';
-import { alternateVariantId, cartFixture, variantId } from '../fixtures/shopify';
+import { alternateVariantId, cartFixture, sellingPlanId, variantId } from '../fixtures/shopify';
 
 function mockApi() {
   return {
     createCart: vi.fn(async () => cartFixture(0)),
     getCart: vi.fn(async () => cartFixture(1)),
-    addToCart: vi.fn(async (_cartId: string, _variantId: string, quantity: number) => cartFixture(quantity)),
+    addToCart: vi.fn(async (_cartId: string, _variantId: string, quantity: number, _sellingPlanId?: string) => cartFixture(quantity)),
     removeFromCart: vi.fn(async () => cartFixture(0)),
     updateCartItem: vi.fn(async (_cartId: string, _lineId: string, quantity: number) => cartFixture(quantity)),
   };
@@ -33,6 +33,15 @@ describe('cart store integration behavior', () => {
 
     expect(api.addToCart).toHaveBeenCalledWith('gid://shopify/Cart/cart-1', alternateVariantId, 2);
     expect(store.totalQuantity).toBe(2);
+  });
+
+  it('passes subscription selling plan IDs through cart adds', async () => {
+    const api = mockApi();
+    const store = createCartStore(api);
+
+    await store.addItem(variantId, 1, sellingPlanId);
+
+    expect(api.addToCart).toHaveBeenCalledWith('gid://shopify/Cart/cart-1', variantId, 1, sellingPlanId);
   });
 
   it('persists and restores cart after page refresh', async () => {

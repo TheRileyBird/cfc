@@ -6,7 +6,7 @@ import {
   removeFromCart,
   updateCartItem,
 } from '../../src/lib/cart-client';
-import { rawCart, variantId } from '../fixtures/shopify';
+import { rawCart, sellingPlanId, variantId } from '../fixtures/shopify';
 
 function mockFetch(body: unknown, ok = true, status = 200) {
   const fetchMock = vi.fn(async () => ({
@@ -43,6 +43,15 @@ describe('Shopify cart API utilities', () => {
 
     expect(request.variables.lines).toEqual([{ merchandiseId: variantId, quantity: 2 }]);
     expect(cart.totalQuantity).toBe(2);
+  });
+
+  it('adds a sellingPlanId for subscription cart lines', async () => {
+    const fetchMock = mockFetch({ data: { cartLinesAdd: { cart: rawCart(1) } } });
+
+    await addToCart('gid://shopify/Cart/cart-1', variantId, 1, sellingPlanId);
+    const request = JSON.parse(String(fetchMock.mock.calls[0][1]?.body));
+
+    expect(request.variables.lines).toEqual([{ merchandiseId: variantId, quantity: 1, sellingPlanId }]);
   });
 
   it('updates quantity for increase and decrease requests', async () => {

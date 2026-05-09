@@ -52,7 +52,53 @@ export interface ShopifyProductDetail extends Omit<ShopifyProduct, 'priceRange' 
     maxVariantPrice: { amount: string; currencyCode: string };
   };
   images: { edges: Array<{ node: { url: string; altText: string | null } }> };
-  variants: { edges: Array<{ node: { id: string; title: string; price: { amount: string }; availableForSale: boolean } }> };
+  variants: {
+    edges: Array<{
+      node: {
+        id: string;
+        title: string;
+        price: { amount: string };
+        availableForSale: boolean;
+        sellingPlanAllocations?: {
+          edges: Array<{
+            node: {
+              sellingPlan: {
+                id: string;
+                name: string;
+                description: string | null;
+                recurringDeliveries: boolean;
+                options: Array<{ name: string; value: string }>;
+              };
+              priceAdjustments: Array<{
+                price: { amount: string; currencyCode: string };
+                compareAtPrice: { amount: string; currencyCode: string } | null;
+                perDeliveryPrice: { amount: string; currencyCode: string };
+              }>;
+            };
+          }>;
+        };
+      };
+    }>;
+  };
+  sellingPlanGroups?: {
+    edges: Array<{
+      node: {
+        name: string;
+        options: Array<{ name: string; values: string[] }>;
+        sellingPlans: {
+          edges: Array<{
+            node: {
+              id: string;
+              name: string;
+              description: string | null;
+              recurringDeliveries: boolean;
+              options: Array<{ name: string; value: string }>;
+            };
+          }>;
+        };
+      };
+    }>;
+  };
 }
 
 function isRetailProduct(product: ShopifyProduct): boolean {
@@ -251,6 +297,12 @@ export function getCheckoutUrl(variantId: string): string {
   return `https://${SHOPIFY_DOMAIN}/cart/${variantId.replace('gid://shopify/ProductVariant/', '')}:1`;
 }
 
+export function getSubscriptionCheckoutUrl(variantId: string, sellingPlanId?: string): string {
+  const url = getCheckoutUrl(variantId);
+  if (!sellingPlanId) return url;
+  return `${url}?selling_plan=${sellingPlanId.replace('gid://shopify/SellingPlan/', '')}`;
+}
+
 const PRODUCT_DETAIL_QUERY = `
   query GetProduct($handle: String!) {
     product(handle: $handle) {
@@ -269,7 +321,51 @@ const PRODUCT_DETAIL_QUERY = `
         edges { node { url altText } }
       }
       variants(first: 20) {
-        edges { node { id title availableForSale price { amount } } }
+        edges {
+          node {
+            id
+            title
+            availableForSale
+            price { amount }
+            sellingPlanAllocations(first: 10) {
+              edges {
+                node {
+                  sellingPlan {
+                    id
+                    name
+                    description
+                    recurringDeliveries
+                    options { name value }
+                  }
+                  priceAdjustments {
+                    price { amount currencyCode }
+                    compareAtPrice { amount currencyCode }
+                    perDeliveryPrice { amount currencyCode }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+      sellingPlanGroups(first: 10) {
+        edges {
+          node {
+            name
+            options { name values }
+            sellingPlans(first: 10) {
+              edges {
+                node {
+                  id
+                  name
+                  description
+                  recurringDeliveries
+                  options { name value }
+                }
+              }
+            }
+          }
+        }
       }
       collections(first: 3) {
         edges { node { title } }

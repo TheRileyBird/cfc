@@ -35,6 +35,9 @@ const CART_FRAGMENT = `
       node {
         id
         quantity
+        sellingPlanAllocation {
+          sellingPlan { id name }
+        }
         merchandise {
           ... on ProductVariant {
             id
@@ -63,6 +66,8 @@ export interface CartLineItem {
   productHandle: string;
   imageUrl: string;
   imageAlt: string;
+  sellingPlanId: string;
+  sellingPlanName: string;
 }
 
 export interface Cart {
@@ -99,6 +104,8 @@ export function parseCart(raw: any): Cart {
       productHandle: node.merchandise.product.handle,
       imageUrl: node.merchandise.product.images.edges[0]?.node.url ?? '',
       imageAlt: node.merchandise.product.images.edges[0]?.node.altText ?? '',
+      sellingPlanId: node.sellingPlanAllocation?.sellingPlan?.id ?? '',
+      sellingPlanName: node.sellingPlanAllocation?.sellingPlan?.name ?? '',
     })),
   };
 }
@@ -116,12 +123,15 @@ export async function getCart(cartId: string): Promise<Cart | null> {
   return data.cart ? parseCart(data.cart) : null;
 }
 
-export async function addToCart(cartId: string, variantId: string, quantity = 1): Promise<Cart> {
+export async function addToCart(cartId: string, variantId: string, quantity = 1, sellingPlanId?: string): Promise<Cart> {
+  const line: { merchandiseId: string; quantity: number; sellingPlanId?: string } = { merchandiseId: variantId, quantity };
+  if (sellingPlanId) line.sellingPlanId = sellingPlanId;
+
   const data = await gql<any>(
     `mutation cartLinesAdd($cartId: ID!, $lines: [CartLineInput!]!) {
       cartLinesAdd(cartId: $cartId, lines: $lines) { cart { ${CART_FRAGMENT} } }
     }`,
-    { cartId, lines: [{ merchandiseId: variantId, quantity }] }
+    { cartId, lines: [line] }
   );
   return parseCart(data.cartLinesAdd.cart);
 }

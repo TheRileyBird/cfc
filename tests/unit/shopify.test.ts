@@ -1,6 +1,6 @@
 import { describe, expect, it, vi } from 'vitest';
-import { getCheckoutUrl, getProducts, shopifyFetch } from '../../src/lib/shopify';
-import { productFixture, variantId } from '../fixtures/shopify';
+import { getCheckoutUrl, getProducts, getSubscriptionCheckoutUrl, shopifyFetch } from '../../src/lib/shopify';
+import { productFixture, sellingPlanId, variantId } from '../fixtures/shopify';
 
 function mockFetch(body: unknown, ok = true, status = 200) {
   vi.stubGlobal('fetch', vi.fn(async () => ({
@@ -36,6 +36,12 @@ describe('Shopify product utilities', () => {
 
   it('returns checkoutUrl-compatible Shopify cart permalink for a variant', () => {
     expect(getCheckoutUrl(variantId)).toBe('https://cfcskincare.myshopify.com/cart/2001:1');
+  });
+
+  it('adds selling plan IDs to subscription checkout permalinks', () => {
+    expect(getSubscriptionCheckoutUrl(variantId, sellingPlanId)).toBe(
+      'https://cfcskincare.myshopify.com/cart/2001:1?selling_plan=3001'
+    );
   });
 
   it('throws friendly API errors from shopifyFetch', async () => {

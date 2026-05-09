@@ -2,7 +2,7 @@
 import Layout from '../../layouts/Layout.astro';
 import Nav from '../../components/Nav.astro';
 import FoilStamp from '../../components/motifs/FoilStamp.astro';
-import { getAllProducts, getProductByHandle, formatPrice, getCheckoutUrl } from '../../lib/shopify';
+import { getAllProducts, getProductByHandle, formatPrice, getCheckoutUrl, SHOPIFY_DOMAIN } from '../../lib/shopify';
 import type { ShopifyProductDetail } from '../../lib/shopify';
 
 export async function getStaticPaths() {
@@ -23,6 +23,9 @@ const firstAvailableId = variants.find(v => v.availableForSale)?.id ?? variants[
 const minPrice = formatPrice(product.priceRange.minVariantPrice.amount);
 const maxPrice = formatPrice(product.priceRange.maxVariantPrice.amount);
 const priceDisplay = minPrice !== maxPrice ? `${minPrice} – ${maxPrice}` : minPrice;
+const firstAvailableVariant = variants.find(v => v.id === firstAvailableId) ?? variants[0];
+const firstAvailablePrice = firstAvailableVariant?.price.amount ? formatPrice(firstAvailableVariant.price.amount) : priceDisplay;
+const hasSellingPlans = variants.some((variant) => (variant.sellingPlanAllocations?.edges.length ?? 0) > 0);
 
 function getStep(p: ShopifyProductDetail): { label: string; num: string } | null {
   const text = [p.title, ...p.tags, ...p.collections.edges.map(e => e.node.title)].join(' ').toLowerCase();
@@ -32,7 +35,82 @@ function getStep(p: ShopifyProductDetail): { label: string; num: string } | null
   return null;
 }
 const step = getStep(product);
-const variantsJson = JSON.stringify(variants.map(v => ({ id: v.id, title: v.title, available: v.availableForSale })));
+const productSellingPlans = product.sellingPlanGroups?.edges.flatMap(({ node: group }) => (
+  group.sellingPlans.edges.map(({ node: sellingPlan }) => {
+    const deliveryOption = sellingPlan.options.find(option => /deliver|frequency|every/i.test(option.name))?.value
+      ?? sellingPlan.options[0]?.value
+      ?? group.options[0]?.values[0]
+      ?? '';
+
+    return {
+      id: sellingPlan.id,
+      groupName: group.name,
+      originalName: sellingPlan.name,
+      deliveryOption,
+      description: sellingPlan.description,
+    };
+  })
+)) ?? [];
+const fallbackSellingPlans = variants.flatMap((v) => (v.sellingPlanAllocations?.edges ?? []).map(({ node }) => {
+  const deliveryOption = node.sellingPlan.options.find(option => /deliver|frequency|every/i.test(option.name))?.value
+    ?? node.sellingPlan.options[0]?.value
+    ?? '';
+
+  return {
+    id: node.sellingPlan.id,
+    groupName: node.sellingPlan.name,
+    originalName: node.sellingPlan.name,
+    deliveryOption,
+    description: node.sellingPlan.description,
+  };
+}));
+const sellingPlans = Array.from(
+  new Map((productSellingPlans.length > 0 ? productSellingPlans : fallbackSellingPlans).map((plan) => [plan.id, plan])).values()
+).sort((a, b) => {
+  const score = (plan: { groupName: string; originalName: string }) => {
+    const text = `${plan.groupName} ${plan.originalName}`.toLowerCase();
+    return text.includes('new sign') || text.includes('black friday') || text.includes('subscription for skincare') ? 0 : 1;
+  };
+  return score(a) - score(b);
+});
+const displayPlanName = (plan: { groupName: string; originalName: string }, discount: number) => {
+  const text = `${plan.groupName} ${plan.originalName}`.toLowerCase();
+  if (text.includes('new sign') || text.includes('black friday') || discount >= 25) {
+    return 'New sign up Subscription for skincare';
+  }
+  return 'Subscriptions for skin care';
+};
+const displayDiscount = (plan: { groupName: string; originalName: string }, discount: number) => {
+  const text = `${plan.groupName} ${plan.originalName}`.toLowerCase();
+  if (text.includes('new sign') || text.includes('black friday') || discount >= 25) return 'Save 30%';
+  return 'Save 15%';
+};
+const variantsJson = JSON.stringify(variants.map(v => ({
+  id: v.id,
+  title: v.title,
+  available: v.availableForSale,
+  price: formatPrice(v.price.amount),
+  sellingPlans: sellingPlans.map((plan) => {
+    const allocation = (v.sellingPlanAllocations?.edges ?? []).find(({ node }) => node.sellingPlan.id === plan.id)?.node;
+    const priceAdjustment = allocation?.priceAdjustments[0];
+    const planPrice = Number(priceAdjustment?.price.amount ?? 0);
+    const compareAtPrice = Number(priceAdjustment?.compareAtPrice?.amount ?? v.price.amount);
+    const discount = compareAtPrice > planPrice && planPrice > 0
+      ? Math.round(((compareAtPrice - planPrice) / compareAtPrice) * 100)
+      : 0;
+
+    return {
+      id: plan.id,
+      name: displayPlanName(plan, discount),
+      originalName: plan.originalName,
+      description: plan.description,
+      deliveryOption: plan.deliveryOption,
+      price: priceAdjustment?.price.amount ? formatPrice(priceAdjustment.price.amount, priceAdjustment.price.currencyCode) : '',
+      compareAtPrice: priceAdjustment?.compareAtPrice?.amount ? formatPrice(priceAdjustment.compareAtPrice.amount, priceAdjustment.compareAtPrice.currencyCode) : '',
+      discountLabel: displayDiscount(plan, discount),
+    };
+  }),
+})));
 ---
 
 <Layout
@@ -121,7 +199,52 @@ const variantsJson = JSON.stringify(variants.map(v => ({ id: v.id, title: v.titl
           </div>
 
           <!-- Right: product info -->
-          <div class="reveal-right">
+          <div
+            class="reveal-right"
+            x-data={`{
+              adding: false,
+              added: false,
+              selectedId: ${JSON.stringify(firstAvailableId)},
+              purchaseOption: 'one-time',
+              selectedSellingPlanId: '',
+              variants: ${variantsJson},
+              cartBase: ${JSON.stringify(`https://${SHOPIFY_DOMAIN}/cart/`)},
+              currentVariant() {
+                return this.variants.find((variant) => variant.id === this.selectedId) || this.variants[0] || { price: ${JSON.stringify(firstAvailablePrice)}, sellingPlans: [] };
+              },
+              currentPrice() {
+                return this.currentVariant().price || ${JSON.stringify(firstAvailablePrice)};
+              },
+              currentSellingPlans() {
+                return this.currentVariant().sellingPlans || [];
+              },
+              selectVariant(id) {
+                this.selectedId = id;
+                if (this.purchaseOption === 'subscription') {
+                  const plan = this.currentSellingPlans()[0];
+                  this.selectedSellingPlanId = plan?.id || '';
+                  if (!this.selectedSellingPlanId) this.purchaseOption = 'one-time';
+                }
+              },
+              selectOneTime() {
+                this.purchaseOption = 'one-time';
+                this.selectedSellingPlanId = '';
+              },
+              selectSubscription(planId) {
+                this.purchaseOption = 'subscription';
+                this.selectedSellingPlanId = planId;
+              },
+              checkoutUrl() {
+                const variantId = String(this.selectedId || '').split('/').pop();
+                if (!variantId) return ${JSON.stringify(`https://www.cfcskincare.shop/products/${product.handle}`)};
+                let url = this.cartBase + variantId + ':1';
+                if (this.selectedSellingPlanId) {
+                  url += '?selling_plan=' + String(this.selectedSellingPlanId).split('/').pop();
+                }
+                return url;
+              }
+            }`}
+          >
 
             <!-- Step / category -->
             {step && (
@@ -140,7 +263,7 @@ const variantsJson = JSON.stringify(variants.map(v => ({ id: v.id, title: v.titl
               {product.title}
             </h1>
 
-            <p class="font-display text-[26px] font-normal text-ink mb-7">{priceDisplay}</p>
+            <p class="font-display text-[26px] font-normal text-ink mb-7" x-text="currentPrice()">{firstAvailablePrice}</p>
 
             {product.description && (
               <p class="font-sans font-light text-[14px] leading-[1.8] text-ink-soft mb-8 max-w-[460px]">
@@ -149,16 +272,15 @@ const variantsJson = JSON.stringify(variants.map(v => ({ id: v.id, title: v.titl
             )}
 
             <!-- Variant + cart block -->
-            <div
-              x-data={`{ adding: false, added: false, selectedId: ${JSON.stringify(firstAvailableId)}, variants: ${variantsJson} }`}
-            >
+            <div>
               {hasVariantChoice && (
                 <div class="mb-6">
                   <p class="font-mono text-[9px] tracking-[0.18em] uppercase text-ink-soft mb-3">Select Option</p>
                   <div class="flex flex-wrap gap-2">
                     {variants.map((v) => (
                       <button
-                        @click={`selectedId = ${JSON.stringify(v.id)}`}
+                        type="button"
+                        @click={`selectVariant(${JSON.stringify(v.id)})`}
                         :class={`selectedId === ${JSON.stringify(v.id)} ? 'bg-ink text-white border-ink' : 'bg-white text-ink border-rule hover:border-ink'`}
                         class="font-mono text-[10px] tracking-[0.1em] uppercase border px-4 py-2.5 transition-all duration-200"
                         disabled={!v.availableForSale || undefined}
@@ -171,11 +293,61 @@ const variantsJson = JSON.stringify(variants.map(v => ({ id: v.id, title: v.titl
                 </div>
               )}
 
+              {hasSellingPlans && (
+                <div class="mb-6">
+                  <p class="font-display text-[24px] text-ink mb-4">Purchase Options</p>
+                  <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <button
+                      type="button"
+                      @click="selectOneTime()"
+                      :class="purchaseOption === 'one-time' ? 'border-gold-deep text-gold-deep' : 'border-rule text-ink-soft hover:border-gold'"
+                      class="relative min-h-[92px] w-full border bg-white px-5 py-4 text-left transition-all duration-200"
+                    >
+                      <span class="flex items-center gap-4">
+                        <svg class="h-9 w-9 shrink-0" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                          <path d="M15 20h15l-1.5 13h-12L15 20Z"/>
+                          <path d="M19 20v-3.5a5.5 5.5 0 0 1 11 0V20"/>
+                          <path d="M9 29c4 0 5.5 6 11 6h13c2.5 0 4 1.5 4 3.5S35.5 42 33 42H20.5C15 42 11 38 7 34"/>
+                        </svg>
+                        <span class="font-display text-[22px] leading-tight">One-time Purchase</span>
+                      </span>
+                    </button>
+
+                    <template x-for="plan in currentSellingPlans()" :key="plan.id">
+                      <button
+                        type="button"
+                        @click="selectSubscription(plan.id)"
+                        :class="selectedSellingPlanId === plan.id ? 'border-gold-deep text-gold-deep' : 'border-rule text-ink-soft hover:border-gold'"
+                        class="relative min-h-[92px] w-full border bg-white px-5 py-4 text-left transition-all duration-200"
+                      >
+                        <span
+                          class="absolute -top-3 right-3 bg-gold-deep px-2.5 py-1 font-display text-[16px] leading-none text-white"
+                          x-show="plan.discountLabel"
+                          x-text="plan.discountLabel"
+                        ></span>
+                        <span class="flex items-center gap-4">
+                          <svg class="h-9 w-9 shrink-0" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                            <rect x="10" y="12" width="24" height="24"/>
+                            <path d="M16 8v8M28 8v8M10 19h24M16 25h4M24 25h4M16 31h4"/>
+                            <path d="M35 29a7 7 0 1 0 2 5"/>
+                            <path d="M38 28v6h-6"/>
+                          </svg>
+                          <span>
+                            <span class="block font-display text-[22px] leading-tight" x-text="plan.name"></span>
+                            <span class="block font-sans text-[12px] font-light mt-1 opacity-70" x-show="plan.deliveryOption" x-text="plan.deliveryOption"></span>
+                          </span>
+                        </span>
+                      </button>
+                    </template>
+                  </div>
+                </div>
+              )}
+
               {product.availableForSale ? (
                 <button
                   @click={`if (!adding && !added) {
                     adding = true;
-                    await $store.cart.addItem(selectedId);
+                    await $store.cart.addItem(selectedId, 1, selectedSellingPlanId || undefined);
                     adding = false;
                     added = true;
                     setTimeout(() => { added = false; }, 2000);
@@ -197,8 +369,19 @@ const variantsJson = JSON.stringify(variants.map(v => ({ id: v.id, title: v.titl
                 </button>
               )}
 
+              {hasSellingPlans && (
+                <p
+                  x-show="selectedSellingPlanId"
+                  x-cloak
+                  class="font-sans text-[11px] leading-[1.6] text-ink-soft mb-3"
+                >
+                  This item is a recurring or deferred purchase. By continuing, you agree to the cancellation policy and authorize charges at the prices, frequency, and dates shown until fulfilled or canceled, if permitted.
+                </p>
+              )}
+
               <a
                 href={firstAvailableId ? getCheckoutUrl(firstAvailableId) : `https://www.cfcskincare.shop/products/${product.handle}`}
+                :href="checkoutUrl()"
                 target="_blank"
                 rel="noopener"
                 class="block w-full text-center font-mono text-[10px] tracking-[0.2em] uppercase py-4 border border-rule text-ink-soft hover:border-ink hover:text-ink transition-colors duration-200"
