@@ -1,0 +1,267 @@
+---
+import { getSystemBuilderData, getSystemPriceRange } from '../lib/system-builder';
+
+const data = await getSystemBuilderData();
+const wizardData = JSON.stringify(data);
+---
+
+<section
+  class="bg-parchment min-h-screen"
+  style="padding: 128px 0 100px;"
+  x-data={`systemWizard(${wizardData})`}
+  x-init="
+    const params = new URLSearchParams(window.location.search);
+    const requested = params.get('system');
+    if (systems.some((system) => system.id === requested)) selectedSystem = requested;
+  "
+>
+  <div class="max-w-[1440px] mx-auto px-6 sm:px-10">
+    <div class="text-center mx-auto mb-12 max-w-[640px]">
+      <div class="flex items-center justify-center gap-4 mb-4">
+        <span class="font-mono text-[10px] tracking-[0.2em] uppercase text-gold">The System Builder</span>
+      </div>
+      <h1 class="font-display font-light text-ink mb-4 leading-none" style="font-size: clamp(42px, 5vw, 72px);">
+        Build your CFC routine.
+      </h1>
+      <p class="font-sans font-light text-[14px] leading-relaxed text-ink-soft">
+        Choose a system, pick your cleanser and SPF, and the routine total updates from the current Shopify product prices.
+      </p>
+    </div>
+
+    <div class="grid grid-cols-1 xl:grid-cols-[minmax(0,1fr)_420px] gap-8 items-start">
+      <div class="bg-white">
+        <div class="grid grid-cols-1 lg:grid-cols-3 border-b border-rule">
+          <template x-for="system in systems" :key="system.id">
+            <button
+              type="button"
+              @click="selectedSystem = system.id"
+              class="text-left p-6 border-b lg:border-b-0 lg:border-r border-rule transition-colors duration-200 last:border-r-0"
+              :class="selectedSystem === system.id ? 'bg-ink text-white' : 'bg-white text-ink hover:bg-parchment-2'"
+            >
+              <span class="font-mono text-[9px] tracking-[0.18em] uppercase text-gold" x-text="system.eyebrow"></span>
+              <span class="block font-display text-[25px] leading-tight mt-3" x-text="system.name"></span>
+              <span
+                class="block font-sans font-light text-[12px] leading-relaxed mt-3"
+                :class="selectedSystem === system.id ? 'text-[rgba(255,255,255,0.62)]' : 'text-ink-soft'"
+                x-text="system.description"
+              ></span>
+              <span
+                class="block font-mono text-[10px] tracking-[0.1em] mt-4"
+                :class="selectedSystem === system.id ? 'text-gold' : 'text-ink-soft'"
+                x-text="systemPriceRange(system)"
+              ></span>
+            </button>
+          </template>
+        </div>
+
+        <div class="p-6 sm:p-8 lg:p-10">
+          <div class="flex items-center gap-4 mb-6">
+            <div class="h-px bg-gold w-5"></div>
+            <span class="font-mono text-[10px] tracking-[0.2em] uppercase text-gold">Step 01 - Choose Cleanser</span>
+          </div>
+          <div class="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-10">
+            <template x-for="cleanser in products.cleansers" :key="cleanser.variantId || cleanser.handle">
+              <button
+                type="button"
+                @click="selectedCleanser = cleanser.variantId"
+                class="text-left border p-5 min-h-[264px] transition-all duration-200"
+                :class="selectedCleanser === cleanser.variantId ? 'border-ink bg-parchment' : 'border-rule bg-white hover:border-gold'"
+                :disabled="!cleanser.variantId"
+              >
+                <span class="font-display text-[22px] leading-tight text-ink" x-text="cleanser.shortTitle || cleanser.title"></span>
+                <span class="block font-mono text-[10px] text-gold mt-2" x-text="cleanser.formattedPrice"></span>
+                <span class="block font-sans text-[12px] leading-relaxed text-ink-soft mt-3" x-text="cleanser.description"></span>
+                <span class="block font-sans font-light text-[12px] leading-relaxed text-ink-soft mt-4" x-text="cleanser.details"></span>
+                <span class="block font-mono text-[9px] tracking-[0.16em] uppercase text-gold mt-5">
+                  <span x-show="selectedCleanser === cleanser.variantId">Selected</span>
+                  <span x-show="selectedCleanser !== cleanser.variantId">Choose</span>
+                </span>
+              </button>
+            </template>
+          </div>
+
+          <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            <div>
+              <div class="flex items-center gap-4 mb-5">
+                <div class="h-px bg-gold w-5"></div>
+                <span class="font-mono text-[10px] tracking-[0.2em] uppercase text-gold">Step 02 - Included Treatment</span>
+              </div>
+              <div class="space-y-3">
+                <template x-for="item in includedTreatments()" :key="item.variantId || item.handle">
+                  <a
+                    :href="`/products/${item.handle}`"
+                    class="flex items-center justify-between gap-4 border border-rule bg-white px-4 py-3 hover:border-gold transition-colors duration-200"
+                  >
+                    <span class="font-sans text-[13px] text-ink" x-text="item.title"></span>
+                    <span class="font-mono text-[10px] text-gold" x-text="item.formattedPrice"></span>
+                  </a>
+                </template>
+              </div>
+            </div>
+
+            <div>
+              <div class="flex items-center gap-4 mb-5">
+                <div class="h-px bg-gold w-5"></div>
+                <span class="font-mono text-[10px] tracking-[0.2em] uppercase text-gold">Step 03 - Choose SPF</span>
+              </div>
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <template x-for="spf in products.spf" :key="spf.variantId || spf.handle">
+                  <button
+                    type="button"
+                    @click="selectedSpf = spf.variantId"
+                    class="text-left border p-4 min-h-[132px] transition-all duration-200"
+                    :class="selectedSpf === spf.variantId ? 'border-ink bg-parchment' : 'border-rule bg-white hover:border-gold'"
+                    :disabled="!spf.variantId"
+                  >
+                    <span class="font-display text-[19px] leading-tight text-ink" x-text="spf.title"></span>
+                    <span class="block font-mono text-[10px] text-gold mt-2" x-text="spf.formattedPrice"></span>
+                    <span class="block font-sans text-[12px] text-ink-soft mt-2" x-text="spf.description"></span>
+                  </button>
+                </template>
+              </div>
+            </div>
+          </div>
+
+          <div x-show="currentSystem().retinolIds.length > 0" class="mt-10" x-cloak>
+            <div class="flex items-center gap-4 mb-5">
+              <div class="h-px bg-gold w-5"></div>
+              <span class="font-mono text-[10px] tracking-[0.2em] uppercase text-gold">Premium Adds Both Retinols</span>
+            </div>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <template x-for="retinol in includedRetinols()" :key="retinol.variantId || retinol.handle">
+                <a :href="`/products/${retinol.handle}`" class="flex items-center justify-between gap-4 border border-rule bg-white px-4 py-3 hover:border-gold transition-colors duration-200">
+                  <span class="font-sans text-[13px] text-ink" x-text="retinol.title"></span>
+                  <span class="font-mono text-[10px] text-gold" x-text="retinol.formattedPrice"></span>
+                </a>
+              </template>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <aside class="bg-ink text-white sticky top-8">
+        <div class="p-7 sm:p-8">
+          <span class="font-mono text-[10px] tracking-[0.2em] uppercase text-gold">Your System</span>
+          <h2 class="font-display text-[31px] leading-tight mt-3 mb-2" x-text="currentSystem().name"></h2>
+          <p class="font-sans font-light text-[13px] leading-relaxed text-[rgba(255,255,255,0.58)] mb-6">
+            Total updates from selected Shopify products.
+          </p>
+
+          <ul class="space-y-3 mb-7">
+            <template x-for="item in selectedItems()" :key="item.variantId || item.handle">
+              <li class="flex items-start justify-between gap-4 font-sans font-light text-[13px] leading-relaxed text-[rgba(255,255,255,0.72)]">
+                <a :href="`/products/${item.handle}`" class="hover:text-gold transition-colors duration-200" x-text="item.title"></a>
+                <span class="font-mono text-[10px] text-gold shrink-0" x-text="item.formattedPrice"></span>
+              </li>
+            </template>
+          </ul>
+
+          <div class="flex items-end justify-between gap-6 mb-7 pt-6 border-t border-[rgba(255,255,255,0.08)]">
+            <span class="font-mono text-[10px] tracking-[0.18em] uppercase text-[rgba(255,255,255,0.48)]">System Total</span>
+            <span class="font-display text-[42px] leading-none" x-text="formatPrice(selectedTotal())"></span>
+          </div>
+
+          <button
+            type="button"
+            @click="addSystem()"
+            class="w-full bg-gold text-ink font-mono text-[10px] tracking-[0.18em] uppercase py-4 transition-colors duration-200 hover:bg-[oklch(80%_0.08_78)] disabled:opacity-60"
+            :disabled="$store.cart.isLoading || selectedItems().some((item) => !item.variantId)"
+          >
+            <span x-show="!$store.cart.isLoading">Add System To Cart</span>
+            <span x-show="$store.cart.isLoading">Adding System</span>
+          </button>
+
+          <div class="mt-8 pt-7 border-t border-[rgba(255,255,255,0.08)]">
+            <span class="font-mono text-[10px] tracking-[0.18em] uppercase text-gold">Suggested Upsells</span>
+            <div class="space-y-3 mt-4">
+              <template x-for="upsell in products.upsells" :key="upsell.variantId || upsell.handle">
+                <div class="flex items-center justify-between gap-3">
+                  <a :href="`/products/${upsell.handle}`" class="font-sans text-[12px] text-[rgba(255,255,255,0.68)] hover:text-gold transition-colors duration-200">
+                    <span x-text="upsell.title"></span>
+                    <span class="text-gold" x-text="` ${upsell.formattedPrice}`"></span>
+                  </a>
+                  <button
+                    type="button"
+                    @click="$store.cart.addItem(upsell.variantId)"
+                    class="border border-[rgba(255,255,255,0.16)] text-white font-mono text-[9px] tracking-[0.14em] uppercase px-3 py-2 hover:border-gold hover:text-gold transition-colors duration-200 disabled:opacity-50"
+                    :disabled="!upsell.variantId"
+                  >
+                    Add
+                  </button>
+                </div>
+              </template>
+            </div>
+          </div>
+        </div>
+      </aside>
+    </div>
+  </div>
+</section>
+
+<script is:inline>
+  function systemWizard(data) {
+    const money = new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' });
+
+    return {
+      products: data.products,
+      systems: data.systems,
+      selectedSystem: 'complete',
+      selectedCleanser: data.products.cleansers[0]?.variantId || '',
+      selectedSpf: data.products.spf[0]?.variantId || '',
+
+      currentSystem() {
+        return this.systems.find((system) => system.id === this.selectedSystem) || this.systems[0];
+      },
+      findByVariant(collection, variantId) {
+        return collection.find((item) => item.variantId === variantId) || collection[0];
+      },
+      selectedCleanserProduct() {
+        return this.findByVariant(this.products.cleansers, this.selectedCleanser);
+      },
+      selectedSpfProduct() {
+        return this.findByVariant(this.products.spf, this.selectedSpf);
+      },
+      includedTreatments() {
+        return this.currentSystem().treatmentIds.map((id) => this.products.treatments[id]);
+      },
+      includedRetinols() {
+        return this.currentSystem().retinolIds.map((id) => this.products.retinols[id]);
+      },
+      selectedItems() {
+        return [
+          this.selectedCleanserProduct(),
+          ...this.includedTreatments(),
+          this.selectedSpfProduct(),
+          ...this.includedRetinols(),
+        ].filter(Boolean);
+      },
+      selectedTotal() {
+        return this.selectedItems().reduce((total, item) => total + (Number(item.price) || 0), 0);
+      },
+      systemPriceRange(system) {
+        const treatmentTotal = system.treatmentIds.reduce((total, id) => total + (Number(this.products.treatments[id]?.price) || 0), 0);
+        const retinolTotal = system.retinolIds.reduce((total, id) => total + (Number(this.products.retinols[id]?.price) || 0), 0);
+        const totals = this.products.cleansers.flatMap((cleanser) =>
+          this.products.spf.map((spf) => (Number(cleanser.price) || 0) + treatmentTotal + retinolTotal + (Number(spf.price) || 0))
+        );
+        const min = Math.min(...totals);
+        const max = Math.max(...totals);
+
+        if (!Number.isFinite(min) || !Number.isFinite(max)) return '$0';
+        if (min === max) return this.formatPrice(min);
+        return `${this.formatPrice(min)}-${this.formatPrice(max)}`;
+      },
+      formatPrice(amount) {
+        return money.format(Number(amount) || 0);
+      },
+      async addSystem() {
+        await this.$store.cart.addItems(
+          this.selectedItems().map((item) => ({
+            merchandiseId: item.variantId,
+            quantity: 1,
+          }))
+        );
+      },
+    };
+  }
+</script>

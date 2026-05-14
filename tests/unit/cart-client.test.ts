@@ -1,5 +1,6 @@
 import { describe, expect, it, vi } from 'vitest';
 import {
+  addLinesToCart,
   addToCart,
   createCart,
   parseCart,
@@ -52,6 +53,22 @@ describe('Shopify cart API utilities', () => {
     const request = JSON.parse(String(fetchMock.mock.calls[0][1]?.body));
 
     expect(request.variables.lines).toEqual([{ merchandiseId: variantId, quantity: 1, sellingPlanId }]);
+  });
+
+  it('adds multiple cart lines in one Shopify mutation', async () => {
+    const fetchMock = mockFetch({ data: { cartLinesAdd: { cart: rawCart(3) } } });
+
+    const cart = await addLinesToCart('gid://shopify/Cart/cart-1', [
+      { merchandiseId: variantId, quantity: 1 },
+      { merchandiseId: 'gid://shopify/ProductVariant/2002', quantity: 2 },
+    ]);
+    const request = JSON.parse(String(fetchMock.mock.calls[0][1]?.body));
+
+    expect(request.variables.lines).toEqual([
+      { merchandiseId: variantId, quantity: 1 },
+      { merchandiseId: 'gid://shopify/ProductVariant/2002', quantity: 2 },
+    ]);
+    expect(cart.totalQuantity).toBe(3);
   });
 
   it('updates quantity for increase and decrease requests', async () => {

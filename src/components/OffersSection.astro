@@ -1,61 +1,22 @@
 ---
-const offers = [
-  {
-    name: 'Starter System',
-    tagline: 'Begin here.',
-    price: '$130',
-    priceRange: '$110–$130 with Subscribe & Save',
-    description: 'One cleanser, one treatment, one SPF. The foundation of the CFC protocol — clinically designed, simple to use, results within weeks.',
-    includes: [
-      'Age Defying Brightening Cleanser',
-      'Apple Stem Wrinkle Eraser',
-      'Pure Sun Defense SPF 50+',
-    ],
-    cta: 'Start Your Skin Journey',
-    href: '/shop',
-    featured: false,
-  },
-  {
-    name: 'Complete Treatment System',
-    tagline: 'The full transformation.',
-    price: '$250',
-    priceRange: '$175–$210 with Subscribe & Save',
-    description: 'The full Cleanse-Treat-Protect protocol. Five products, three steps — this is the system our clients use when they stop wearing foundation.',
-    includes: [
-      'Brightening Glyco Glow Cleanser',
-      'Apple Stem Wrinkle Eraser',
-      'Color Correction C&E Serum',
-      'Pure Hydration Hyaluronic Acid Serum',
-      'Sun Kissed Tinted SPF 30',
-    ],
-    cta: 'Shop the Complete System',
-    href: '/shop',
-    featured: true,
-  },
-  {
-    name: 'Premium Collection',
-    tagline: 'For women who are serious.',
-    price: '$450',
-    priceRange: '$315–$420 with Subscribe & Save',
-    description: 'The complete system plus advanced NAD+ formulations and the Quad Glow Elite LED Mask. At-home results that rival in-office treatments.',
-    includes: [
-      'Complete System — all 5 products',
-      'NAD+ Age Defying Retinol Cream 0.5%',
-      'Revitalizing Retinol Eye Cream',
-      'T Tightening and Firming Serum',
-      'Quad Glow Elite LED Mask',
-    ],
-    cta: 'Build Your Premium Routine',
-    href: '/shop',
-    featured: false,
-  },
-];
+import { getSystemBuilderData, getSystemPriceRange } from '../lib/system-builder';
+
+const data = await getSystemBuilderData();
+const offers = data.systems.map((system) => ({
+  ...system,
+  price: getSystemPriceRange(data, system),
+  priceRange: 'Calculated from current Shopify product prices',
+  href: `/systems?system=${system.id}`,
+  includes: system.id === 'starter'
+    ? ['Choose one cleanser', 'Apple Stem Wrinkle Eraser', 'Choose clear or tinted medical-grade sunscreen']
+    : system.id === 'complete'
+      ? ['Choose one cleanser', 'Apple Stem Wrinkle Eraser', 'Color Correction C&E Serum', 'Pure Hydration Hyaluronic Acid Serum', 'Choose clear or tinted medical-grade sunscreen']
+      : ['Choose one cleanser', 'CFC GLOW - all 3 treatment products', 'Choose clear or tinted medical-grade sunscreen', 'NAD+ Age Defying Retinol Cream 0.5%', 'Revitalizing Retinol Eye Cream'],
+}));
 ---
 
 <section class="bg-parchment" id="offers" style="padding: 140px 0;">
   <div class="max-w-[1440px] mx-auto px-10">
-
-    <!-- Header -->
     <div class="reveal text-center mx-auto mb-16 max-w-[560px]">
       <div class="flex items-center justify-center gap-4 mb-4">
         <span class="font-mono text-[10px] tracking-[0.2em] uppercase text-gold">Choose Your System</span>
@@ -63,10 +24,9 @@ const offers = [
       <h2 class="font-display font-light text-ink mb-4 leading-none tracking-[-0.02em]" style="font-size: clamp(38px, 4vw, 58px);">
         Start where you are.
       </h2>
-      <p class="font-sans font-light text-[14px] text-ink-soft">Save 30% when you subscribe — and never run out of what your skin needs.</p>
+      <p class="font-sans font-light text-[14px] text-ink-soft">Build a system with current Shopify pricing and the products your skin needs.</p>
     </div>
 
-    <!-- Cards grid: 2px gap -->
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-px">
       {offers.map(({ name, tagline, price, priceRange, description, includes, cta, href, featured }, i) => (
         <div
@@ -81,23 +41,19 @@ const offers = [
             </div>
           )}
 
-          <!-- Tagline -->
           <p class="font-mono text-[10px] tracking-[0.2em] uppercase mb-3 text-gold">
             {tagline}
           </p>
 
-          <!-- Name -->
           <h3 class={`font-display text-[28px] font-normal mb-5 ${featured ? 'text-white' : 'text-ink'}`}>
             {name}
           </h3>
 
-          <!-- Divider -->
           <div
             class={`mb-6 border-t ${featured ? '' : 'border-rule'}`}
             style={featured ? 'border-color: rgba(255,255,255,0.08);' : undefined}
           ></div>
 
-          <!-- Price -->
           <div class="mb-5">
             <span
               class={`font-display font-light text-[52px] leading-none ${featured ? 'text-white' : 'text-ink'}`}
@@ -110,13 +66,11 @@ const offers = [
             </p>
           </div>
 
-          <!-- Divider -->
           <div
             class={`mb-6 border-t ${featured ? '' : 'border-rule'}`}
             style={featured ? 'border-color: rgba(255,255,255,0.08);' : undefined}
           ></div>
 
-          <!-- Description -->
           <p
             class={`font-sans font-light text-[13px] leading-relaxed mb-7 ${!featured ? 'text-ink-soft' : ''}`}
             style={featured ? 'color: rgba(255,255,255,0.65);' : undefined}
@@ -124,7 +78,6 @@ const offers = [
             {description}
           </p>
 
-          <!-- Includes -->
           <ul class="space-y-2.5 mb-8 flex-1">
             {includes.map(item => (
               <li
@@ -137,7 +90,6 @@ const offers = [
             ))}
           </ul>
 
-          <!-- CTA -->
           <a
             href={href}
             class={`block text-center font-mono text-[10px] tracking-[0.18em] uppercase py-4 transition-all duration-200 ${featured ? 'bg-gold text-ink' : 'border border-ink text-ink'}`}

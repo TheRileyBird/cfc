@@ -7,6 +7,9 @@ function mockApi() {
     createCart: vi.fn(async () => cartFixture(0)),
     getCart: vi.fn(async () => cartFixture(1)),
     addToCart: vi.fn(async (_cartId: string, _variantId: string, quantity: number, _sellingPlanId?: string) => cartFixture(quantity)),
+    addLinesToCart: vi.fn(async (_cartId: string, lines: Array<{ quantity?: number }>) => (
+      cartFixture(lines.reduce((total, line) => total + (line.quantity ?? 1), 0))
+    )),
     removeFromCart: vi.fn(async () => cartFixture(0)),
     updateCartItem: vi.fn(async (_cartId: string, _lineId: string, quantity: number) => cartFixture(quantity)),
   };
@@ -42,6 +45,24 @@ describe('cart store integration behavior', () => {
     await store.addItem(variantId, 1, sellingPlanId);
 
     expect(api.addToCart).toHaveBeenCalledWith('gid://shopify/Cart/cart-1', variantId, 1, sellingPlanId);
+  });
+
+  it('adds multiple system products and opens the drawer', async () => {
+    const api = mockApi();
+    const store = createCartStore(api);
+
+    await store.addItems([
+      { merchandiseId: variantId, quantity: 1 },
+      { merchandiseId: alternateVariantId, quantity: 1 },
+    ]);
+
+    expect(api.createCart).toHaveBeenCalled();
+    expect(api.addLinesToCart).toHaveBeenCalledWith('gid://shopify/Cart/cart-1', [
+      { merchandiseId: variantId, quantity: 1 },
+      { merchandiseId: alternateVariantId, quantity: 1 },
+    ]);
+    expect(store.totalQuantity).toBe(2);
+    expect(store.isOpen).toBe(true);
   });
 
   it('persists and restores cart after page refresh', async () => {

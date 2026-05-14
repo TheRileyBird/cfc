@@ -11,7 +11,11 @@ const steps = [
     stepLabel: 'Step 01',
     headline: 'A clean slate, not a stripped one.',
     body: 'Gentle, plant-based cleansers that remove impurities without compromising your skin\'s natural barrier. Options include our Age Defying Brightening, NAD+ Bamboo Firming, and Jamin Jasmine formulas.',
-    products: ['Age Defying Brightening Cleanser', 'NAD+ Bamboo Firming Cleanser', 'Jamin Jasmine Cleanser'],
+    products: [
+      { name: 'Age Defying Brightening Cleanser', href: '/products/age-defying-brightening-cleanser' },
+      { name: 'NAD+ Bamboo Firming Cleanser', href: '/products/nad-bamboo-firming-cleanser' },
+      { name: 'Jamin Jasmine Cleanser', href: '/products/jamin-jasmine-nad-cleanser' },
+    ],
     image: cleanseImg,
     imageAlt: 'Woman cleansing face at sink with CFC products',
     imageRight: true,
@@ -22,7 +26,11 @@ const steps = [
     stepLabel: 'Step 02',
     headline: 'Where clinical results happen.',
     body: 'The heart of the CFC system. Three hero treatments working in synergy to address pigmentation, oxidative damage, fine lines, and cellular hydration.',
-    products: ['Apple Stem Wrinkle Eraser', 'Color Correction C&E Serum', 'Pure Hydration Hyaluronic Acid Serum'],
+    products: [
+      { name: 'Apple Stem Wrinkle Eraser', href: '/products/apple-stem-wrinkle-eraser' },
+      { name: 'Color Correction C&E Serum', href: '/products/color-correction-c-e-serum' },
+      { name: 'Pure Hydration Hyaluronic Acid Serum', href: '/products/pure-hydration-ha' },
+    ],
     image: treatImg,
     imageAlt: 'Woman applying CFC treatment serum',
     imageRight: false,
@@ -33,7 +41,10 @@ const steps = [
     stepLabel: 'Step 03',
     headline: 'Guard every result you\'ve earned.',
     body: 'Medical-grade SPF formulations that protect your skin investment and wear beautifully on all skin tones — no white cast, no compromise.',
-    products: ['Pure Sun Defense SPF 50+', 'Sun Kissed Protection Tinted SPF 30'],
+    products: [
+      { name: 'Pure Sun Defense SPF 50+', href: '/products/pure-sun-defense-sunscreen' },
+      { name: 'Sun Kissed Protection Tinted SPF 30', href: '/products/sun-kissed-protection-sunscreen' },
+    ],
     image: protectImg,
     imageAlt: 'Woman at sink with CFC skincare routine',
     imageRight: true,
@@ -93,7 +104,9 @@ const steps = [
             {products.map(p => (
               <li class="flex items-center gap-3 font-sans font-light text-[13px] text-[rgba(255,255,255,0.6)]">
                 <span class="h-px bg-gold shrink-0 w-4"></span>
-                {p}
+                <a href={p.href} class="transition-colors duration-200 hover:text-gold">
+                  {p.name}
+                </a>
               </li>
             ))}
           </ul>

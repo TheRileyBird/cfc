@@ -136,6 +136,36 @@ export async function addToCart(cartId: string, variantId: string, quantity = 1,
   return parseCart(data.cartLinesAdd.cart);
 }
 
+export interface CartLineInput {
+  merchandiseId: string;
+  quantity?: number;
+  sellingPlanId?: string;
+}
+
+export async function addLinesToCart(cartId: string, lines: CartLineInput[]): Promise<Cart> {
+  const cartLines = lines
+    .filter((line) => line.merchandiseId)
+    .map((line) => ({
+      merchandiseId: line.merchandiseId,
+      quantity: line.quantity ?? 1,
+      ...(line.sellingPlanId ? { sellingPlanId: line.sellingPlanId } : {}),
+    }));
+
+  if (cartLines.length === 0) {
+    const cart = await getCart(cartId);
+    if (!cart) throw new Error('Cart unavailable');
+    return cart;
+  }
+
+  const data = await gql<any>(
+    `mutation cartLinesAdd($cartId: ID!, $lines: [CartLineInput!]!) {
+      cartLinesAdd(cartId: $cartId, lines: $lines) { cart { ${CART_FRAGMENT} } }
+    }`,
+    { cartId, lines: cartLines }
+  );
+  return parseCart(data.cartLinesAdd.cart);
+}
+
 export async function removeFromCart(cartId: string, lineId: string): Promise<Cart> {
   const data = await gql<any>(
     `mutation cartLinesRemove($cartId: ID!, $lineIds: [ID!]!) {

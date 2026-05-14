@@ -1,5 +1,6 @@
 import type { Cart } from './cart-client';
 import {
+  addLinesToCart,
   addToCart,
   createCart,
   getCart,
@@ -16,6 +17,7 @@ export interface CartApi {
   createCart: typeof createCart;
   getCart: typeof getCart;
   addToCart: typeof addToCart;
+  addLinesToCart: typeof addLinesToCart;
   removeFromCart: typeof removeFromCart;
   updateCartItem: typeof updateCartItem;
 }
@@ -24,6 +26,7 @@ export function createCartStore(api: CartApi = {
   createCart,
   getCart,
   addToCart,
+  addLinesToCart,
   removeFromCart,
   updateCartItem,
 }) {
@@ -85,6 +88,27 @@ export function createCartStore(api: CartApi = {
         this.isOpen = true;
       } catch {
         this.errorMessage = 'We could not add that item to your cart. Please try again.';
+      } finally {
+        this.isLoading = false;
+      }
+    },
+
+    async addItems(lines: Array<{ merchandiseId: string; quantity?: number; sellingPlanId?: string }>) {
+      this.errorMessage = '';
+      const validLines = lines.filter((line) => line.merchandiseId && (line.quantity ?? 1) > 0);
+      if (validLines.length === 0) {
+        this.errorMessage = 'These products are not available right now.';
+        return;
+      }
+      if (!this.id) await this.init();
+      if (!this.id) return;
+      this.isLoading = true;
+      try {
+        const cart = await api.addLinesToCart(this.id, validLines);
+        this.applyCart(cart);
+        this.isOpen = true;
+      } catch {
+        this.errorMessage = 'We could not add those items to your cart. Please try again.';
       } finally {
         this.isLoading = false;
       }
