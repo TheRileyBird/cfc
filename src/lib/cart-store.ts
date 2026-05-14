@@ -93,7 +93,10 @@ export function createCartStore(api: CartApi = {
       }
     },
 
-    async addItems(lines: Array<{ merchandiseId: string; quantity?: number; sellingPlanId?: string }>) {
+    async addItems(
+      lines: Array<{ merchandiseId: string; quantity?: number; sellingPlanId?: string }>,
+      options: { openCart?: boolean } = {}
+    ) {
       this.errorMessage = '';
       const validLines = lines.filter((line) => line.merchandiseId && (line.quantity ?? 1) > 0);
       if (validLines.length === 0) {
@@ -106,7 +109,7 @@ export function createCartStore(api: CartApi = {
       try {
         const cart = await api.addLinesToCart(this.id, validLines);
         this.applyCart(cart);
-        this.isOpen = true;
+        this.isOpen = options.openCart ?? true;
       } catch {
         this.errorMessage = 'We could not add those items to your cart. Please try again.';
       } finally {
