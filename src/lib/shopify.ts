@@ -42,7 +42,7 @@ export interface ShopifyProduct {
   images: { edges: Array<{ node: { url: string; altText: string | null } }> };
   variants: { edges: Array<{ node: { id: string; title: string; price: { amount: string } } }> };
   tags: string[];
-  collections: { edges: Array<{ node: { title: string } }> };
+  collections: { edges: Array<{ node: { title: string; handle: string } }> };
 }
 
 export interface ShopifyProductDetail extends Omit<ShopifyProduct, 'priceRange' | 'variants' | 'images'> {
@@ -140,8 +140,8 @@ const PRODUCT_FIELDS = `
   variants(first: 1) {
     edges { node { id title price { amount } } }
   }
-  collections(first: 3) {
-    edges { node { title } }
+  collections(first: 10) {
+    edges { node { title handle } }
   }
 `;
 
@@ -159,7 +159,7 @@ function getMockProducts(): ShopifyProduct[] {
       variants: {
         edges: [{ node: { id: 'gid://shopify/ProductVariant/2001', title: 'Default Title', price: { amount: '28.00' } } }],
       },
-      collections: { edges: [{ node: { title: 'Cleanse' } }] },
+      collections: { edges: [{ node: { title: 'Adult Skin Care', handle: 'adult-skin-care' } }] },
     },
     {
       id: 'gid://shopify/Product/1002',
@@ -173,7 +173,7 @@ function getMockProducts(): ShopifyProduct[] {
       variants: {
         edges: [{ node: { id: 'gid://shopify/ProductVariant/2002', title: '1 oz', price: { amount: '46.00' } } }],
       },
-      collections: { edges: [{ node: { title: 'Treat' } }] },
+      collections: { edges: [{ node: { title: 'Adult Skin Care', handle: 'adult-skin-care' } }] },
     },
     {
       id: 'gid://shopify/Product/1003',
@@ -187,7 +187,7 @@ function getMockProducts(): ShopifyProduct[] {
       variants: {
         edges: [{ node: { id: 'gid://shopify/ProductVariant/2003', title: 'Default Title', price: { amount: '34.00' } } }],
       },
-      collections: { edges: [{ node: { title: 'Protect' } }] },
+      collections: { edges: [{ node: { title: 'Adult Skin Care', handle: 'adult-skin-care' } }] },
     },
   ];
 }
@@ -379,8 +379,8 @@ const PRODUCT_DETAIL_QUERY = `
           }
         }
       }
-      collections(first: 3) {
-        edges { node { title } }
+      collections(first: 10) {
+        edges { node { title handle } }
       }
     }
   }

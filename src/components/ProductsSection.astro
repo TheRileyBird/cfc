@@ -33,15 +33,12 @@ const ctaLabel = isFeatured ? 'Shop Complete System' : 'View All Products';
 const ctaTarget = isFeatured ? undefined : '_blank';
 
 function getProductFilter(product: ShopifyProduct): 'adult' | 'teen' | 'swag' {
-  const text = [
-    product.title,
-    product.description,
-    ...product.tags,
-    ...product.collections.edges.map(({ node }) => node.title),
-  ].join(' ').toLowerCase();
+  const handles = product.collections.edges.map(({ node }) => node.handle);
+  const titles = product.collections.edges.map(({ node }) => node.title.toLowerCase());
+  const collectionText = [...handles, ...titles].join(' ');
 
-  if (text.includes('swag') || text.includes('merch') || text.includes('apparel')) return 'swag';
-  if (text.includes('teen') || text.includes('tween')) return 'teen';
+  if (collectionText.includes('swag') || collectionText.includes('merch') || collectionText.includes('apparel')) return 'swag';
+  if (handles.includes('tween-and-teen-skin-care')) return 'teen';
   return 'adult';
 }
 
