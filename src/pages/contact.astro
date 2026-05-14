@@ -102,29 +102,29 @@ import bottleImg from '../assets/images/bottle.jpg';
               Use the form for skin consultations, product matching, order support, local pickup questions, wholesale inquiries, or press requests.
             </p>
 
-            <div class="bg-white border border-rule grid gap-5 mb-8 items-start p-6" style="grid-template-columns: 64px 1fr;">
-              <Image
-                src={founderImg}
-                alt="Brittani, NP-C — Founder of CFC Skincare"
-                class="object-cover object-top w-16 h-16"
-                widths={[128]}
-                sizes="64px"
-              />
-              <div>
-                <p class="font-mono text-[18px] font-normal text-gold mb-1.5">Founder-led guidance</p>
-                <p class="font-sans font-light text-[13px] leading-relaxed text-ink-soft">
-                  Messages are reviewed by the CFC team for practical, product-specific next steps.
-                </p>
-              </div>
-            </div>
-
             <div class="border border-rule bg-white">
+              <div class="grid gap-5 items-start p-6 border-b border-rule" style="grid-template-columns: 64px 1fr;">
+                <Image
+                  src={founderImg}
+                  alt="Brittani, NP-C — Founder of CFC Skincare"
+                  class="object-cover object-top w-16 h-16"
+                  widths={[128]}
+                  sizes="64px"
+                />
+                <div>
+                  <p class="font-display text-[22px] font-normal text-ink leading-tight mb-1.5">Founder-led guidance</p>
+                  <p class="font-sans font-light text-[13px] leading-relaxed text-ink-soft">
+                    Messages are reviewed by the CFC team for practical, product-specific next steps.
+                  </p>
+                </div>
+              </div>
+
               {[
                 ['Consultation cost', 'Free product guidance'],
                 ['Privacy', 'Skin details stay confidential'],
                 ['Order help', 'Include your order number'],
               ].map(([label, value], i) => (
-                <div class={`p-5 ${i < 3 ? 'border-b border-rule' : ''}`}>
+                <div class={`p-5 ${i < 2 ? 'border-b border-rule' : ''}`}>
                   <p class="font-mono text-[9px] tracking-[0.18em] uppercase text-gold mb-1.5">{label}</p>
                   <p class="font-sans text-[14px] text-ink">{value}</p>
                 </div>
@@ -345,7 +345,7 @@ import bottleImg from '../assets/images/bottle.jpg';
                 ['Order support', 'Include your order number and the email used at checkout.'],
                 ['Partnerships', 'Share your business, location, and what kind of collaboration you have in mind.'],
               ].map(([title, copy]) => (
-                <div class="grid sm:grid-cols-[180px_1fr] gap-3 sm:gap-8 py-6 border-b border-rule">
+                <div class="grid sm:grid-cols-[150px_1fr] gap-3 sm:gap-8 py-6 border-b border-rule">
                   <p class="font-display text-[20px] font-normal text-ink">{title}</p>
                   <p class="font-sans font-light text-[14px] leading-[1.75] text-ink-soft">{copy}</p>
                 </div>
