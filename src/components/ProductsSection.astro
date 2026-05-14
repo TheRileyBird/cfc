@@ -20,22 +20,29 @@ const products = providedProducts ?? (isFeatured ? await getFeaturedProducts() :
 const hasProducts = products.length > 0;
 
 const displayProducts = products;
-const filters = ['All', 'Cleanse', 'Treat', 'Protect'];
+const defaultFilter = 'adult';
+const filters = [
+  { label: 'Adults', value: 'adult' },
+  { label: 'Teen', value: 'teen' },
+  { label: 'Swag', value: 'swag' },
+  { label: 'Shop All', value: 'all' },
+];
 const heading = isFeatured ? 'Featured collection.' : 'The complete system.';
 const ctaHref = isFeatured ? '/shop' : 'https://www.cfcskincare.shop/collections/all';
 const ctaLabel = isFeatured ? 'Shop Complete System' : 'View All Products';
 const ctaTarget = isFeatured ? undefined : '_blank';
 
-function getProductStep(product: ShopifyProduct): 'cleanse' | 'treat' | 'protect' {
+function getProductFilter(product: ShopifyProduct): 'adult' | 'teen' | 'swag' {
   const text = [
     product.title,
+    product.description,
     ...product.tags,
     ...product.collections.edges.map(({ node }) => node.title),
   ].join(' ').toLowerCase();
 
-  if (text.includes('cleanser') || text.includes('cleanse')) return 'cleanse';
-  if (text.includes('spf') || text.includes('sunscreen') || text.includes('sun protection')) return 'protect';
-  return 'treat';
+  if (text.includes('swag') || text.includes('merch') || text.includes('apparel')) return 'swag';
+  if (text.includes('teen') || text.includes('tween')) return 'teen';
+  return 'adult';
 }
 
 function getShopPageHref(page: number): string {
@@ -51,7 +58,7 @@ const productState = displayProducts.map((product, index) => {
   return {
     id: product.id,
     title: product.title,
-    category: getProductStep(product),
+    category: getProductFilter(product),
     available: product.availableForSale,
     price: Number(product.priceRange.minVariantPrice.amount),
     bestSellingRank,
@@ -103,19 +110,19 @@ const lastVisibleIndex = firstVisibleIndex + 16;
     <!-- Filter tabs + grid (state) -->
     <div
       x-data={`{
-        active: 'All',
+        active: ${JSON.stringify(defaultFilter)},
         sortBy: 'alpha',
         page: ${initialPage},
         perPage: 16,
         products: ${JSON.stringify(productState)},
         reset() {
-          this.active = 'All';
+          this.active = ${JSON.stringify(defaultFilter)};
           this.sortBy = 'alpha';
           this.page = 1;
         },
         filteredProducts() {
           return this.products.filter((product) => {
-            return this.active === 'All' || product.category === this.active.toLowerCase();
+            return this.active === 'all' || product.category === this.active;
           });
         },
         sortedProducts() {
@@ -156,11 +163,11 @@ const lastVisibleIndex = firstVisibleIndex + 16;
           <div class="flex flex-wrap gap-0.5">
             {filters.map(f => (
               <button
-                @click={`active = '${f}'; page = 1`}
-                :class={`active === '${f}' ? 'bg-ink text-white' : 'bg-white text-ink-soft hover:text-ink border border-rule'`}
+                @click={`active = '${f.value}'; page = 1`}
+                :class={`active === '${f.value}' ? 'bg-ink text-white' : 'bg-white text-ink-soft hover:text-ink border border-rule'`}
                 class="px-5 py-2.5 font-mono text-[10px] tracking-[0.15em] uppercase transition-all duration-200"
               >
-                {f}
+                {f.label}
               </button>
             ))}
           </div>
