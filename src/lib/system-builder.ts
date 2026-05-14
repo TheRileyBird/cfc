@@ -63,14 +63,20 @@ export const productConfig = {
   treatments: {
     appleStem: {
       title: 'Apple Stem Wrinkle Eraser',
+      description: 'Targets visible fine lines and texture.',
+      details: 'A daily treatment step that supports smoother, brighter-looking skin and anchors every CFC system.',
       handle: 'apple-stem-wrinkle-eraser',
     },
     colorCorrection: {
       title: 'Color Correction C&E Serum',
+      description: 'Brightens uneven tone and supports antioxidant defense.',
+      details: 'Included in CFC GLOW to help address dullness, discoloration, and environmental stress.',
       handle: 'color-correction-c-e-serum',
     },
     hydration: {
       title: 'Pure Hydration Hyaluronic Acid Serum',
+      description: 'Floods skin with lightweight hydration.',
+      details: 'Included in CFC GLOW to visibly plump, soften, and support the skin barrier.',
       handle: 'pure-hydration-ha',
     },
   },
@@ -89,10 +95,14 @@ export const productConfig = {
   retinols: {
     retinolCream: {
       title: 'NAD+ Age Defying Retinol Cream 0.5%',
+      description: 'Advanced evening renewal for visible aging.',
+      details: 'Automatically included in the Premium Collection for texture, tone, and fine-line support.',
       handle: 'nad-age-defying-retinol',
     },
     retinolEye: {
       title: 'Revitalizing Retinol Eye Cream',
+      description: 'Targeted retinol care for the eye area.',
+      details: 'Automatically included in the Premium Collection to support smoother, brighter-looking eyes.',
       handle: 'revitalizing-retinol-eye-serum',
     },
   },

@@ -15,7 +15,7 @@ const wizardData = JSON.stringify(data);
     if (systems.some((system) => system.id === requested)) selectedSystem = requested;
   "
 >
-  <div class="max-w-[1440px] mx-auto px-6 sm:px-10">
+  <div class="max-w-5xl mx-auto px-6 sm:px-10">
     <div class="text-center mx-auto mb-12 max-w-[640px]">
       <div class="flex items-center justify-center gap-4 mb-4">
         <span class="font-mono text-[10px] tracking-[0.2em] uppercase text-gold">The System Builder</span>
@@ -24,176 +24,246 @@ const wizardData = JSON.stringify(data);
         Build your CFC routine.
       </h1>
       <p class="font-sans font-light text-[14px] leading-relaxed text-ink-soft">
-        Choose a system, pick your cleanser and SPF, and the routine total updates from the current Shopify product prices.
+        Select one system to get started. Then choose your cleanser and SPF; everything else marked included is automatically added.
       </p>
     </div>
 
-    <div class="grid grid-cols-1 xl:grid-cols-[minmax(0,1fr)_420px] gap-8 items-start">
-      <div class="bg-white">
-        <div class="grid grid-cols-1 lg:grid-cols-3 border-b border-rule">
-          <template x-for="system in systems" :key="system.id">
-            <button
-              type="button"
-              @click="selectedSystem = system.id"
-              class="text-left p-6 border-b lg:border-b-0 lg:border-r border-rule transition-colors duration-200 last:border-r-0"
-              :class="selectedSystem === system.id ? 'bg-ink text-white' : 'bg-white text-ink hover:bg-parchment-2'"
-            >
-              <span class="font-mono text-[9px] tracking-[0.18em] uppercase text-gold" x-text="system.eyebrow"></span>
-              <span class="block font-display text-[25px] leading-tight mt-3" x-text="system.name"></span>
-              <span
-                class="block font-sans font-light text-[12px] leading-relaxed mt-3"
-                :class="selectedSystem === system.id ? 'text-[rgba(255,255,255,0.62)]' : 'text-ink-soft'"
-                x-text="system.description"
-              ></span>
-              <span
-                class="block font-mono text-[10px] tracking-[0.1em] mt-4"
-                :class="selectedSystem === system.id ? 'text-gold' : 'text-ink-soft'"
-                x-text="systemPriceRange(system)"
-              ></span>
-            </button>
-          </template>
-        </div>
-
-        <div class="p-6 sm:p-8 lg:p-10">
-          <div class="flex items-center gap-4 mb-6">
-            <div class="h-px bg-gold w-5"></div>
-            <span class="font-mono text-[10px] tracking-[0.2em] uppercase text-gold">Step 01 - Choose Cleanser</span>
+    <div class="bg-white">
+        <div class="p-6 sm:p-8 lg:p-10 border-b border-rule">
+          <div class="flex items-center justify-between gap-6 mb-6">
+            <div>
+              <span class="font-mono text-[10px] tracking-[0.2em] uppercase text-gold">Start Here</span>
+              <h2 class="font-display text-[32px] leading-tight text-ink mt-2">Select your system.</h2>
+            </div>
+            <p class="hidden md:block max-w-[260px] font-sans font-light text-[13px] leading-relaxed text-ink-soft">
+              This choice controls which treatment products are automatically included.
+            </p>
           </div>
-          <div class="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-10">
-            <template x-for="cleanser in products.cleansers" :key="cleanser.variantId || cleanser.handle">
+
+          <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
+            <template x-for="system in systems" :key="system.id">
               <button
                 type="button"
-                @click="selectedCleanser = cleanser.variantId"
-                class="text-left border p-5 min-h-[264px] transition-all duration-200"
-                :class="selectedCleanser === cleanser.variantId ? 'border-ink bg-parchment' : 'border-rule bg-white hover:border-gold'"
-                :disabled="!cleanser.variantId"
+                @click="selectedSystem = system.id"
+                class="text-left p-6 border transition-all duration-200"
+                :class="selectedSystem === system.id ? 'bg-ink text-white border-ink shadow-strong' : 'bg-white text-ink border-rule hover:border-gold'"
               >
-                <span class="font-display text-[22px] leading-tight text-ink" x-text="cleanser.shortTitle || cleanser.title"></span>
-                <span class="block font-mono text-[10px] text-gold mt-2" x-text="cleanser.formattedPrice"></span>
-                <span class="block font-sans text-[12px] leading-relaxed text-ink-soft mt-3" x-text="cleanser.description"></span>
-                <span class="block font-sans font-light text-[12px] leading-relaxed text-ink-soft mt-4" x-text="cleanser.details"></span>
-                <span class="block font-mono text-[9px] tracking-[0.16em] uppercase text-gold mt-5">
-                  <span x-show="selectedCleanser === cleanser.variantId">Selected</span>
-                  <span x-show="selectedCleanser !== cleanser.variantId">Choose</span>
+                <span class="font-mono text-[9px] tracking-[0.18em] uppercase text-gold" x-text="system.eyebrow"></span>
+                <span class="block font-display text-[25px] leading-tight mt-3" x-text="system.name"></span>
+                <span
+                  class="block font-sans font-light text-[12px] leading-relaxed mt-3"
+                  :class="selectedSystem === system.id ? 'text-[rgba(255,255,255,0.62)]' : 'text-ink-soft'"
+                  x-text="system.description"
+                ></span>
+                <span
+                  class="block font-mono text-[10px] tracking-[0.1em] mt-4"
+                  :class="selectedSystem === system.id ? 'text-gold' : 'text-ink-soft'"
+                  x-text="systemPriceRange(system)"
+                ></span>
+                <span
+                  class="inline-flex mt-5 font-mono text-[9px] tracking-[0.16em] uppercase"
+                  :class="selectedSystem === system.id ? 'text-gold' : 'text-ink-soft'"
+                >
+                  <span x-show="selectedSystem === system.id">Selected</span>
+                  <span x-show="selectedSystem !== system.id">Select</span>
                 </span>
               </button>
             </template>
           </div>
+        </div>
 
-          <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        <div class="p-6 sm:p-8 lg:p-10 border-b border-rule">
+          <div class="flex flex-col md:flex-row md:items-end md:justify-between gap-3 mb-6">
             <div>
-              <div class="flex items-center gap-4 mb-5">
-                <div class="h-px bg-gold w-5"></div>
-                <span class="font-mono text-[10px] tracking-[0.2em] uppercase text-gold">Step 02 - Included Treatment</span>
-              </div>
-              <div class="space-y-3">
-                <template x-for="item in includedTreatments()" :key="item.variantId || item.handle">
-                  <a
-                    :href="`/products/${item.handle}`"
-                    class="flex items-center justify-between gap-4 border border-rule bg-white px-4 py-3 hover:border-gold transition-colors duration-200"
-                  >
-                    <span class="font-sans text-[13px] text-ink" x-text="item.title"></span>
-                    <span class="font-mono text-[10px] text-gold" x-text="item.formattedPrice"></span>
-                  </a>
-                </template>
-              </div>
+              <span class="font-mono text-[10px] tracking-[0.2em] uppercase text-gold">Step 01</span>
+              <h2 class="font-display text-[32px] leading-tight text-ink mt-2">Choose your cleanser.</h2>
             </div>
-
-            <div>
-              <div class="flex items-center gap-4 mb-5">
-                <div class="h-px bg-gold w-5"></div>
-                <span class="font-mono text-[10px] tracking-[0.2em] uppercase text-gold">Step 03 - Choose SPF</span>
-              </div>
-              <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                <template x-for="spf in products.spf" :key="spf.variantId || spf.handle">
-                  <button
-                    type="button"
-                    @click="selectedSpf = spf.variantId"
-                    class="text-left border p-4 min-h-[132px] transition-all duration-200"
-                    :class="selectedSpf === spf.variantId ? 'border-ink bg-parchment' : 'border-rule bg-white hover:border-gold'"
-                    :disabled="!spf.variantId"
-                  >
-                    <span class="font-display text-[19px] leading-tight text-ink" x-text="spf.title"></span>
-                    <span class="block font-mono text-[10px] text-gold mt-2" x-text="spf.formattedPrice"></span>
-                    <span class="block font-sans text-[12px] text-ink-soft mt-2" x-text="spf.description"></span>
-                  </button>
-                </template>
-              </div>
-            </div>
+            <p class="max-w-[360px] font-sans font-light text-[13px] leading-relaxed text-ink-soft">
+              Pick one cleanser. The selected cleanser becomes part of your system.
+            </p>
           </div>
-
-          <div x-show="currentSystem().retinolIds.length > 0" class="mt-10" x-cloak>
-            <div class="flex items-center gap-4 mb-5">
-              <div class="h-px bg-gold w-5"></div>
-              <span class="font-mono text-[10px] tracking-[0.2em] uppercase text-gold">Premium Adds Both Retinols</span>
-            </div>
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-              <template x-for="retinol in includedRetinols()" :key="retinol.variantId || retinol.handle">
-                <a :href="`/products/${retinol.handle}`" class="flex items-center justify-between gap-4 border border-rule bg-white px-4 py-3 hover:border-gold transition-colors duration-200">
-                  <span class="font-sans text-[13px] text-ink" x-text="retinol.title"></span>
-                  <span class="font-mono text-[10px] text-gold" x-text="retinol.formattedPrice"></span>
-                </a>
-              </template>
-            </div>
+          <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
+            <template x-for="cleanser in products.cleansers" :key="cleanser.variantId || cleanser.handle">
+              <button
+                type="button"
+                @click="selectedCleanser = cleanser.variantId"
+                class="relative text-left border p-5 min-h-[264px] transition-all duration-200"
+                :class="selectedCleanser === cleanser.variantId ? 'border-ink bg-ink text-white shadow-strong' : 'border-rule bg-white text-ink hover:border-gold'"
+                :disabled="!cleanser.variantId"
+              >
+                <span
+                  x-show="selectedCleanser === cleanser.variantId"
+                  class="absolute top-4 right-4 bg-gold text-ink font-mono text-[9px] tracking-[0.16em] uppercase px-2 py-1"
+                >Selected</span>
+                <span class="block font-display text-[22px] leading-tight pr-20" x-text="cleanser.shortTitle || cleanser.title"></span>
+                <span class="block font-mono text-[10px] text-gold mt-2" x-text="cleanser.formattedPrice"></span>
+                <span
+                  class="block font-sans text-[12px] leading-relaxed mt-3"
+                  :class="selectedCleanser === cleanser.variantId ? 'text-[rgba(255,255,255,0.7)]' : 'text-ink-soft'"
+                  x-text="cleanser.description"
+                ></span>
+                <span
+                  class="block font-sans font-light text-[12px] leading-relaxed mt-4"
+                  :class="selectedCleanser === cleanser.variantId ? 'text-[rgba(255,255,255,0.62)]' : 'text-ink-soft'"
+                  x-text="cleanser.details"
+                ></span>
+                <span class="block font-mono text-[9px] tracking-[0.16em] uppercase text-gold mt-5">
+                  <span x-show="selectedCleanser === cleanser.variantId">Included in your system</span>
+                  <span x-show="selectedCleanser !== cleanser.variantId">Choose this cleanser</span>
+                </span>
+              </button>
+            </template>
           </div>
         </div>
-      </div>
 
-      <aside class="bg-ink text-white sticky top-8">
-        <div class="p-7 sm:p-8">
-          <span class="font-mono text-[10px] tracking-[0.2em] uppercase text-gold">Your System</span>
-          <h2 class="font-display text-[31px] leading-tight mt-3 mb-2" x-text="currentSystem().name"></h2>
-          <p class="font-sans font-light text-[13px] leading-relaxed text-[rgba(255,255,255,0.58)] mb-6">
-            Total updates from selected Shopify products.
-          </p>
-
-          <ul class="space-y-3 mb-7">
-            <template x-for="item in selectedItems()" :key="item.variantId || item.handle">
-              <li class="flex items-start justify-between gap-4 font-sans font-light text-[13px] leading-relaxed text-[rgba(255,255,255,0.72)]">
-                <a :href="`/products/${item.handle}`" class="hover:text-gold transition-colors duration-200" x-text="item.title"></a>
-                <span class="font-mono text-[10px] text-gold shrink-0" x-text="item.formattedPrice"></span>
-              </li>
+        <div class="p-6 sm:p-8 lg:p-10 border-b border-rule">
+          <div class="flex flex-col md:flex-row md:items-end md:justify-between gap-3 mb-6">
+            <div>
+              <span class="font-mono text-[10px] tracking-[0.2em] uppercase text-gold">Step 02</span>
+              <h2 class="font-display text-[32px] leading-tight text-ink mt-2">Included treatment products.</h2>
+            </div>
+            <p class="max-w-[360px] font-sans font-light text-[13px] leading-relaxed text-ink-soft">
+              No action needed here. These products are automatically included based on the system you selected.
+            </p>
+          </div>
+          <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
+            <template x-for="item in includedTreatments()" :key="item.variantId || item.handle">
+              <div class="border border-rule bg-parchment p-5 min-h-[168px]">
+                <div class="flex items-start justify-between gap-4">
+                  <span class="font-display text-[21px] leading-tight text-ink" x-text="item.title"></span>
+                  <span class="shrink-0 bg-ink text-white font-mono text-[9px] tracking-[0.16em] uppercase px-2 py-1">Included</span>
+                </div>
+                <span class="block font-mono text-[10px] text-gold mt-3" x-text="item.formattedPrice"></span>
+                <span class="block font-sans text-[12px] leading-relaxed text-ink-soft mt-3" x-text="item.description"></span>
+                <span class="block font-sans font-light text-[12px] leading-relaxed text-ink-soft mt-3" x-text="item.details"></span>
+              </div>
             </template>
-          </ul>
-
-          <div class="flex items-end justify-between gap-6 mb-7 pt-6 border-t border-[rgba(255,255,255,0.08)]">
-            <span class="font-mono text-[10px] tracking-[0.18em] uppercase text-[rgba(255,255,255,0.48)]">System Total</span>
-            <span class="font-display text-[42px] leading-none" x-text="formatPrice(selectedTotal())"></span>
           </div>
 
-          <button
-            type="button"
-            @click="addSystem()"
-            class="w-full bg-gold text-ink font-mono text-[10px] tracking-[0.18em] uppercase py-4 transition-colors duration-200 hover:bg-[oklch(80%_0.08_78)] disabled:opacity-60"
-            :disabled="$store.cart.isLoading || selectedItems().some((item) => !item.variantId)"
-          >
-            <span x-show="!$store.cart.isLoading">Add System To Cart</span>
-            <span x-show="$store.cart.isLoading">Adding System</span>
-          </button>
-
-          <div class="mt-8 pt-7 border-t border-[rgba(255,255,255,0.08)]">
-            <span class="font-mono text-[10px] tracking-[0.18em] uppercase text-gold">Suggested Upsells</span>
-            <div class="space-y-3 mt-4">
-              <template x-for="upsell in products.upsells" :key="upsell.variantId || upsell.handle">
-                <div class="flex items-center justify-between gap-3">
-                  <a :href="`/products/${upsell.handle}`" class="font-sans text-[12px] text-[rgba(255,255,255,0.68)] hover:text-gold transition-colors duration-200">
-                    <span x-text="upsell.title"></span>
-                    <span class="text-gold" x-text="` ${upsell.formattedPrice}`"></span>
-                  </a>
-                  <button
-                    type="button"
-                    @click="$store.cart.addItem(upsell.variantId)"
-                    class="border border-[rgba(255,255,255,0.16)] text-white font-mono text-[9px] tracking-[0.14em] uppercase px-3 py-2 hover:border-gold hover:text-gold transition-colors duration-200 disabled:opacity-50"
-                    :disabled="!upsell.variantId"
-                  >
-                    Add
-                  </button>
+          <div x-show="currentSystem().retinolIds.length > 0" class="mt-5" x-cloak>
+            <div class="mb-4">
+              <span class="font-mono text-[10px] tracking-[0.18em] uppercase text-gold">Premium Collection Also Includes</span>
+            </div>
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+              <template x-for="retinol in includedRetinols()" :key="retinol.variantId || retinol.handle">
+                <div class="border border-rule bg-parchment p-5 min-h-[152px]">
+                  <div class="flex items-start justify-between gap-4">
+                    <span class="font-display text-[21px] leading-tight text-ink" x-text="retinol.title"></span>
+                    <span class="shrink-0 bg-ink text-white font-mono text-[9px] tracking-[0.16em] uppercase px-2 py-1">Included</span>
+                  </div>
+                  <span class="block font-mono text-[10px] text-gold mt-3" x-text="retinol.formattedPrice"></span>
+                  <span class="block font-sans text-[12px] leading-relaxed text-ink-soft mt-3" x-text="retinol.description"></span>
+                  <span class="block font-sans font-light text-[12px] leading-relaxed text-ink-soft mt-3" x-text="retinol.details"></span>
                 </div>
               </template>
             </div>
           </div>
         </div>
-      </aside>
+
+        <div class="p-6 sm:p-8 lg:p-10">
+          <div class="flex flex-col md:flex-row md:items-end md:justify-between gap-3 mb-6">
+            <div>
+              <span class="font-mono text-[10px] tracking-[0.2em] uppercase text-gold">Step 03</span>
+              <h2 class="font-display text-[32px] leading-tight text-ink mt-2">Choose your sunscreen.</h2>
+            </div>
+            <p class="max-w-[360px] font-sans font-light text-[13px] leading-relaxed text-ink-soft">
+              Pick clear or tinted protection, then add your full system to cart.
+            </p>
+          </div>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <template x-for="spf in products.spf" :key="spf.variantId || spf.handle">
+              <button
+                type="button"
+                @click="selectedSpf = spf.variantId"
+                class="relative text-left border p-5 min-h-[150px] transition-all duration-200"
+                :class="selectedSpf === spf.variantId ? 'bg-ink text-white border-ink shadow-strong' : 'bg-white text-ink border-rule hover:border-gold'"
+                :disabled="!spf.variantId"
+              >
+                <span
+                  x-show="selectedSpf === spf.variantId"
+                  class="absolute top-4 right-4 bg-gold text-ink font-mono text-[9px] tracking-[0.16em] uppercase px-2 py-1"
+                >Selected</span>
+                <span class="block font-display text-[21px] leading-tight pr-20" x-text="spf.title"></span>
+                <span class="block font-mono text-[10px] text-gold mt-2" x-text="spf.formattedPrice"></span>
+                <span
+                  class="block font-sans text-[12px] mt-3"
+                  :class="selectedSpf === spf.variantId ? 'text-[rgba(255,255,255,0.7)]' : 'text-ink-soft'"
+                  x-text="spf.description"
+                ></span>
+              </button>
+            </template>
+          </div>
+        </div>
+      <div class="bg-ink text-white p-6 sm:p-8 lg:p-10">
+        <div class="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-8">
+          <div class="max-w-xl">
+            <span class="font-mono text-[10px] tracking-[0.2em] uppercase text-gold">Your System</span>
+            <h2 class="font-display text-[34px] leading-tight mt-3 mb-2" x-text="currentSystem().name"></h2>
+            <p class="font-sans font-light text-[13px] leading-relaxed text-[rgba(255,255,255,0.58)]">
+              Review your selected system before adding it to the cart.
+            </p>
+          </div>
+
+          <div class="lg:text-right">
+            <span class="block font-mono text-[10px] tracking-[0.18em] uppercase text-[rgba(255,255,255,0.48)]">System Total</span>
+            <span class="block font-display text-[52px] leading-none mt-2" x-text="formatPrice(selectedTotal())"></span>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-x-10 gap-y-3 mt-8 pt-7 border-t border-[rgba(255,255,255,0.08)]">
+          <template x-for="item in selectedItems()" :key="item.variantId || item.handle">
+            <div class="flex items-start justify-between gap-4 font-sans font-light text-[13px] leading-relaxed text-[rgba(255,255,255,0.72)]">
+              <span x-text="item.title"></span>
+              <span class="font-mono text-[10px] text-gold shrink-0" x-text="item.formattedPrice"></span>
+            </div>
+          </template>
+        </div>
+
+        <button
+          type="button"
+          @click="addSystem()"
+          class="w-full mt-8 bg-gold text-ink font-mono text-[10px] tracking-[0.18em] uppercase py-4 transition-colors duration-200 hover:bg-[oklch(80%_0.08_78)] disabled:opacity-60"
+          :disabled="$store.cart.isLoading || selectedItems().some((item) => !item.variantId)"
+        >
+          <span x-show="!$store.cart.isLoading">Add System To Cart</span>
+          <span x-show="$store.cart.isLoading">Adding System</span>
+        </button>
+
+        <p class="font-sans font-light text-[12px] leading-relaxed text-[rgba(255,255,255,0.52)] mt-4">
+          This builder helps you choose a routine. After these items are in your cart, you can add, remove, or adjust products directly in the cart.
+        </p>
+      </div>
+
+      <div x-show="selectedSystem === 'premium'" class="p-6 sm:p-8 lg:p-10 border-t border-rule" x-cloak>
+        <div class="flex flex-col md:flex-row md:items-end md:justify-between gap-3 mb-6">
+          <div>
+            <span class="font-mono text-[10px] tracking-[0.2em] uppercase text-gold">Optional Additions</span>
+            <h2 class="font-display text-[32px] leading-tight text-ink mt-2">Pair with your Premium Collection.</h2>
+          </div>
+          <p class="max-w-[360px] font-sans font-light text-[13px] leading-relaxed text-ink-soft">
+            These are not part of the system total. Add either one if you want to extend the routine.
+          </p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <template x-for="item in products.upsells" :key="item.variantId || item.handle">
+            <div class="border border-rule bg-white p-5 min-h-[150px]">
+              <div class="flex items-start justify-between gap-4">
+                <a :href="`/products/${item.handle}`" class="font-display text-[21px] leading-tight text-ink hover:text-gold transition-colors duration-200" x-text="item.title"></a>
+                <span class="font-mono text-[10px] text-gold shrink-0" x-text="item.formattedPrice"></span>
+              </div>
+              <button
+                type="button"
+                @click="$store.cart.addItem(item.variantId)"
+                class="mt-6 border border-ink text-ink font-mono text-[9px] tracking-[0.14em] uppercase px-4 py-3 hover:bg-ink hover:text-white transition-colors duration-200 disabled:opacity-50"
+                :disabled="!item.variantId"
+              >
+                Add To Cart
+              </button>
+            </div>
+          </template>
+        </div>
+      </div>
     </div>
   </div>
 </section>
