@@ -7,6 +7,12 @@ const USE_MOCKS = env.SHOPIFY_USE_MOCKS === 'true' || env.PUBLIC_SHOPIFY_USE_MOC
 export const SHOPIFY_DOMAIN = env.SHOPIFY_STORE_DOMAIN ?? env.PUBLIC_SHOPIFY_STORE_DOMAIN ?? 'cfcskincare.myshopify.com';
 const STOREFRONT_TOKEN = env.SHOPIFY_STOREFRONT_TOKEN ?? env.PUBLIC_SHOPIFY_STOREFRONT_TOKEN ?? '';
 const API_VERSION = env.SHOPIFY_API_VERSION ?? env.PUBLIC_SHOPIFY_API_VERSION ?? '2024-01';
+export const FEATURED_PRODUCT_HANDLES = [
+  'apple-stem-wrinkle-eraser',
+  'color-correction-c-e-serum',
+  'pure-hydration-ha',
+  'nad-bamboo-firming-cleanser',
+] as const;
 
 export const STOREFRONT_URL = `https://${SHOPIFY_DOMAIN}/api/${API_VERSION}/graphql.json`;
 
@@ -189,6 +195,62 @@ function getMockProducts(): ShopifyProduct[] {
       },
       collections: { edges: [{ node: { title: 'Adult Skin Care', handle: 'adult-skin-care' } }] },
     },
+    {
+      id: 'gid://shopify/Product/1004',
+      title: 'Apple Stem Wrinkle Eraser',
+      handle: 'apple-stem-wrinkle-eraser',
+      description: 'Targets visible fine lines and texture.',
+      availableForSale: true,
+      tags: ['Treat'],
+      priceRange: { minVariantPrice: { amount: '52.00', currencyCode: 'USD' } },
+      images: { edges: [{ node: { url: '/favicon.png', altText: 'Apple Stem Wrinkle Eraser' } }] },
+      variants: {
+        edges: [{ node: { id: 'gid://shopify/ProductVariant/2004', title: 'Default Title', price: { amount: '52.00' } } }],
+      },
+      collections: { edges: [{ node: { title: 'Adult Skin Care', handle: 'adult-skin-care' } }] },
+    },
+    {
+      id: 'gid://shopify/Product/1005',
+      title: 'Color Correction C&E Serum',
+      handle: 'color-correction-c-e-serum',
+      description: 'Brightens uneven tone and supports antioxidant defense.',
+      availableForSale: true,
+      tags: ['Treat'],
+      priceRange: { minVariantPrice: { amount: '62.00', currencyCode: 'USD' } },
+      images: { edges: [{ node: { url: '/favicon.png', altText: 'Color Correction C&E Serum' } }] },
+      variants: {
+        edges: [{ node: { id: 'gid://shopify/ProductVariant/2005', title: 'Default Title', price: { amount: '62.00' } } }],
+      },
+      collections: { edges: [{ node: { title: 'Adult Skin Care', handle: 'adult-skin-care' } }] },
+    },
+    {
+      id: 'gid://shopify/Product/1006',
+      title: 'Pure Hydration Hyaluronic Acid Serum',
+      handle: 'pure-hydration-ha',
+      description: 'Floods skin with lightweight hydration.',
+      availableForSale: true,
+      tags: ['Treat'],
+      priceRange: { minVariantPrice: { amount: '58.00', currencyCode: 'USD' } },
+      images: { edges: [{ node: { url: '/favicon.png', altText: 'Pure Hydration Hyaluronic Acid Serum' } }] },
+      variants: {
+        edges: [{ node: { id: 'gid://shopify/ProductVariant/2006', title: 'Default Title', price: { amount: '58.00' } } }],
+      },
+      collections: { edges: [{ node: { title: 'Adult Skin Care', handle: 'adult-skin-care' } }] },
+    },
+    {
+      id: 'gid://shopify/Product/1007',
+      title: 'NAD+ Bamboo Firming Cleanser',
+      handle: 'nad-bamboo-firming-cleanser',
+      description: 'A refreshing NAD+ cleanser designed to leave skin clean, smooth, and supported.',
+      availableForSale: true,
+      tags: ['Cleanse'],
+      priceRange: { minVariantPrice: { amount: '38.00', currencyCode: 'USD' } },
+      images: { edges: [{ node: { url: '/favicon.png', altText: 'NAD+ Bamboo Firming Cleanser' } }] },
+      variants: {
+        edges: [{ node: { id: 'gid://shopify/ProductVariant/2007', title: 'Default Title', price: { amount: '38.00' } } }],
+      },
+      collections: { edges: [{ node: { title: 'Adult Skin Care', handle: 'adult-skin-care' } }] },
+    },
   ];
 }
 
@@ -219,6 +281,14 @@ const COLLECTION_PRODUCTS_QUERY = `
           }
         }
       }
+    }
+  }
+`;
+
+const PRODUCT_BY_HANDLE_LISTING_QUERY = `
+  query GetProductByHandle($handle: String!) {
+    product(handle: $handle) {
+      ${PRODUCT_FIELDS}
     }
   }
 `;
@@ -286,8 +356,31 @@ export async function getCollectionProducts(handle: string, first = 24): Promise
   }
 }
 
+export async function getProductsByHandles(handles: readonly string[]): Promise<ShopifyProduct[]> {
+  if (USE_MOCKS) {
+    const products = getMockProducts();
+    return handles
+      .map(handle => products.find(product => product.handle === handle))
+      .filter((product): product is ShopifyProduct => Boolean(product));
+  }
+
+  const products = await Promise.all(handles.map(async (handle) => {
+    try {
+      const data = await shopifyFetch<{ product: ShopifyProduct | null }>(
+        PRODUCT_BY_HANDLE_LISTING_QUERY,
+        { handle }
+      );
+      return data.product;
+    } catch {
+      return null;
+    }
+  }));
+
+  return products.filter((product): product is ShopifyProduct => Boolean(product));
+}
+
 export async function getFeaturedProducts(): Promise<ShopifyProduct[]> {
-  return getCollectionProducts('featured', 4);
+  return getProductsByHandles(FEATURED_PRODUCT_HANDLES);
 }
 
 export function formatPrice(amount: string, currency = 'USD'): string {

@@ -1,5 +1,12 @@
 import { describe, expect, it, vi } from 'vitest';
-import { getCheckoutUrl, getProducts, getSubscriptionCheckoutUrl, shopifyFetch } from '../../src/lib/shopify';
+import {
+  FEATURED_PRODUCT_HANDLES,
+  getCheckoutUrl,
+  getFeaturedProducts,
+  getProducts,
+  getSubscriptionCheckoutUrl,
+  shopifyFetch,
+} from '../../src/lib/shopify';
 import { productFixture, sellingPlanId, variantId } from '../fixtures/shopify';
 
 function mockFetch(body: unknown, ok = true, status = 200) {
@@ -32,6 +39,36 @@ describe('Shopify product utilities', () => {
     const products = await getProducts();
 
     expect(products[0].variants.edges[0].node.id).toBe(variantId);
+  });
+
+  it('returns the configured homepage featured products in order', async () => {
+    const featuredProducts = FEATURED_PRODUCT_HANDLES.map((handle, index) => ({
+      ...productFixture,
+      id: `gid://shopify/Product/featured-${index}`,
+      title: [
+        'Apple Stem Wrinkle Eraser',
+        'Color Correction C&E Serum',
+        'Pure Hydration Hyaluronic Acid Serum',
+        'NAD+ Bamboo Firming Cleanser',
+      ][index],
+      handle,
+    }));
+
+    vi.stubGlobal('fetch', vi.fn(async (_url, init) => {
+      const body = JSON.parse(String((init as RequestInit).body));
+      const product = featuredProducts.find(({ handle }) => handle === body.variables.handle) ?? null;
+
+      return {
+        ok: true,
+        status: 200,
+        json: async () => ({ data: { product } }),
+      };
+    }));
+
+    const products = await getFeaturedProducts();
+
+    expect(products).toHaveLength(4);
+    expect(products.map(product => product.handle)).toEqual(FEATURED_PRODUCT_HANDLES);
   });
 
   it('returns checkoutUrl-compatible Shopify cart permalink for a variant', () => {
