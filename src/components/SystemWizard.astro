@@ -136,8 +136,8 @@ const wizardData = JSON.stringify(data);
           </div>
           <div class="grid grid-cols-1 lg:grid-cols-3 gap-4 pt-4">
             <template x-for="item in includedTreatments()" :key="item.variantId || item.handle">
-              <div class="relative border border-rule bg-white min-h-[280px]">
-                <span class="absolute -top-[15px] left-1/2 -translate-x-1/2 z-10 bg-ink text-white font-mono text-[9px] tracking-[0.16em] uppercase px-4 py-1.5 whitespace-nowrap">Included</span>
+              <div class="relative border border-ink bg-ink text-white min-h-[280px] shadow-strong">
+                <span class="absolute -top-[15px] left-1/2 -translate-x-1/2 z-10 bg-gold text-ink font-mono text-[9px] tracking-[0.16em] uppercase px-4 py-1.5 whitespace-nowrap">Included</span>
                 <div class="aspect-[1/1] sm:aspect-[3/4] overflow-hidden bg-parchment">
                   <img
                     x-show="item.imageUrl"
@@ -151,10 +151,10 @@ const wizardData = JSON.stringify(data);
                   </div>
                 </div>
                 <div class="p-5">
-                  <span class="block font-display text-[21px] leading-tight text-ink" x-text="item.title"></span>
+                  <span class="block font-display text-[21px] leading-tight" x-text="item.title"></span>
                   <span class="block font-mono text-[10px] text-gold mt-3" x-text="item.formattedPrice"></span>
-                  <span class="block font-sans text-[12px] leading-relaxed text-ink-soft mt-3" x-text="item.description"></span>
-                  <span class="block font-sans font-light text-[12px] leading-relaxed text-ink-soft mt-3" x-text="item.details"></span>
+                  <span class="block font-sans text-[12px] leading-relaxed text-[rgba(255,255,255,0.7)] mt-3" x-text="item.description"></span>
+                  <span class="block font-sans font-light text-[12px] leading-relaxed text-[rgba(255,255,255,0.62)] mt-3" x-text="item.details"></span>
                 </div>
               </div>
             </template>
@@ -166,8 +166,8 @@ const wizardData = JSON.stringify(data);
             </div>
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-4 pt-4">
               <template x-for="retinol in includedRetinols()" :key="retinol.variantId || retinol.handle">
-                <div class="relative border border-rule bg-white min-h-[260px]">
-                  <span class="absolute -top-[15px] left-1/2 -translate-x-1/2 z-10 bg-ink text-white font-mono text-[9px] tracking-[0.16em] uppercase px-4 py-1.5 whitespace-nowrap">Included</span>
+                <div class="relative border border-ink bg-ink text-white min-h-[260px] shadow-strong">
+                  <span class="absolute -top-[15px] left-1/2 -translate-x-1/2 z-10 bg-gold text-ink font-mono text-[9px] tracking-[0.16em] uppercase px-4 py-1.5 whitespace-nowrap">Included</span>
                   <div class="aspect-[1/1] sm:aspect-[3/4] overflow-hidden bg-parchment">
                     <img
                       x-show="retinol.imageUrl"
@@ -181,10 +181,10 @@ const wizardData = JSON.stringify(data);
                     </div>
                   </div>
                   <div class="p-5">
-                    <span class="block font-display text-[21px] leading-tight text-ink" x-text="retinol.title"></span>
+                    <span class="block font-display text-[21px] leading-tight" x-text="retinol.title"></span>
                     <span class="block font-mono text-[10px] text-gold mt-3" x-text="retinol.formattedPrice"></span>
-                    <span class="block font-sans text-[12px] leading-relaxed text-ink-soft mt-3" x-text="retinol.description"></span>
-                    <span class="block font-sans font-light text-[12px] leading-relaxed text-ink-soft mt-3" x-text="retinol.details"></span>
+                    <span class="block font-sans text-[12px] leading-relaxed text-[rgba(255,255,255,0.7)] mt-3" x-text="retinol.description"></span>
+                    <span class="block font-sans font-light text-[12px] leading-relaxed text-[rgba(255,255,255,0.62)] mt-3" x-text="retinol.details"></span>
                   </div>
                 </div>
               </template>
