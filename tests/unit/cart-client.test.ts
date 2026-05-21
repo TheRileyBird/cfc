@@ -119,4 +119,28 @@ describe('Shopify cart API utilities', () => {
       'https://cfcskincare.myshopify.com/checkouts/cn/test?key=abc'
     );
   });
+
+  it('rewrites Shopify generated cart checkout URLs to checkout paths', () => {
+    expect(normalizeCheckoutUrl('https://cfcskincare.shop/cart/c/cart-token?_s=session&key=abc')).toBe(
+      'https://cfcskincare.myshopify.com/checkouts/cn/cart-token?_s=session&key=abc'
+    );
+  });
+
+  it('rewrites myshopify cart checkout URLs before they redirect to the primary domain', () => {
+    expect(normalizeCheckoutUrl('https://cfcskincare.myshopify.com/cart/c/cart-token?key=abc')).toBe(
+      'https://cfcskincare.myshopify.com/checkouts/cn/cart-token?key=abc'
+    );
+  });
+
+  it('treats configured headless checkout domains with protocols as unsafe', async () => {
+    vi.resetModules();
+    vi.stubEnv('PUBLIC_SHOPIFY_CHECKOUT_DOMAIN', 'https://cfcskincare.shop/');
+    const { normalizeCheckoutUrl } = await import('../../src/lib/cart-client');
+
+    expect(normalizeCheckoutUrl('https://cfcskincare.shop/cart/c/cart-token?key=abc')).toBe(
+      'https://cfcskincare.myshopify.com/checkouts/cn/cart-token?key=abc'
+    );
+
+    vi.unstubAllEnvs();
+  });
 });

@@ -2,8 +2,16 @@ const importEnv = (import.meta as unknown as { env?: Record<string, string | und
 const processEnv = typeof process === 'undefined' ? {} : process.env;
 const env = { ...importEnv, ...processEnv };
 const SHOPIFY_CHECKOUT_FALLBACK_DOMAIN = 'cfcskincare.myshopify.com';
-const SHOPIFY_DOMAIN = env.PUBLIC_SHOPIFY_STORE_DOMAIN ?? env.SHOPIFY_STORE_DOMAIN ?? 'cfcskincare.myshopify.com';
-const CONFIGURED_CHECKOUT_DOMAIN = env.PUBLIC_SHOPIFY_CHECKOUT_DOMAIN ?? env.SHOPIFY_CHECKOUT_DOMAIN ?? SHOPIFY_DOMAIN;
+
+function cleanDomain(value: string | undefined): string {
+  return (value ?? '')
+    .replace(/^https?:\/\//, '')
+    .replace(/\/.*$/, '')
+    .toLowerCase();
+}
+
+const SHOPIFY_DOMAIN = cleanDomain(env.PUBLIC_SHOPIFY_STORE_DOMAIN ?? env.SHOPIFY_STORE_DOMAIN) || SHOPIFY_CHECKOUT_FALLBACK_DOMAIN;
+const CONFIGURED_CHECKOUT_DOMAIN = cleanDomain(env.PUBLIC_SHOPIFY_CHECKOUT_DOMAIN ?? env.SHOPIFY_CHECKOUT_DOMAIN) || SHOPIFY_DOMAIN;
 const HEADLESS_DOMAINS = new Set(['cfcskincare.com', 'www.cfcskincare.com', 'cfcskincare.shop', 'www.cfcskincare.shop', 'cfcskincare.netlify.app']);
 const CHECKOUT_DOMAIN = HEADLESS_DOMAINS.has(CONFIGURED_CHECKOUT_DOMAIN)
   ? SHOPIFY_CHECKOUT_FALLBACK_DOMAIN
@@ -99,8 +107,11 @@ export function normalizeCheckoutUrl(checkoutUrl: string): string {
 
   try {
     const url = new URL(checkoutUrl);
-    if (url.hostname.endsWith('.myshopify.com')) return url.href;
-    return `https://${CHECKOUT_DOMAIN}${url.pathname}${url.search}${url.hash}`;
+    const cartCheckoutMatch = url.pathname.match(/^\/cart\/c\/([^/]+)$/);
+    const pathname = cartCheckoutMatch ? `/checkouts/cn/${cartCheckoutMatch[1]}` : url.pathname;
+
+    if (url.hostname.endsWith('.myshopify.com') && !cartCheckoutMatch) return url.href;
+    return `https://${CHECKOUT_DOMAIN}${pathname}${url.search}${url.hash}`;
   } catch {
     return checkoutUrl;
   }

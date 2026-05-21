@@ -5,7 +5,7 @@ const storefrontPattern = '**/api/2024-01/graphql.json';
 function cart(quantity: number) {
   return {
     id: 'gid://shopify/Cart/cart-1',
-    checkoutUrl: 'https://cfcskincare.myshopify.com/checkouts/cn/test-checkout',
+    checkoutUrl: 'https://cfcskincare.shop/cart/c/test-checkout?_s=session-id&_y=visitor-id&key=checkout-key',
     totalQuantity: quantity,
     lines: {
       edges: quantity > 0 ? [{
@@ -104,7 +104,9 @@ test('customer can shop through checkout handoff without payment', async ({ page
 test('product buy now goes to Shopify checkout in the same tab', async ({ page }) => {
   await page.goto('/products/gentle-cleanser');
 
+  const popupPromise = page.waitForEvent('popup', { timeout: 1000 }).catch(() => null);
   await page.getByRole('button', { name: /^Buy Now$/i }).click();
 
   await expect(page).toHaveURL(/cfcskincare\.myshopify\.com\/checkouts/);
+  expect(await popupPromise).toBeNull();
 });
