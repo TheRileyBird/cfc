@@ -3,13 +3,12 @@ import {
   addLinesToCart,
   addToCart,
   createCart,
-  getCartPermalink,
   normalizeCheckoutUrl,
   parseCart,
   removeFromCart,
   updateCartItem,
 } from '../../src/lib/cart-client';
-import { alternateVariantId, rawCart, sellingPlanId, variantId } from '../fixtures/shopify';
+import { rawCart, sellingPlanId, variantId } from '../fixtures/shopify';
 
 function mockFetch(body: unknown, ok = true, status = 200) {
   const fetchMock = vi.fn(async () => ({
@@ -99,11 +98,11 @@ describe('Shopify cart API utilities', () => {
     await expect(removeFromCart('gid://shopify/Cart/cart-1', 'missing-line')).rejects.toThrow('Line does not exist');
   });
 
-  it('parses cart totals, line items, and uses a Shopify cart permalink for checkout', () => {
+  it('parses cart totals, line items, and uses a Shopify checkout URL', () => {
     const cart = parseCart(rawCart(2));
 
     expect(cart).toMatchObject({
-      checkoutUrl: 'https://cfcskincare.myshopify.com/cart/2001:2',
+      checkoutUrl: 'https://cfcskincare.myshopify.com/checkouts/cn/test',
       totalQuantity: 2,
       totalAmount: '56.00',
     });
@@ -115,51 +114,9 @@ describe('Shopify cart API utilities', () => {
     });
   });
 
-  it('builds a cart permalink from multiple line items', () => {
-    const checkoutUrl = getCartPermalink([
-      { ...cartLine(), variantId, quantity: 1 },
-      { ...cartLine(), variantId: alternateVariantId, quantity: 2 },
-    ]);
-
-    expect(checkoutUrl).toBe('https://cfcskincare.myshopify.com/cart/2001:1,2002:2');
-  });
-
-  it('preserves single-line selling plan IDs in cart permalinks', () => {
-    const checkoutUrl = getCartPermalink([
-      { ...cartLine(), variantId, quantity: 1, sellingPlanId },
-    ]);
-
-    expect(checkoutUrl).toBe('https://cfcskincare.myshopify.com/cart/2001:1?selling_plan=3001');
-  });
-
-  it('falls back to generated checkout URLs for multi-line subscription carts', () => {
-    const checkoutUrl = getCartPermalink([
-      { ...cartLine(), variantId, quantity: 1, sellingPlanId },
-      { ...cartLine(), variantId: alternateVariantId, quantity: 1 },
-    ]);
-
-    expect(checkoutUrl).toBe('');
-  });
-
   it('normalizes checkout URLs away from the static site host', () => {
-    expect(normalizeCheckoutUrl('https://cfcskincare.com/checkouts/cn/test?key=abc')).toBe(
+    expect(normalizeCheckoutUrl('https://cfcskincare.shop/checkouts/cn/test?key=abc')).toBe(
       'https://cfcskincare.myshopify.com/checkouts/cn/test?key=abc'
     );
   });
 });
-
-function cartLine() {
-  return {
-    id: 'gid://shopify/CartLine/line-1',
-    quantity: 1,
-    variantId,
-    variantTitle: 'Default Title',
-    price: '28.00',
-    productTitle: 'CFC Gentle Cleanser',
-    productHandle: 'gentle-cleanser',
-    imageUrl: 'https://cdn.example.com/cleanser.jpg',
-    imageAlt: 'Cleanser bottle',
-    sellingPlanId: '',
-    sellingPlanName: '',
-  };
-}

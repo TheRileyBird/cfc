@@ -1,8 +1,13 @@
 const importEnv = (import.meta as unknown as { env?: Record<string, string | undefined> }).env ?? {};
 const processEnv = typeof process === 'undefined' ? {} : process.env;
 const env = { ...importEnv, ...processEnv };
+const SHOPIFY_CHECKOUT_FALLBACK_DOMAIN = 'cfcskincare.myshopify.com';
 const SHOPIFY_DOMAIN = env.PUBLIC_SHOPIFY_STORE_DOMAIN ?? env.SHOPIFY_STORE_DOMAIN ?? 'cfcskincare.myshopify.com';
-const CHECKOUT_DOMAIN = env.PUBLIC_SHOPIFY_CHECKOUT_DOMAIN ?? env.SHOPIFY_CHECKOUT_DOMAIN ?? SHOPIFY_DOMAIN;
+const CONFIGURED_CHECKOUT_DOMAIN = env.PUBLIC_SHOPIFY_CHECKOUT_DOMAIN ?? env.SHOPIFY_CHECKOUT_DOMAIN ?? SHOPIFY_DOMAIN;
+const HEADLESS_DOMAINS = new Set(['cfcskincare.com', 'www.cfcskincare.com', 'cfcskincare.shop', 'www.cfcskincare.shop', 'cfcskincare.netlify.app']);
+const CHECKOUT_DOMAIN = HEADLESS_DOMAINS.has(CONFIGURED_CHECKOUT_DOMAIN)
+  ? SHOPIFY_CHECKOUT_FALLBACK_DOMAIN
+  : CONFIGURED_CHECKOUT_DOMAIN;
 const STOREFRONT_TOKEN = env.PUBLIC_SHOPIFY_STOREFRONT_TOKEN ?? env.SHOPIFY_STOREFRONT_TOKEN ?? '';
 const API_VERSION = env.PUBLIC_SHOPIFY_API_VERSION ?? env.SHOPIFY_API_VERSION ?? '2024-01';
 const STOREFRONT_URL = `https://${SHOPIFY_DOMAIN}/api/${API_VERSION}/graphql.json`;
@@ -89,35 +94,6 @@ export interface SearchProduct {
   variantId: string;
 }
 
-function numericShopifyId(id: string, prefix: string): string {
-  return id.replace(prefix, '');
-}
-
-export function getCartPermalink(items: CartLineItem[]): string {
-  const cartLines = items
-    .map((item) => {
-      const variantId = numericShopifyId(item.variantId, 'gid://shopify/ProductVariant/');
-      if (!variantId) return null;
-      return `${variantId}:${Math.max(item.quantity, 1)}`;
-    })
-    .filter((line): line is string => Boolean(line));
-
-  if (cartLines.length === 0) return '';
-
-  const url = new URL(`https://${CHECKOUT_DOMAIN}/cart/${cartLines.join(',')}`);
-  const sellingPlanIds = items
-    .map((item) => numericShopifyId(item.sellingPlanId, 'gid://shopify/SellingPlan/'))
-    .filter(Boolean);
-
-  if (sellingPlanIds.length > 0 && items.length !== 1) return '';
-
-  if (sellingPlanIds.length === 1 && items.length === 1) {
-    url.searchParams.set('selling_plan', sellingPlanIds[0]);
-  }
-
-  return url.href;
-}
-
 export function normalizeCheckoutUrl(checkoutUrl: string): string {
   if (!checkoutUrl) return '';
 
@@ -147,7 +123,7 @@ export function parseCart(raw: any): Cart {
 
   return {
     id: raw.id,
-    checkoutUrl: getCartPermalink(items) || normalizeCheckoutUrl(raw.checkoutUrl),
+    checkoutUrl: normalizeCheckoutUrl(raw.checkoutUrl),
     totalQuantity: raw.totalQuantity,
     totalAmount: raw.cost.totalAmount.amount,
     items,

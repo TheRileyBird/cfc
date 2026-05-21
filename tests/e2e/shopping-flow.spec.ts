@@ -37,13 +37,6 @@ test.beforeEach(async ({ page }) => {
     });
   });
 
-  await page.route('https://cfcskincare.myshopify.com/cart/**', async route => {
-    await route.fulfill({
-      contentType: 'text/html',
-      body: '<!doctype html><title>Mock Shopify Cart</title><h1>Mock Shopify Cart</h1>',
-    });
-  });
-
   await page.route(storefrontPattern, async route => {
     const body = route.request().postDataJSON();
     const query = String(body.query);
@@ -103,7 +96,7 @@ test('customer can shop through checkout handoff without payment', async ({ page
   await page.getByRole('button', { name: /Add to Cart/i }).first().click();
 
   const checkout = page.getByRole('link', { name: /^Checkout$/i });
-  await expect(checkout).toHaveAttribute('href', /cfcskincare\.myshopify\.com\/cart/);
+  await expect(checkout).toHaveAttribute('href', /cfcskincare\.myshopify\.com\/checkouts/);
   await page.getByRole('link', { name: /^Checkout$/i }).click();
-  await expect(page).toHaveURL(/cfcskincare\.myshopify\.com\/cart/);
+  await expect(page).toHaveURL(/cfcskincare\.myshopify\.com\/checkouts/);
 });
