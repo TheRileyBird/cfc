@@ -30,6 +30,10 @@ function cart(quantity: number) {
 }
 
 test.beforeEach(async ({ page }) => {
+  await page.addInitScript(() => {
+    document.cookie = 'cfc_mask_modal_dismissed=1; path=/; SameSite=Lax';
+  });
+
   await page.route('https://cfcskincare.myshopify.com/checkouts/**', async route => {
     await route.fulfill({
       contentType: 'text/html',
@@ -68,10 +72,6 @@ test.beforeEach(async ({ page }) => {
 });
 
 test('customer can shop through checkout handoff without payment', async ({ page }) => {
-  await page.addInitScript(() => {
-    document.cookie = 'cfc_mask_modal_dismissed=1; path=/; SameSite=Lax';
-  });
-
   await page.goto('/');
   await expect(page).toHaveTitle(/CFC Skincare/);
 
@@ -98,5 +98,13 @@ test('customer can shop through checkout handoff without payment', async ({ page
   const checkout = page.getByRole('link', { name: /^Checkout$/i });
   await expect(checkout).toHaveAttribute('href', /cfcskincare\.myshopify\.com\/checkouts/);
   await page.getByRole('link', { name: /^Checkout$/i }).click();
+  await expect(page).toHaveURL(/cfcskincare\.myshopify\.com\/checkouts/);
+});
+
+test('product buy now goes to Shopify checkout in the same tab', async ({ page }) => {
+  await page.goto('/products/gentle-cleanser');
+
+  await page.getByRole('button', { name: /^Buy Now$/i }).click();
+
   await expect(page).toHaveURL(/cfcskincare\.myshopify\.com\/checkouts/);
 });

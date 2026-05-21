@@ -4,7 +4,7 @@ import Nav from '../../components/Nav.astro';
 import FoilStamp from '../../components/motifs/FoilStamp.astro';
 import ProductCard from '../../components/ProductCard.astro';
 import { CalendarSync, ShoppingBag } from '@lucide/astro';
-import { getAllProducts, getProductByHandle, getFeaturedProducts, formatPrice, getCheckoutUrl, SHOPIFY_DOMAIN } from '../../lib/shopify';
+import { getAllProducts, getProductByHandle, getFeaturedProducts, formatPrice } from '../../lib/shopify';
 import type { ShopifyProductDetail } from '../../lib/shopify';
 
 export async function getStaticPaths() {
@@ -211,7 +211,6 @@ const variantsJson = JSON.stringify(variants.map(v => ({
               purchaseOption: 'one-time',
               selectedSellingPlanId: '',
               variants: ${variantsJson},
-              cartBase: ${JSON.stringify(`https://${SHOPIFY_DOMAIN}/cart/`)},
               currentVariant() {
                 return this.variants.find((variant) => variant.id === this.selectedId) || this.variants[0] || { price: ${JSON.stringify(firstAvailablePrice)}, sellingPlans: [] };
               },
@@ -237,14 +236,12 @@ const variantsJson = JSON.stringify(variants.map(v => ({
                 this.purchaseOption = 'subscription';
                 this.selectedSellingPlanId = planId;
               },
-              checkoutUrl() {
-                const variantId = String(this.selectedId || '').split('/').pop();
-                if (!variantId) return ${JSON.stringify(`https://www.cfcskincare.shop/products/${product.handle}`)};
-                let url = this.cartBase + variantId + ':1';
-                if (this.selectedSellingPlanId) {
-                  url += '?selling_plan=' + String(this.selectedSellingPlanId).split('/').pop();
-                }
-                return url;
+              async buyNow() {
+                if (this.adding || !this.selectedId) return;
+                this.adding = true;
+                await $store.cart.addItem(this.selectedId, 1, this.selectedSellingPlanId || undefined);
+                this.adding = false;
+                if ($store.cart.checkoutUrl) window.location.href = $store.cart.checkoutUrl;
               }
             }`}
           >
@@ -379,15 +376,14 @@ const variantsJson = JSON.stringify(variants.map(v => ({
                 </p>
               )}
 
-              <a
-                href={firstAvailableId ? getCheckoutUrl(firstAvailableId) : `https://www.cfcskincare.shop/products/${product.handle}`}
-                :href="checkoutUrl()"
-                target="_blank"
-                rel="noopener"
+              <button
+                type="button"
+                @click="buyNow()"
+                :disabled="adding || undefined"
                 class="block w-full text-center font-mono text-[10px] tracking-[0.2em] uppercase py-4 border border-rule text-ink-soft hover:border-ink hover:text-ink transition-colors duration-200"
               >
                 Buy Now
-              </a>
+              </button>
             </div>
 
             <!-- Trust indicators -->

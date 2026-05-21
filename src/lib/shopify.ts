@@ -385,16 +385,6 @@ export function formatPrice(amount: string, currency = 'USD'): string {
   return new Intl.NumberFormat('en-US', { style: 'currency', currency }).format(parseFloat(amount));
 }
 
-export function getCheckoutUrl(variantId: string): string {
-  return `https://${SHOPIFY_DOMAIN}/cart/${variantId.replace('gid://shopify/ProductVariant/', '')}:1`;
-}
-
-export function getSubscriptionCheckoutUrl(variantId: string, sellingPlanId?: string): string {
-  const url = getCheckoutUrl(variantId);
-  if (!sellingPlanId) return url;
-  return `${url}?selling_plan=${sellingPlanId.replace('gid://shopify/SellingPlan/', '')}`;
-}
-
 const PRODUCT_DETAIL_QUERY = `
   query GetProduct($handle: String!) {
     product(handle: $handle) {
