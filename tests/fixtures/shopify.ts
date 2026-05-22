@@ -22,6 +22,7 @@ export function rawCart(quantity = 1, id = 'gid://shopify/Cart/cart-1') {
   return {
     id,
     checkoutUrl: 'https://cfcskincare.myshopify.com/checkouts/cn/test',
+    discountCodes: [],
     totalQuantity: quantity,
     lines: {
       edges: quantity > 0 ? [{
@@ -50,6 +51,7 @@ export function cartFixture(quantity = 1): Cart {
   return {
     id: 'gid://shopify/Cart/cart-1',
     checkoutUrl: 'https://cfcskincare.myshopify.com/checkouts/cn/test',
+    discountCodes: [],
     totalQuantity: quantity,
     totalAmount: (28 * quantity).toFixed(2),
     items: quantity > 0 ? [{

@@ -12,7 +12,10 @@ function mockApi() {
     )),
     removeFromCart: vi.fn(async () => cartFixture(0)),
     updateCartItem: vi.fn(async (_cartId: string, _lineId: string, quantity: number) => cartFixture(quantity)),
-    updateCartDiscountCodes: vi.fn(async () => cartFixture(1)),
+    updateCartDiscountCodes: vi.fn(async (_cartId: string, discountCodes: string[]) => ({
+      ...cartFixture(1),
+      discountCodes: discountCodes.map((code) => ({ code, applicable: true })),
+    })),
   };
 }
 
@@ -86,6 +89,7 @@ describe('cart store integration behavior', () => {
     await store.init();
 
     expect(api.updateCartDiscountCodes).toHaveBeenCalledWith('gid://shopify/Cart/cart-1', ['COLLAB10']);
+    expect(store.checkoutUrl).toContain('discount=COLLAB10');
   });
 
   it('applies pending Collabs discount codes after adding an item', async () => {
@@ -96,6 +100,7 @@ describe('cart store integration behavior', () => {
     await store.addItem(variantId, 1);
 
     expect(api.updateCartDiscountCodes).toHaveBeenCalledWith('gid://shopify/Cart/cart-1', ['COLLAB10']);
+    expect(store.checkoutUrl).toContain('discount=COLLAB10');
   });
 
   it('updates cart quantity correctly', async () => {

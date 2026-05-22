@@ -30,6 +30,9 @@ const { code = '' } = Astro.props;
         const pathMatch = window.location.pathname.match(/^\/discount\/([^/?#]+)/);
         if (pathMatch?.[1]) return sanitizeDiscountCode(decodeURIComponent(pathMatch[1]));
 
+        const pathSegments = window.location.pathname.split('/').filter(Boolean);
+        if (pathSegments.length === 1) return sanitizeDiscountCode(decodeURIComponent(pathSegments[0]));
+
         return sanitizeDiscountCode(fallbackCode);
       }
 

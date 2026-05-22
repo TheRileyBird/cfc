@@ -87,15 +87,43 @@ describe('Shopify cart API utilities', () => {
   });
 
   it('updates Shopify cart discount codes', async () => {
-    const fetchMock = mockFetch({ data: { cartDiscountCodesUpdate: { cart: rawCart(1) } } });
+    const fetchMock = mockFetch({
+      data: {
+        cartDiscountCodesUpdate: {
+          cart: {
+            ...rawCart(1),
+            discountCodes: [{ code: 'COLLAB10', applicable: true }],
+          },
+          userErrors: [],
+        },
+      },
+    });
 
-    await updateCartDiscountCodes('gid://shopify/Cart/cart-1', ['COLLAB10']);
+    const cart = await updateCartDiscountCodes('gid://shopify/Cart/cart-1', ['COLLAB10']);
     const request = JSON.parse(String(fetchMock.mock.calls[0][1]?.body));
 
     expect(request.variables).toEqual({
       cartId: 'gid://shopify/Cart/cart-1',
       discountCodes: ['COLLAB10'],
     });
+    expect(request.query).toContain('discountCodes { code applicable }');
+    expect(request.query).toContain('userErrors { field message }');
+    expect(cart.discountCodes).toEqual([{ code: 'COLLAB10', applicable: true }]);
+  });
+
+  it('surfaces Shopify discount application errors', async () => {
+    mockFetch({
+      data: {
+        cartDiscountCodesUpdate: {
+          cart: rawCart(1),
+          userErrors: [{ field: ['discountCodes'], message: 'Discount code is not valid' }],
+        },
+      },
+    });
+
+    await expect(updateCartDiscountCodes('gid://shopify/Cart/cart-1', ['COLLAB10'])).rejects.toThrow(
+      'Discount code is not valid'
+    );
   });
 
   it('removes a line item on success and surfaces failure', async () => {

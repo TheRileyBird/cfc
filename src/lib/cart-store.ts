@@ -15,6 +15,18 @@ const DISCOUNT_STORAGE_KEY = 'shopify_discount_code';
 const fmt = (amount: string) =>
   new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(parseFloat(amount) || 0);
 
+function appendDiscountToCheckoutUrl(checkoutUrl: string, discountCode: string) {
+  if (!checkoutUrl || !discountCode) return checkoutUrl;
+
+  try {
+    const url = new URL(checkoutUrl);
+    url.searchParams.set('discount', discountCode);
+    return url.href;
+  } catch {
+    return checkoutUrl;
+  }
+}
+
 export interface CartApi {
   createCart: typeof createCart;
   getCart: typeof getCart;
@@ -54,6 +66,11 @@ export function createCartStore(api: CartApi = {
 
       try {
         const cart = await api.updateCartDiscountCodes(this.id, [discountCode]);
+        const accepted = cart.discountCodes.some(
+          (code) => code.code.toLowerCase() === discountCode.toLowerCase() && code.applicable
+        );
+        if (!accepted) throw new Error('Discount code is not applicable to this cart.');
+        cart.checkoutUrl = appendDiscountToCheckoutUrl(cart.checkoutUrl, discountCode);
         this.applyCart(cart);
       } catch {
         localStorage.removeItem(DISCOUNT_STORAGE_KEY);

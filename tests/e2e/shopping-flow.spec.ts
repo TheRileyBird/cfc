@@ -2,10 +2,11 @@ import { expect, test } from '@playwright/test';
 
 const storefrontPattern = '**/api/2024-01/graphql.json';
 
-function cart(quantity: number) {
+function cart(quantity: number, discountCodes: Array<{ code: string; applicable: boolean }> = []) {
   return {
     id: 'gid://shopify/Cart/cart-1',
     checkoutUrl: 'https://cfcskincare.shop/cart/c/test-checkout?_s=session-id&_y=visitor-id&key=checkout-key',
+    discountCodes,
     totalQuantity: quantity,
     lines: {
       edges: quantity > 0 ? [{
@@ -59,7 +60,16 @@ test.beforeEach(async ({ page }) => {
       return;
     }
     if (query.includes('cartDiscountCodesUpdate')) {
-      await route.fulfill({ json: { data: { cartDiscountCodesUpdate: { cart: cart(1) } } } });
+      await route.fulfill({
+        json: {
+          data: {
+            cartDiscountCodesUpdate: {
+              cart: cart(1, variables.discountCodes.map((code: string) => ({ code, applicable: true }))),
+              userErrors: [],
+            },
+          },
+        },
+      });
       return;
     }
     if (query.includes('cartLinesRemove')) {
@@ -135,19 +145,29 @@ test('Collabs discount links store discount and preserve tracking params', async
 
   await expect(page.getByRole('dialog', { name: /Shopping cart/i })).toBeVisible();
   expect(appliedDiscountCodes).toEqual(['COLLAB10']);
+  await expect(page.getByRole('link', { name: /^Checkout$/i })).toHaveAttribute('href', /discount=COLLAB10/);
 });
 
 test('production Collabs QR slug RENEWEDAPPROACH redirects and stores discount', async ({ page }) => {
-  await page.goto('/RENEWEDAPPROACH?dt_id=0');
+  await page.goto('/discount?code=RENEWEDAPPROACH&dt_id=0');
 
   await expect(page).toHaveURL(/\/\?dt_id=0$/);
   await expect.poll(async () => page.evaluate(() => localStorage.getItem('shopify_discount_code'))).toBe('RENEWEDAPPROACH');
 });
 
 test('production Collabs QR slug LISA redirects and stores discount', async ({ page }) => {
-  await page.goto('/LISA?utm_source=collabs');
+  await page.goto('/discount?code=LISA&utm_source=collabs');
 
   await expect(page.getByText('Applying discount')).toHaveCount(0);
   await expect(page).toHaveURL(/\/\?utm_source=collabs$/);
   await expect.poll(async () => page.evaluate(() => localStorage.getItem('shopify_discount_code'))).toBe('LISA');
+});
+
+test('additional production Collabs QR slugs redirect and store discounts', async ({ page }) => {
+  for (const code of ['TIMELESS', 'ALAINA', 'SAINTLYSKIN']) {
+    await page.goto(`/discount?code=${code}&utm_source=collabs`);
+
+    await expect(page).toHaveURL(/\/\?utm_source=collabs$/);
+    await expect.poll(async () => page.evaluate(() => localStorage.getItem('shopify_discount_code'))).toBe(code);
+  }
 });

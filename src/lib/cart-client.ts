@@ -43,6 +43,7 @@ async function gql<T>(query: string, variables: Record<string, unknown> = {}): P
 const CART_FRAGMENT = `
   id
   checkoutUrl
+  discountCodes { code applicable }
   totalQuantity
   lines(first: 100) {
     edges {
@@ -87,6 +88,7 @@ export interface CartLineItem {
 export interface Cart {
   id: string;
   checkoutUrl: string;
+  discountCodes: Array<{ code: string; applicable: boolean }>;
   totalQuantity: number;
   totalAmount: string;
   items: CartLineItem[];
@@ -135,6 +137,7 @@ export function parseCart(raw: any): Cart {
   return {
     id: raw.id,
     checkoutUrl: normalizeCheckoutUrl(raw.checkoutUrl),
+    discountCodes: raw.discountCodes ?? [],
     totalQuantity: raw.totalQuantity,
     totalAmount: raw.cost.totalAmount.amount,
     items,
@@ -220,10 +223,15 @@ export async function updateCartItem(cartId: string, lineId: string, quantity: n
 export async function updateCartDiscountCodes(cartId: string, discountCodes: string[]): Promise<Cart> {
   const data = await gql<any>(
     `mutation cartDiscountCodesUpdate($cartId: ID!, $discountCodes: [String!]!) {
-      cartDiscountCodesUpdate(cartId: $cartId, discountCodes: $discountCodes) { cart { ${CART_FRAGMENT} } }
+      cartDiscountCodesUpdate(cartId: $cartId, discountCodes: $discountCodes) {
+        cart { ${CART_FRAGMENT} }
+        userErrors { field message }
+      }
     }`,
     { cartId, discountCodes }
   );
+  const userError = data.cartDiscountCodesUpdate.userErrors?.[0];
+  if (userError) throw new Error(userError.message);
   return parseCart(data.cartDiscountCodesUpdate.cart);
 }
 
