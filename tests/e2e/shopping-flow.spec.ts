@@ -147,6 +147,7 @@ test('production Collabs QR slug RENEWEDAPPROACH redirects and stores discount',
 test('production Collabs QR slug LISA redirects and stores discount', async ({ page }) => {
   await page.goto('/LISA?utm_source=collabs');
 
+  await expect(page.getByText('Applying discount')).toHaveCount(0);
   await expect(page).toHaveURL(/\/\?utm_source=collabs$/);
   await expect.poll(async () => page.evaluate(() => localStorage.getItem('shopify_discount_code'))).toBe('LISA');
 });
