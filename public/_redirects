@@ -1,0 +1,3 @@
+/discount/* /discount/index.html 200
+/:discount_code /discount/index.html 200
+/* /index.html 200
