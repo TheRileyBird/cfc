@@ -113,7 +113,7 @@ const ogImage = image.startsWith('http') ? image : new URL(image, siteUrl).href;
   <body class="bg-white font-sans text-ink antialiased overflow-x-hidden">
     <CartDrawer />
     <SearchModal />
-    <MaskPromoModal />
+    {/* <MaskPromoModal /> */}
     <slot />
     {showNewsletter && <NewsletterPreFooter />}
     <Footer />
