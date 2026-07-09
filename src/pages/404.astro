@@ -1,0 +1,42 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Nav from '../components/Nav.astro';
+---
+
+<Layout title="Page Not Found — CFC Skincare" description="The page you are looking for could not be found." showNewsletter={false}>
+  <Nav />
+
+  <main>
+    <section class="bg-ink pt-[160px] pb-[120px] relative overflow-hidden min-h-[70vh] flex items-center">
+      <div class="max-w-[1440px] mx-auto px-6 sm:px-10 w-full">
+        <div class="max-w-[760px]">
+          <div class="flex items-center gap-4 mb-8">
+            <div class="h-px bg-gold w-6"></div>
+            <span class="font-mono text-[10px] tracking-[0.2em] uppercase text-gold">404 — Page Not Found</span>
+          </div>
+          <h1 class="font-display font-light text-white leading-[1.02] tracking-[-0.02em] mb-6" style="font-size: clamp(44px, 5vw, 76px);">
+            This page seems to have slipped away.
+          </h1>
+          <p class="font-sans font-light text-[16px] leading-[1.75] max-w-[620px] mb-10" style="color: rgba(255,255,255,0.58);">
+            The address may have changed, or the link you followed is out of date. The shop and everything else are right where you left them.
+          </p>
+          <div class="flex flex-wrap items-center gap-6">
+            <a
+              href="/"
+              class="inline-flex items-center gap-3 bg-gold text-ink font-mono text-[11px] tracking-[0.18em] uppercase px-8 py-4 hover:bg-white transition-colors"
+            >
+              Back to Home
+            </a>
+            <a
+              href="/shop"
+              class="inline-flex items-center gap-3 font-mono text-[11px] tracking-[0.18em] uppercase text-white/70 hover:text-white transition-colors"
+            >
+              Browse the Shop
+            </a>
+          </div>
+        </div>
+      </div>
+      <div class="absolute bottom-0 inset-x-0 h-px" style="background: rgba(255,255,255,0.06);"></div>
+    </section>
+  </main>
+</Layout>

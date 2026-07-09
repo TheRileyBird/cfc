@@ -1,6 +1,13 @@
+# Single source of truth for redirects — do not add [[redirects]] to netlify.toml.
+# Order matters: explicit routes must come before the referral-code wildcard.
+
+# Shopify-hosted customer accounts
 /account https://cfcskincare.myshopify.com/account 302!
 /account/* https://cfcskincare.myshopify.com/account/:splat 302!
 /services/login_with_shop/* https://cfcskincare.myshopify.com/services/login_with_shop/:splat 302!
+
+# Discount / referral links. The bare one-segment wildcard supports referral
+# URLs like cfcskincare.shop/penny; it only fires when no built page exists
+# at that path. Unknown multi-segment paths fall through to the 404 page.
 /discount/* /discount/index.html 200
 /:discount_code /discount/index.html 200
-/* /index.html 200

@@ -1,21 +1,8 @@
+# Redirect rules live in public/_redirects (single source of truth).
+
 [build]
   command = "npm run build"
   publish = "dist"
 
 [build.environment]
   NODE_VERSION = "22"
-
-[[redirects]]
-  from = "/discount/*"
-  to = "/discount/index.html"
-  status = "200"
-
-[[redirects]]
-  from = "/:discount_code"
-  to = "/discount/index.html"
-  status = "200"
-
-[[redirects]]
-  from = "/*"
-  to = "/index.html"
-  status = "200"
