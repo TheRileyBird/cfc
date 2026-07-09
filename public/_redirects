@@ -1,3 +1,6 @@
+/account https://cfcskincare.myshopify.com/account 302!
+/account/* https://cfcskincare.myshopify.com/account/:splat 302!
+/services/login_with_shop/* https://cfcskincare.myshopify.com/services/login_with_shop/:splat 302!
 /discount/* /discount/index.html 200
 /:discount_code /discount/index.html 200
 /* /index.html 200

@@ -12,4 +12,19 @@ describe('Netlify redirect rules', () => {
     expect(appFallback).toBeGreaterThan(-1);
     expect(collabsRule).toBeLessThan(appFallback);
   });
+
+  it('routes Shopify account login paths before Collabs slug handling', () => {
+    const config = readFileSync(resolve(process.cwd(), 'public/_redirects'), 'utf8');
+    const accountRule = config.indexOf('/account/* https://cfcskincare.myshopify.com/account/:splat 302!');
+    const loginWithShopRule = config.indexOf(
+      '/services/login_with_shop/* https://cfcskincare.myshopify.com/services/login_with_shop/:splat 302!'
+    );
+    const collabsRule = config.indexOf('/:discount_code /discount/index.html 200');
+
+    expect(accountRule).toBeGreaterThan(-1);
+    expect(loginWithShopRule).toBeGreaterThan(-1);
+    expect(collabsRule).toBeGreaterThan(-1);
+    expect(accountRule).toBeLessThan(collabsRule);
+    expect(loginWithShopRule).toBeLessThan(collabsRule);
+  });
 });

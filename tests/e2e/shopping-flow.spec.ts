@@ -126,7 +126,7 @@ test('product buy now goes to Shopify checkout in the same tab', async ({ page }
 });
 
 test('account links go to the Shopify login page', async ({ page }) => {
-  const loginUrl = 'https://www.cfcskincare.shop/account/login';
+  const loginUrl = 'https://cfcskincare.myshopify.com/account/login';
 
   await page.setViewportSize({ width: 1280, height: 900 });
   await page.goto('/');
