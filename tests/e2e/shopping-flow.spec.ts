@@ -125,6 +125,19 @@ test('product buy now goes to Shopify checkout in the same tab', async ({ page }
   expect(await popupPromise).toBeNull();
 });
 
+test('account links go to the Shopify login page', async ({ page }) => {
+  const loginUrl = 'https://www.cfcskincare.shop/account/login';
+
+  await page.setViewportSize({ width: 1280, height: 900 });
+  await page.goto('/');
+  await page.evaluate(() => window.scrollTo(0, 200));
+  await expect(page.getByRole('link', { name: 'Account' })).toHaveAttribute('href', loginUrl);
+
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.getByRole('button', { name: 'Menu' }).click();
+  await expect(page.getByRole('link', { name: /^Account$/ })).toHaveAttribute('href', loginUrl);
+});
+
 test('Collabs discount links store discount and preserve tracking params', async ({ page }) => {
   let appliedDiscountCodes: string[] = [];
 

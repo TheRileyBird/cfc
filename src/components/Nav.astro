@@ -6,6 +6,7 @@ export interface Props {
   position?: 'fixed' | 'sticky';
 }
 const { position = 'fixed' } = Astro.props;
+const accountHref = 'https://www.cfcskincare.shop/account/login';
 ---
 
 <div
@@ -119,7 +120,7 @@ const { position = 'fixed' } = Astro.props;
             <path stroke-linecap="round" d="m21 21-4.35-4.35"/>
           </svg>
         </button>
-        <a href="https://www.cfcskincare.shop/account" class="text-ink-soft hover:text-ink transition-colors" aria-label="Account">
+        <a href={accountHref} class="text-ink-soft hover:text-ink transition-colors" aria-label="Account">
           <svg class="w-[17px] h-[17px]" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5">
             <path stroke-linecap="round" stroke-linejoin="round" d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
             <circle cx="12" cy="7" r="4"/>
@@ -225,7 +226,7 @@ const { position = 'fixed' } = Astro.props;
     ))}
     <div class="mt-5 flex gap-3">
       <a
-        href="https://www.cfcskincare.shop/account"
+        href={accountHref}
         class="flex-1 text-center py-3 border border-rule text-ink font-mono text-[10px] tracking-[0.18em] uppercase hover:border-ink transition-colors"
       >
         Account
