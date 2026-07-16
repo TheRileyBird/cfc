@@ -6,6 +6,12 @@
 /account/* https://cfcskincare.myshopify.com/account/:splat 302!
 /services/login_with_shop/* https://cfcskincare.myshopify.com/services/login_with_shop/:splat 302!
 
+# New products added after the last deploy have no static page yet; send
+# their URLs to the shop page until the nightly rebuild bakes them. Netlify
+# skips this rule when a real page exists, and 302 keeps browsers from
+# caching the detour.
+/products/* /shop 302
+
 # Discount / referral links. The bare one-segment wildcard supports referral
 # URLs like cfcskincare.shop/penny; it only fires when no built page exists
 # at that path. Unknown multi-segment paths fall through to the 404 page.

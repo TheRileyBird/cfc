@@ -1,0 +1,83 @@
+name: Rebuild site when products change
+
+# Product pages are baked at build time from Shopify. This runs daily,
+# fingerprints the full catalog (every product's handle + updatedAt), and
+# triggers a Netlify build ONLY if the fingerprint differs from the last
+# run's — catching creates, edits, and deletes alike. Quiet days cost zero
+# build minutes. The last fingerprint is stored in the Actions cache
+# (never in a commit, so it can't itself trigger a deploy).
+
+on:
+  schedule:
+    - cron: '0 10 * * *' # daily at 5:00 AM Central (10:00 UTC)
+  workflow_dispatch: {}
+
+jobs:
+  check-and-rebuild:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Restore previous catalog fingerprint
+        uses: actions/cache/restore@v4
+        with:
+          path: fingerprint.txt
+          key: products-fingerprint-${{ github.run_id }}
+          restore-keys: |
+            products-fingerprint-
+
+      - name: Fingerprint the Shopify catalog
+        id: check
+        env:
+          SHOPIFY_STORE_DOMAIN: ${{ secrets.SHOPIFY_STORE_DOMAIN }}
+          SHOPIFY_STOREFRONT_TOKEN: ${{ secrets.SHOPIFY_STOREFRONT_TOKEN }}
+        run: |
+          set -euo pipefail
+
+          catalog=""
+          cursor=""
+          while :; do
+            if [ -z "$cursor" ]; then after=""; else after=", after: \\\"$cursor\\\""; fi
+            resp=$(curl -sf "https://${SHOPIFY_STORE_DOMAIN}/api/2024-01/graphql.json" \
+              -H "Content-Type: application/json" \
+              -H "X-Shopify-Storefront-Access-Token: ${SHOPIFY_STOREFRONT_TOKEN}" \
+              -d "{\"query\":\"query { products(first: 250${after}) { pageInfo { hasNextPage endCursor } edges { node { handle updatedAt } } } }\"}")
+            page=$(echo "$resp" | jq -r '.data.products.edges[].node | .handle + " " + .updatedAt')
+            catalog="${catalog}${page}"$'\n'
+            if [ "$(echo "$resp" | jq -r '.data.products.pageInfo.hasNextPage')" = "true" ]; then
+              cursor=$(echo "$resp" | jq -r '.data.products.pageInfo.endCursor')
+            else
+              break
+            fi
+          done
+
+          count=$(echo "$catalog" | grep -c . || true)
+          if [ "$count" -eq 0 ]; then
+            echo "Shopify returned zero products — refusing to fingerprint (likely an API problem)" >&2
+            exit 1
+          fi
+
+          fingerprint=$(echo "$catalog" | sort | sha256sum | cut -d' ' -f1)
+          previous=$(cat fingerprint.txt 2>/dev/null || echo "none")
+          echo "Products: $count | fingerprint: $fingerprint | previous: $previous"
+
+          if [ "$fingerprint" != "$previous" ]; then
+            echo "Catalog changed — triggering rebuild"
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "No catalog changes — skipping build"
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+          fi
+          printf '%s' "$fingerprint" > fingerprint.txt
+
+      - name: Trigger Netlify build
+        if: steps.check.outputs.changed == 'true' || github.event_name == 'workflow_dispatch'
+        env:
+          NETLIFY_BUILD_HOOK_URL: ${{ secrets.NETLIFY_BUILD_HOOK_URL }}
+        run: |
+          curl -sf -X POST "$NETLIFY_BUILD_HOOK_URL" -d '{}'
+          echo "Netlify build triggered."
+
+      - name: Remember catalog fingerprint
+        uses: actions/cache/save@v4
+        with:
+          path: fingerprint.txt
+          key: products-fingerprint-${{ github.run_id }}
