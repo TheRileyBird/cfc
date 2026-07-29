@@ -10,7 +10,7 @@ describe('Netlify redirect rules', () => {
   it('routes unknown one-segment Collabs URLs to the discount redirect', () => {
     const config = readRedirects();
 
-    expect(config).toContain('/:discount_code /discount/index.html 200');
+    expect(config).toContain('/:discount_code /index.html 200');
   });
 
   it('routes Shopify account login paths before Collabs slug handling', () => {
@@ -19,7 +19,7 @@ describe('Netlify redirect rules', () => {
     const loginWithShopRule = config.indexOf(
       '/services/login_with_shop/* https://cfcskincare.myshopify.com/services/login_with_shop/:splat 302!'
     );
-    const collabsRule = config.indexOf('/:discount_code /discount/index.html 200');
+    const collabsRule = config.indexOf('/:discount_code /index.html 200');
 
     expect(accountRule).toBeGreaterThan(-1);
     expect(loginWithShopRule).toBeGreaterThan(-1);

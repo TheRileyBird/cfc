@@ -13,7 +13,8 @@
 /products/* /shop 302
 
 # Discount / referral links. The bare one-segment wildcard supports referral
-# URLs like cfcskincare.shop/penny; it only fires when no built page exists
-# at that path. Unknown multi-segment paths fall through to the 404 page.
+# URLs like cfcskincare.shop/penny by serving the homepage at that visible URL;
+# it only fires when no built page exists at that path. Unknown multi-segment
+# paths fall through to the 404 page.
 /discount/* /discount/index.html 200
-/:discount_code /discount/index.html 200
+/:discount_code /index.html 200
