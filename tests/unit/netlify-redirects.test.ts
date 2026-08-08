@@ -28,6 +28,17 @@ describe('Netlify redirect rules', () => {
     expect(loginWithShopRule).toBeLessThan(collabsRule);
   });
 
+  it('forwards Shopify invoice payment links to the native Shopify domain', () => {
+    const config = readRedirects();
+    const paymentRule = config.indexOf(
+      '/:shop_id/order_payment/:payment_id https://cfcskincare.myshopify.com/:shop_id/order_payment/:payment_id 302!'
+    );
+    const collabsRule = config.indexOf('/:discount_code /index.html 200');
+
+    expect(paymentRule).toBeGreaterThan(-1);
+    expect(paymentRule).toBeLessThan(collabsRule);
+  });
+
   it('has no homepage catch-all so unknown multi-segment paths reach the 404 page', () => {
     const config = readRedirects();
 

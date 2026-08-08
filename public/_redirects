@@ -6,6 +6,11 @@
 /account/* https://cfcskincare.myshopify.com/account/:splat 302!
 /services/login_with_shop/* https://cfcskincare.myshopify.com/services/login_with_shop/:splat 302!
 
+# Shopify draft-order invoice payment links use the primary storefront domain.
+# Forward them to Shopify so Netlify does not serve the Astro 404 page. Netlify
+# preserves the invoice secret query parameter when the destination has no query.
+/:shop_id/order_payment/:payment_id https://cfcskincare.myshopify.com/:shop_id/order_payment/:payment_id 302!
+
 # New products added after the last deploy have no static page yet; send
 # their URLs to the shop page until the nightly rebuild bakes them. Netlify
 # skips this rule when a real page exists, and 302 keeps browsers from
