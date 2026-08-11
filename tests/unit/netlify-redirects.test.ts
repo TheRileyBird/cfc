@@ -19,13 +19,18 @@ describe('Netlify redirect rules', () => {
     const loginWithShopRule = config.indexOf(
       '/services/login_with_shop/* https://cfcskincare.myshopify.com/services/login_with_shop/:splat 302!'
     );
+    const companyLocationRule = config.indexOf(
+      '/company_location/update https://cfcskincare.myshopify.com/company_location/update 302!'
+    );
     const collabsRule = config.indexOf('/:discount_code /index.html 200');
 
     expect(accountRule).toBeGreaterThan(-1);
     expect(loginWithShopRule).toBeGreaterThan(-1);
+    expect(companyLocationRule).toBeGreaterThan(-1);
     expect(collabsRule).toBeGreaterThan(-1);
     expect(accountRule).toBeLessThan(collabsRule);
     expect(loginWithShopRule).toBeLessThan(collabsRule);
+    expect(companyLocationRule).toBeLessThan(collabsRule);
   });
 
   it('forwards Shopify invoice payment links to the native Shopify domain', () => {
