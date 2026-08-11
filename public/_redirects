@@ -4,8 +4,11 @@
 # Shopify-hosted customer accounts
 /account https://cfcskincare.myshopify.com/account 302!
 /account/* https://cfcskincare.myshopify.com/account/:splat 302!
+/customer_authentication/* https://cfcskincare.myshopify.com/customer_authentication/:splat 302!
 /services/login_with_shop/* https://cfcskincare.myshopify.com/services/login_with_shop/:splat 302!
 /company_location/update https://cfcskincare.myshopify.com/company_location/update 302!
+/cart/c/* https://cfcskincare.myshopify.com/cart/c/:splat 302!
+/checkouts/* https://cfcskincare.myshopify.com/checkouts/:splat 302!
 
 # Shopify draft-order invoice payment links use the primary storefront domain.
 # Forward them to Shopify so Netlify does not serve the Astro 404 page. Netlify

@@ -16,6 +16,9 @@ describe('Netlify redirect rules', () => {
   it('routes Shopify account login paths before Collabs slug handling', () => {
     const config = readRedirects();
     const accountRule = config.indexOf('/account/* https://cfcskincare.myshopify.com/account/:splat 302!');
+    const customerAuthenticationRule = config.indexOf(
+      '/customer_authentication/* https://cfcskincare.myshopify.com/customer_authentication/:splat 302!'
+    );
     const loginWithShopRule = config.indexOf(
       '/services/login_with_shop/* https://cfcskincare.myshopify.com/services/login_with_shop/:splat 302!'
     );
@@ -25,10 +28,12 @@ describe('Netlify redirect rules', () => {
     const collabsRule = config.indexOf('/:discount_code /index.html 200');
 
     expect(accountRule).toBeGreaterThan(-1);
+    expect(customerAuthenticationRule).toBeGreaterThan(-1);
     expect(loginWithShopRule).toBeGreaterThan(-1);
     expect(companyLocationRule).toBeGreaterThan(-1);
     expect(collabsRule).toBeGreaterThan(-1);
     expect(accountRule).toBeLessThan(collabsRule);
+    expect(customerAuthenticationRule).toBeLessThan(collabsRule);
     expect(loginWithShopRule).toBeLessThan(collabsRule);
     expect(companyLocationRule).toBeLessThan(collabsRule);
   });
@@ -42,6 +47,19 @@ describe('Netlify redirect rules', () => {
 
     expect(paymentRule).toBeGreaterThan(-1);
     expect(paymentRule).toBeLessThan(collabsRule);
+  });
+
+  it('routes Shopify checkout handoff paths before Collabs slug handling', () => {
+    const config = readRedirects();
+    const cartCheckoutRule = config.indexOf('/cart/c/* https://cfcskincare.myshopify.com/cart/c/:splat 302!');
+    const checkoutRule = config.indexOf('/checkouts/* https://cfcskincare.myshopify.com/checkouts/:splat 302!');
+    const collabsRule = config.indexOf('/:discount_code /index.html 200');
+
+    expect(cartCheckoutRule).toBeGreaterThan(-1);
+    expect(checkoutRule).toBeGreaterThan(-1);
+    expect(collabsRule).toBeGreaterThan(-1);
+    expect(cartCheckoutRule).toBeLessThan(collabsRule);
+    expect(checkoutRule).toBeLessThan(collabsRule);
   });
 
   it('has no homepage catch-all so unknown multi-segment paths reach the 404 page', () => {
