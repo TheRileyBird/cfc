@@ -5,7 +5,7 @@ import { Image } from 'astro:assets';
 import productsImg from '../assets/images/group2.jpg';
 import treatmentImg from '../assets/images/bottle.jpg';
 
-const accountHref = 'https://cfcskincare.myshopify.com/account/login';
+const wholesaleStoreHref = 'https://wholesale.cfcskincare.shop/customer_authentication/login?return_to=%2F';
 ---
 
 <Layout
@@ -41,15 +41,15 @@ const accountHref = 'https://cfcskincare.myshopify.com/account/login';
             CFC partner ordering starts here.
           </h1>
           <p class="font-sans font-light text-[16px] leading-[1.75] max-w-[560px]" style="color: rgba(255,255,255,0.6);">
-            Approved wholesale buyers can sign in with the email assigned to their company location to access account orders, company details, and B2B checkout.
+            Approved wholesale buyers can sign in with the email assigned to their company location to enter the Shopify-hosted CFC wholesale storefront.
           </p>
 
           <div class="mt-10 flex flex-col sm:flex-row gap-4">
             <a
-              href={accountHref}
+              href={wholesaleStoreHref}
               class="inline-flex items-center justify-center bg-gold px-8 py-4 font-mono text-[10px] tracking-[0.18em] uppercase text-ink transition-colors duration-200 hover:bg-gold-light"
             >
-              Sign In To Wholesale
+              Enter Wholesale Store
             </a>
             <a
               href="/contact"
@@ -85,7 +85,7 @@ const accountHref = 'https://cfcskincare.myshopify.com/account/login';
               Use the exact email tied to your company account.
             </h2>
             <p class="font-sans font-light text-[14px] text-ink-soft leading-[1.8] max-w-[440px]">
-              Shopify verifies wholesale buyers with a one-time email code. If your email is assigned to a CFC company location, Shopify applies the company context before checkout.
+              Shopify verifies wholesale buyers with a one-time email code. If your email is assigned to a CFC company location, Shopify applies the company context on the wholesale storefront.
             </p>
           </aside>
 
@@ -93,7 +93,7 @@ const accountHref = 'https://cfcskincare.myshopify.com/account/login';
             {[
               ['1', 'Sign in', 'Enter the email assigned to your company contact and use the one-time code Shopify sends.'],
               ['2', 'Choose location', 'If your account has more than one location, select the company location you are ordering for.'],
-              ['3', 'Order through Shopify', 'Company details, payment terms, and checkout options are handled in Shopify B2B.'],
+              ['3', 'Shop wholesale', 'Browse the Shopify-hosted wholesale storefront with company pricing, payment terms, and B2B checkout.'],
             ].map(([number, title, copy]) => (
               <div class="bg-white p-7 min-h-[230px] flex flex-col">
                 <span class="font-mono text-[10px] tracking-[0.2em] uppercase text-gold mb-8">Step {number}</span>
