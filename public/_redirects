@@ -5,6 +5,7 @@
 /account https://cfcskincare.myshopify.com/account 302!
 /account/* https://cfcskincare.myshopify.com/account/:splat 302!
 /customer_authentication/* https://cfcskincare.myshopify.com/customer_authentication/:splat 302!
+/customer_identity/* https://cfcskincare.myshopify.com/customer_identity/:splat 302!
 /services/login_with_shop/* https://cfcskincare.myshopify.com/services/login_with_shop/:splat 302!
 /company_location/update https://cfcskincare.myshopify.com/company_location/update 302!
 /cart/c/* https://cfcskincare.myshopify.com/cart/c/:splat 302!

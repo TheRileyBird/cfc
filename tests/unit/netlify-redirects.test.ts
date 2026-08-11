@@ -19,6 +19,9 @@ describe('Netlify redirect rules', () => {
     const customerAuthenticationRule = config.indexOf(
       '/customer_authentication/* https://cfcskincare.myshopify.com/customer_authentication/:splat 302!'
     );
+    const customerIdentityRule = config.indexOf(
+      '/customer_identity/* https://cfcskincare.myshopify.com/customer_identity/:splat 302!'
+    );
     const loginWithShopRule = config.indexOf(
       '/services/login_with_shop/* https://cfcskincare.myshopify.com/services/login_with_shop/:splat 302!'
     );
@@ -29,11 +32,13 @@ describe('Netlify redirect rules', () => {
 
     expect(accountRule).toBeGreaterThan(-1);
     expect(customerAuthenticationRule).toBeGreaterThan(-1);
+    expect(customerIdentityRule).toBeGreaterThan(-1);
     expect(loginWithShopRule).toBeGreaterThan(-1);
     expect(companyLocationRule).toBeGreaterThan(-1);
     expect(collabsRule).toBeGreaterThan(-1);
     expect(accountRule).toBeLessThan(collabsRule);
     expect(customerAuthenticationRule).toBeLessThan(collabsRule);
+    expect(customerIdentityRule).toBeLessThan(collabsRule);
     expect(loginWithShopRule).toBeLessThan(collabsRule);
     expect(companyLocationRule).toBeLessThan(collabsRule);
   });
