@@ -1,0 +1,140 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Nav from '../components/Nav.astro';
+import { Image } from 'astro:assets';
+import productsImg from '../assets/images/group2.jpg';
+import treatmentImg from '../assets/images/bottle.jpg';
+
+const accountHref = 'https://cfcskincare.myshopify.com/account/login';
+---
+
+<Layout
+  title="Wholesale Access — CFC Skincare"
+  description="Wholesale access for approved CFC Skincare partners, providers, and company buyers."
+>
+  <Nav />
+
+  <main>
+    <section class="bg-ink pt-[160px] pb-[90px] relative overflow-hidden">
+      <div class="absolute inset-0 hidden lg:block">
+        <Image
+          src={productsImg}
+          alt="CFC Skincare products arranged for wholesale partners"
+          class="absolute inset-y-0 right-0 w-[58%] h-full object-cover object-center"
+          widths={[900, 1300, 1800, 2200]}
+          sizes="58vw"
+          loading="eager"
+        />
+        <div class="absolute inset-0" style="background: linear-gradient(90deg, oklch(13% 0.010 255) 0%, oklch(13% 0.010 255) 42%, rgba(18,21,25,0.78) 66%, rgba(18,21,25,0.34) 100%);"></div>
+      </div>
+
+      <div class="max-w-[1440px] mx-auto px-6 sm:px-10 relative z-10">
+        <div class="reveal max-w-[720px]">
+          <div class="flex items-center gap-4 mb-8">
+            <div class="h-px bg-gold w-6"></div>
+            <span class="font-mono text-[10px] tracking-[0.2em] uppercase text-gold">Wholesale Access</span>
+          </div>
+          <h1
+            class="font-display font-light text-white leading-[1.0] tracking-[-0.02em] mb-8"
+            style="font-size: clamp(52px, 6vw, 92px);"
+          >
+            CFC partner ordering starts here.
+          </h1>
+          <p class="font-sans font-light text-[16px] leading-[1.75] max-w-[560px]" style="color: rgba(255,255,255,0.6);">
+            Approved wholesale buyers can sign in with the email assigned to their company location to access account orders, company details, and B2B checkout.
+          </p>
+
+          <div class="mt-10 flex flex-col sm:flex-row gap-4">
+            <a
+              href={accountHref}
+              class="inline-flex items-center justify-center bg-gold px-8 py-4 font-mono text-[10px] tracking-[0.18em] uppercase text-ink transition-colors duration-200 hover:bg-gold-light"
+            >
+              Sign In To Wholesale
+            </a>
+            <a
+              href="/contact"
+              class="inline-flex items-center justify-center border border-white/20 px-8 py-4 font-mono text-[10px] tracking-[0.18em] uppercase text-white transition-colors duration-200 hover:border-gold hover:text-gold"
+            >
+              Request Access
+            </a>
+          </div>
+        </div>
+
+        <div class="reveal mt-14 overflow-hidden aspect-[16/10] border border-white/10 lg:hidden">
+          <Image
+            src={productsImg}
+            alt="CFC Skincare products arranged for wholesale partners"
+            class="w-full h-full object-cover object-center"
+            widths={[640, 960, 1280]}
+            sizes="100vw"
+          />
+        </div>
+      </div>
+      <div class="absolute bottom-0 inset-x-0 h-px" style="background: rgba(255,255,255,0.06);"></div>
+    </section>
+
+    <section class="bg-parchment py-[90px]">
+      <div class="max-w-[1440px] mx-auto px-6 sm:px-10">
+        <div class="grid grid-cols-1 lg:grid-cols-[5fr_7fr] gap-14 lg:gap-24 items-start">
+          <aside class="reveal-left">
+            <div class="flex items-center gap-4 mb-7">
+              <div class="h-px bg-gold w-6"></div>
+              <span class="font-mono text-[10px] tracking-[0.2em] uppercase text-gold">How It Works</span>
+            </div>
+            <h2 class="font-display font-light text-ink leading-[1.08] tracking-[-0.01em] mb-7" style="font-size: clamp(34px, 3.4vw, 54px);">
+              Use the exact email tied to your company account.
+            </h2>
+            <p class="font-sans font-light text-[14px] text-ink-soft leading-[1.8] max-w-[440px]">
+              Shopify verifies wholesale buyers with a one-time email code. If your email is assigned to a CFC company location, Shopify applies the company context before checkout.
+            </p>
+          </aside>
+
+          <div class="reveal-right grid grid-cols-1 md:grid-cols-3 gap-px bg-rule border border-rule">
+            {[
+              ['1', 'Sign in', 'Enter the email assigned to your company contact and use the one-time code Shopify sends.'],
+              ['2', 'Choose location', 'If your account has more than one location, select the company location you are ordering for.'],
+              ['3', 'Order through Shopify', 'Company details, payment terms, and checkout options are handled in Shopify B2B.'],
+            ].map(([number, title, copy]) => (
+              <div class="bg-white p-7 min-h-[230px] flex flex-col">
+                <span class="font-mono text-[10px] tracking-[0.2em] uppercase text-gold mb-8">Step {number}</span>
+                <h3 class="font-display text-[24px] font-normal text-ink mb-4 leading-tight">{title}</h3>
+                <p class="font-sans font-light text-[13px] leading-[1.75] text-ink-soft">{copy}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="bg-white py-[80px]">
+      <div class="max-w-[1440px] mx-auto px-6 sm:px-10">
+        <div class="grid grid-cols-1 md:grid-cols-[7fr_5fr] gap-px bg-rule border border-rule">
+          <div class="reveal-left bg-white overflow-hidden aspect-[16/9] md:aspect-[21/10]">
+            <Image
+              src={treatmentImg}
+              alt="CFC Skincare product bottle"
+              class="w-full h-full object-cover object-center"
+              widths={[720, 1080, 1440, 2000]}
+              sizes="(max-width: 768px) 100vw, 58vw"
+            />
+          </div>
+          <div class="reveal-right bg-ink p-8 sm:p-10 lg:p-12 flex flex-col justify-center">
+            <p class="font-mono text-[9px] tracking-[0.2em] uppercase text-gold mb-4">Need Access?</p>
+            <h2 class="font-display font-light text-white leading-[1.08] tracking-[-0.01em] mb-5" style="font-size: clamp(30px, 3vw, 44px);">
+              New wholesale buyers need to be approved before sign-in works.
+            </h2>
+            <p class="font-sans font-light text-[14px] leading-[1.8] text-white/60 mb-8">
+              If you are setting up a new business account, contact CFC with your company name, buyer email, shipping location, and resale or provider details.
+            </p>
+            <a
+              href="/contact"
+              class="inline-flex self-start items-center justify-center bg-white px-7 py-4 font-mono text-[10px] tracking-[0.18em] uppercase text-ink transition-colors duration-200 hover:bg-gold hover:text-ink"
+            >
+              Contact CFC
+            </a>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+</Layout>
