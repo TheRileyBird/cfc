@@ -16,11 +16,17 @@ describe('Netlify redirect rules', () => {
   it('routes Shopify account login paths before Collabs slug handling', () => {
     const config = readRedirects();
     const accountRule = config.indexOf('/account/* https://cfcskincare.myshopify.com/account/:splat 302!');
-    const customerAuthenticationRule = config.indexOf(
-      '/customer_authentication/* https://cfcskincare.myshopify.com/customer_authentication/:splat 302!'
+    const customerAuthenticationHintRule = config.indexOf(
+      '/customer_authentication/sso_hint https://cfcskincare.myshopify.com/account/login 302!'
+    );
+    const customerAuthenticationLoginRule = config.indexOf(
+      '/customer_authentication/login https://cfcskincare.myshopify.com/account/login 302!'
+    );
+    const customerAuthenticationCallbackRule = config.indexOf(
+      '/customer_authentication/callback https://cfcskincare.myshopify.com/customer_authentication/callback 302!'
     );
     const customerIdentityRule = config.indexOf(
-      '/customer_identity/* https://cfcskincare.myshopify.com/customer_identity/:splat 302!'
+      '/customer_identity/logout / 302!'
     );
     const loginWithShopRule = config.indexOf(
       '/services/login_with_shop/* https://cfcskincare.myshopify.com/services/login_with_shop/:splat 302!'
@@ -31,16 +37,23 @@ describe('Netlify redirect rules', () => {
     const collabsRule = config.indexOf('/:discount_code /index.html 200');
 
     expect(accountRule).toBeGreaterThan(-1);
-    expect(customerAuthenticationRule).toBeGreaterThan(-1);
+    expect(customerAuthenticationHintRule).toBeGreaterThan(-1);
+    expect(customerAuthenticationLoginRule).toBeGreaterThan(-1);
+    expect(customerAuthenticationCallbackRule).toBeGreaterThan(-1);
     expect(customerIdentityRule).toBeGreaterThan(-1);
     expect(loginWithShopRule).toBeGreaterThan(-1);
     expect(companyLocationRule).toBeGreaterThan(-1);
     expect(collabsRule).toBeGreaterThan(-1);
     expect(accountRule).toBeLessThan(collabsRule);
-    expect(customerAuthenticationRule).toBeLessThan(collabsRule);
+    expect(customerAuthenticationHintRule).toBeLessThan(collabsRule);
+    expect(customerAuthenticationLoginRule).toBeLessThan(collabsRule);
+    expect(customerAuthenticationCallbackRule).toBeLessThan(collabsRule);
     expect(customerIdentityRule).toBeLessThan(collabsRule);
     expect(loginWithShopRule).toBeLessThan(collabsRule);
     expect(companyLocationRule).toBeLessThan(collabsRule);
+
+    expect(config).not.toContain('/customer_authentication/* https://cfcskincare.myshopify.com/customer_authentication/:splat 302!');
+    expect(config).not.toContain('/customer_identity/* https://cfcskincare.myshopify.com/customer_identity/:splat 302!');
   });
 
   it('forwards Shopify invoice payment links to the native Shopify domain', () => {
