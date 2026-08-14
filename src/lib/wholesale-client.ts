@@ -540,6 +540,17 @@ function setCart(cart: WholesaleCart): void {
   }
 }
 
+function showSignedOut(gate: HTMLElement | null, storeRegions: NodeListOf<HTMLElement>, message = ''): void {
+  gate?.classList.remove('hidden');
+  storeRegions.forEach((region) => region.classList.add('hidden'));
+  setStatus(message);
+}
+
+function showSignedIn(gate: HTMLElement | null, storeRegions: NodeListOf<HTMLElement>): void {
+  gate?.classList.add('hidden');
+  storeRegions.forEach((region) => region.classList.remove('hidden'));
+}
+
 async function initWholesale(): Promise<void> {
   const signInButton = document.querySelector<HTMLButtonElement>('[data-wholesale-login]');
   const signOutButton = document.querySelector<HTMLButtonElement>('[data-wholesale-logout]');
@@ -577,16 +588,26 @@ async function initWholesale(): Promise<void> {
       return;
     }
 
-    gate?.classList.remove('hidden');
-    storeRegions.forEach((region) => region.classList.add('hidden'));
+    showSignedOut(gate, storeRegions);
     return;
   }
 
-  gate?.classList.add('hidden');
-  storeRegions.forEach((region) => region.classList.remove('hidden'));
+  showSignedIn(gate, storeRegions);
   setStatus('Loading wholesale account...');
 
-  const locations = await getBuyerLocations(session);
+  let locations: BuyerLocation[] = [];
+  try {
+    locations = await getBuyerLocations(session);
+  } catch (error) {
+    const message = error instanceof Error ? error.message : 'Wholesale is temporarily unavailable.';
+    if (message.includes('session expired')) {
+      showSignedOut(gate, storeRegions, message);
+      productGrid!.innerHTML = '';
+      return;
+    }
+    throw error;
+  }
+
   if (locations.length === 0) {
     setStatus('This email is signed in, but it is not assigned to a wholesale company location.');
     productGrid!.innerHTML = '';
@@ -598,7 +619,19 @@ async function initWholesale(): Promise<void> {
   localStorage.setItem(LOCATION_KEY, location.id);
   if (locationLabel) locationLabel.textContent = `${location.companyName} · ${location.name}`;
 
-  const products = await getWholesaleProducts(session, location.id);
+  let products: WholesaleProduct[] = [];
+  try {
+    products = await getWholesaleProducts(session, location.id);
+  } catch (error) {
+    const message = error instanceof Error ? error.message : 'Wholesale products are temporarily unavailable.';
+    if (message.includes('session expired')) {
+      showSignedOut(gate, storeRegions, message);
+      productGrid!.innerHTML = '';
+      return;
+    }
+    throw error;
+  }
+
   setStatus(`${products.length} wholesale product${products.length === 1 ? '' : 's'} available`);
   if (productGrid) renderProducts(products, productGrid);
 
