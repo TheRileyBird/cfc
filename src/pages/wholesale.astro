@@ -4,8 +4,6 @@ import Nav from '../components/Nav.astro';
 import { Image } from 'astro:assets';
 import productsImg from '../assets/images/group2.jpg';
 import treatmentImg from '../assets/images/bottle.jpg';
-
-const wholesaleStoreHref = 'https://wholesale.cfcskincare.shop/customer_authentication/login?return_to=%2F';
 ---
 
 <Layout
@@ -46,10 +44,10 @@ const wholesaleStoreHref = 'https://wholesale.cfcskincare.shop/customer_authenti
 
           <div class="mt-10 flex flex-col sm:flex-row gap-4">
             <a
-              href={wholesaleStoreHref}
+              href="#wholesale-store"
               class="inline-flex items-center justify-center bg-gold px-8 py-4 font-mono text-[10px] tracking-[0.18em] uppercase text-ink transition-colors duration-200 hover:bg-gold-light"
             >
-              Enter Wholesale Store
+              Enter Wholesale
             </a>
             <a
               href="/contact"
@@ -73,35 +71,71 @@ const wholesaleStoreHref = 'https://wholesale.cfcskincare.shop/customer_authenti
       <div class="absolute bottom-0 inset-x-0 h-px" style="background: rgba(255,255,255,0.06);"></div>
     </section>
 
-    <section class="bg-parchment py-[90px]">
+    <section id="wholesale-store" class="bg-parchment py-[90px]">
       <div class="max-w-[1440px] mx-auto px-6 sm:px-10">
         <div class="grid grid-cols-1 lg:grid-cols-[5fr_7fr] gap-14 lg:gap-24 items-start">
           <aside class="reveal-left">
             <div class="flex items-center gap-4 mb-7">
               <div class="h-px bg-gold w-6"></div>
-              <span class="font-mono text-[10px] tracking-[0.2em] uppercase text-gold">How It Works</span>
+              <span class="font-mono text-[10px] tracking-[0.2em] uppercase text-gold">Wholesale Store</span>
             </div>
             <h2 class="font-display font-light text-ink leading-[1.08] tracking-[-0.01em] mb-7" style="font-size: clamp(34px, 3.4vw, 54px);">
-              Use the exact email tied to your company account.
+              Sign in with the email tied to your company account.
             </h2>
             <p class="font-sans font-light text-[14px] text-ink-soft leading-[1.8] max-w-[440px]">
-              Shopify verifies wholesale buyers with a one-time email code. If your email is assigned to a CFC company location, Shopify applies the company context on the wholesale storefront.
+              Approved buyers can shop CFC wholesale pricing here on the main site. Shopify verifies your email, then applies your company location, catalog, pricing, and checkout terms.
             </p>
           </aside>
 
-          <div class="reveal-right grid grid-cols-1 md:grid-cols-3 gap-px bg-rule border border-rule">
-            {[
-              ['1', 'Sign in', 'Enter the email assigned to your company contact and use the one-time code Shopify sends.'],
-              ['2', 'Choose location', 'If your account has more than one location, select the company location you are ordering for.'],
-              ['3', 'Shop wholesale', 'Browse the Shopify-hosted wholesale storefront with company pricing, payment terms, and B2B checkout.'],
-            ].map(([number, title, copy]) => (
-              <div class="bg-white p-7 min-h-[230px] flex flex-col">
-                <span class="font-mono text-[10px] tracking-[0.2em] uppercase text-gold mb-8">Step {number}</span>
-                <h3 class="font-display text-[24px] font-normal text-ink mb-4 leading-tight">{title}</h3>
-                <p class="font-sans font-light text-[13px] leading-[1.75] text-ink-soft">{copy}</p>
+          <div class="reveal-right bg-white border border-rule p-7 sm:p-9">
+            <div data-wholesale-gate>
+              <p class="font-mono text-[10px] tracking-[0.2em] uppercase text-gold mb-5">Buyer Login</p>
+              <h3 class="font-display text-[30px] sm:text-[36px] font-light text-ink mb-5 leading-tight">Access your wholesale catalog.</h3>
+              <p class="font-sans font-light text-[14px] leading-[1.8] text-ink-soft max-w-[620px] mb-8">
+                Use the same email assigned to your Shopify company contact. If the email is approved, your wholesale products and pricing will load after sign-in.
+              </p>
+              <button
+                type="button"
+                data-wholesale-login
+                class="inline-flex items-center justify-center bg-ink px-8 py-4 font-mono text-[10px] tracking-[0.18em] uppercase text-white transition-colors duration-200 hover:bg-gold hover:text-ink"
+              >
+                Sign In to Shop
+              </button>
+            </div>
+
+            <div data-wholesale-store class="hidden">
+              <div class="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+                <div>
+                  <p class="font-mono text-[10px] tracking-[0.2em] uppercase text-gold mb-3">Approved Buyer</p>
+                  <h3 class="font-display text-[30px] sm:text-[36px] font-light text-ink leading-tight" data-wholesale-location>Wholesale account</h3>
+                  <p class="mt-3 font-sans font-light text-[13px] text-ink-soft" data-wholesale-status>Loading wholesale products...</p>
+                </div>
+                <div class="flex flex-wrap items-center gap-3">
+                  <button
+                    type="button"
+                    data-wholesale-logout
+                    class="border border-rule bg-white px-5 py-3 font-mono text-[9px] tracking-[0.15em] uppercase text-ink-soft transition-colors hover:border-ink hover:text-ink"
+                  >
+                    Sign Out
+                  </button>
+                  <a
+                    href="#"
+                    data-wholesale-checkout
+                    class="pointer-events-none opacity-40 inline-flex items-center justify-center bg-ink px-6 py-3 font-mono text-[9px] tracking-[0.15em] uppercase text-white transition-colors duration-200 hover:bg-gold hover:text-ink"
+                  >
+                    Checkout
+                  </a>
+                </div>
               </div>
-            ))}
+              <div class="mt-6 border-y border-rule py-4 font-mono text-[10px] tracking-[0.14em] uppercase text-ink-soft" data-wholesale-cart>
+                Cart empty
+              </div>
+            </div>
           </div>
+        </div>
+
+        <div data-wholesale-store class="hidden mt-12">
+          <div data-wholesale-products class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-px border border-rule bg-rule"></div>
         </div>
       </div>
     </section>
@@ -138,3 +172,7 @@ const wholesaleStoreHref = 'https://wholesale.cfcskincare.shop/customer_authenti
     </section>
   </main>
 </Layout>
+
+<script>
+  import '../lib/wholesale-client';
+</script>
