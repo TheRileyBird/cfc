@@ -462,8 +462,13 @@ function renderProducts(products: WholesaleProduct[], container: HTMLElement): v
 }
 
 function setStatus(text: string): void {
-  const status = document.querySelector<HTMLElement>('[data-wholesale-status]');
-  if (status) status.textContent = text;
+  document.querySelectorAll<HTMLElement>('[data-wholesale-status]').forEach((status) => {
+    status.textContent = text;
+  });
+  document.querySelectorAll<HTMLElement>('[data-wholesale-public-status]').forEach((status) => {
+    status.textContent = text;
+    status.classList.toggle('hidden', !text);
+  });
 }
 
 function setCart(cart: WholesaleCart): void {
@@ -496,12 +501,24 @@ async function initWholesale(): Promise<void> {
 
   const params = new URLSearchParams(window.location.search);
   let session = getSession();
+
+  if (params.has('error')) {
+    setStatus(params.get('error_description') ?? params.get('error') ?? 'Wholesale login could not be completed.');
+    window.history.replaceState({}, document.title, '/wholesale');
+  }
+
   if (params.has('code')) {
     setStatus('Finishing secure sign in...');
     session = await completeLogin(params.get('code') ?? '', params.get('state') ?? '');
   }
 
   if (!session) {
+    if (params.get('company_location_changed') === 'true') {
+      setStatus('Opening your wholesale catalog...');
+      await startLogin();
+      return;
+    }
+
     gate?.classList.remove('hidden');
     storeRegions.forEach((region) => region.classList.add('hidden'));
     return;
