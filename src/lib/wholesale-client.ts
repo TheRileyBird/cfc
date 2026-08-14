@@ -1,3 +1,5 @@
+import { normalizeCheckoutUrl } from './cart-client';
+
 const importEnv = (import.meta as unknown as { env?: Record<string, string | undefined> }).env ?? {};
 
 const SHOPIFY_DOMAIN = cleanDomain(importEnv.PUBLIC_SHOPIFY_STORE_DOMAIN ?? importEnv.SHOPIFY_STORE_DOMAIN) || 'cfcskincare.myshopify.com';
@@ -490,7 +492,7 @@ function renderProducts(products: WholesaleProduct[], container: HTMLElement): v
     const imageAlt = escapeHtml(product.imageAlt);
     const variantId = escapeHtml(product.variantId);
     return `
-      <article class="group flex h-full flex-col overflow-hidden bg-white transition-colors duration-300 hover:bg-parchment-2">
+      <article class="group flex h-full flex-col overflow-hidden border border-rule bg-white transition-colors duration-300 hover:bg-parchment-2">
         <div class="aspect-[1/1] overflow-hidden bg-parchment sm:aspect-[3/4]">
           ${product.imageUrl
             ? `<img src="${escapeHtml(product.imageUrl)}" alt="${imageAlt}" loading="lazy" class="h-full w-full object-cover transition-transform duration-[800ms] group-hover:scale-[1.06]" />`
@@ -535,18 +537,27 @@ function setCart(cart: WholesaleCart): void {
   const checkout = document.querySelector<HTMLAnchorElement>('[data-wholesale-checkout]');
   if (cartSummary) cartSummary.textContent = `${cart.totalQuantity} item${cart.totalQuantity === 1 ? '' : 's'} · ${formatMoney(cart.totalAmount, cart.currencyCode)}`;
   if (checkout) {
-    checkout.href = cart.checkoutUrl;
+    checkout.href = normalizeCheckoutUrl(cart.checkoutUrl);
     checkout.classList.remove('pointer-events-none', 'opacity-40');
   }
 }
 
-function showSignedOut(gate: HTMLElement | null, storeRegions: NodeListOf<HTMLElement>, message = ''): void {
+function setHeroMode(hero: HTMLElement | null, mode: 'login' | 'account'): void {
+  if (!hero) return;
+  hero.classList.toggle('min-h-[calc(85vh-96px)]', mode === 'login');
+  hero.classList.toggle('flex', mode === 'login');
+  hero.classList.toggle('items-center', mode === 'login');
+}
+
+function showSignedOut(hero: HTMLElement | null, gate: HTMLElement | null, storeRegions: NodeListOf<HTMLElement>, message = ''): void {
+  setHeroMode(hero, 'login');
   gate?.classList.remove('hidden');
   storeRegions.forEach((region) => region.classList.add('hidden'));
   setStatus(message);
 }
 
-function showSignedIn(gate: HTMLElement | null, storeRegions: NodeListOf<HTMLElement>): void {
+function showSignedIn(hero: HTMLElement | null, gate: HTMLElement | null, storeRegions: NodeListOf<HTMLElement>): void {
+  setHeroMode(hero, 'account');
   gate?.classList.add('hidden');
   storeRegions.forEach((region) => region.classList.remove('hidden'));
 }
@@ -557,6 +568,7 @@ async function initWholesale(): Promise<void> {
   const productGrid = document.querySelector<HTMLElement>('[data-wholesale-products]');
   const locationLabel = document.querySelector<HTMLElement>('[data-wholesale-location]');
   const gate = document.querySelector<HTMLElement>('[data-wholesale-gate]');
+  const hero = document.querySelector<HTMLElement>('[data-wholesale-hero]');
   const storeRegions = document.querySelectorAll<HTMLElement>('[data-wholesale-store]');
 
   signInButton?.addEventListener('click', () => {
@@ -588,11 +600,11 @@ async function initWholesale(): Promise<void> {
       return;
     }
 
-    showSignedOut(gate, storeRegions);
+    showSignedOut(hero, gate, storeRegions);
     return;
   }
 
-  showSignedIn(gate, storeRegions);
+  showSignedIn(hero, gate, storeRegions);
   setStatus('Loading wholesale account...');
 
   let locations: BuyerLocation[] = [];
@@ -601,7 +613,7 @@ async function initWholesale(): Promise<void> {
   } catch (error) {
     const message = error instanceof Error ? error.message : 'Wholesale is temporarily unavailable.';
     if (message.includes('session expired')) {
-      showSignedOut(gate, storeRegions, message);
+      showSignedOut(hero, gate, storeRegions, message);
       productGrid!.innerHTML = '';
       return;
     }
@@ -625,7 +637,7 @@ async function initWholesale(): Promise<void> {
   } catch (error) {
     const message = error instanceof Error ? error.message : 'Wholesale products are temporarily unavailable.';
     if (message.includes('session expired')) {
-      showSignedOut(gate, storeRegions, message);
+      showSignedOut(hero, gate, storeRegions, message);
       productGrid!.innerHTML = '';
       return;
     }
