@@ -570,13 +570,28 @@ function setCartError(message: string): void {
   cartStore.isOpen = true;
 }
 
-function applyWholesaleCart(cart: Cart): void {
+function syncCartStore(cart: Cart): void {
   localStorage.setItem(CART_KEY, cart.id);
+  getCartStore()?.applyCart?.(cart);
+}
+
+function applyWholesaleCart(cart: Cart): void {
+  syncCartStore(cart);
   const cartStore = getCartStore();
-  if (!cartStore?.applyCart) return;
+  if (!cartStore) return;
   cartStore.errorMessage = '';
-  cartStore.applyCart(cart);
   cartStore.isOpen = true;
+}
+
+async function restoreWholesaleCart(): Promise<void> {
+  const cartId = localStorage.getItem(CART_KEY);
+  if (!cartId) return;
+  const cart = await getWholesaleCart(cartId);
+  if (cart) {
+    syncCartStore(cart);
+  } else {
+    localStorage.removeItem(CART_KEY);
+  }
 }
 
 async function refreshWholesaleCheckoutUrl(): Promise<string> {
@@ -673,6 +688,12 @@ async function initWholesale(): Promise<void> {
 
   showSignedIn(hero, gate, storeRegions);
   setStatus('Loading wholesale account...');
+
+  try {
+    await restoreWholesaleCart();
+  } catch {
+    // Cart badge stays stale; it resyncs on the next add or checkout click.
+  }
 
   let locations: BuyerLocation[] = [];
   try {
