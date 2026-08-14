@@ -47,43 +47,15 @@ import Nav from '../components/Nav.astro';
           <p class="mx-auto mt-5 hidden max-w-[520px] font-sans text-[13px] leading-relaxed text-ink-soft" data-wholesale-public-status></p>
         </div>
 
-        <div data-wholesale-store class="hidden">
-          <div class="text-center">
-            <div class="mb-5 flex items-center justify-center gap-4">
-              <div class="h-px bg-gold w-8"></div>
-              <span class="font-mono text-[10px] tracking-[0.2em] uppercase text-gold">Wholesale Account</span>
-              <div class="h-px bg-gold w-8"></div>
-            </div>
-            <h1 class="font-display font-light text-ink leading-tight tracking-[-0.01em]" style="font-size: clamp(34px, 4vw, 50px);" data-wholesale-location>
-              Wholesale account
-            </h1>
-            <p class="mx-auto mt-4 max-w-[520px] font-sans text-[14px] leading-relaxed text-ink-soft" data-wholesale-status>
-              Loading wholesale products...
-            </p>
-            <div class="mt-7 flex flex-col sm:flex-row sm:justify-center gap-3">
-              <a
-                href="#wholesale-products"
-                class="inline-flex items-center justify-center bg-ink px-7 py-3 font-mono text-[10px] tracking-[0.18em] uppercase text-white transition-colors duration-200 hover:bg-gold hover:text-ink"
-              >
-                View Products
-              </a>
-              <a
-                href="#"
-                data-wholesale-checkout
-                class="pointer-events-none opacity-40 inline-flex items-center justify-center border border-rule bg-white px-7 py-3 font-mono text-[10px] tracking-[0.18em] uppercase text-ink transition-colors duration-200 hover:border-gold hover:text-gold"
-              >
-                Checkout
-              </a>
-              <button
-                type="button"
-                data-wholesale-logout
-                class="inline-flex items-center justify-center border border-rule bg-white px-7 py-3 font-mono text-[10px] tracking-[0.18em] uppercase text-ink-soft transition-colors duration-200 hover:border-ink hover:text-ink"
-              >
-                Sign Out
-              </button>
-            </div>
-            <p class="mt-5 font-mono text-[10px] tracking-[0.14em] uppercase text-ink-soft" data-wholesale-cart>Cart empty</p>
+        <div data-wholesale-store class="hidden text-center">
+          <div class="mb-5 flex items-center justify-center gap-4">
+            <div class="h-px bg-gold w-8"></div>
+            <span class="font-mono text-[10px] tracking-[0.2em] uppercase text-gold">Wholesale Access</span>
+            <div class="h-px bg-gold w-8"></div>
           </div>
+          <p class="mx-auto max-w-[520px] font-sans text-[14px] leading-relaxed text-ink-soft" data-wholesale-status>
+            Loading wholesale products...
+          </p>
         </div>
       </div>
     </section>
@@ -96,9 +68,12 @@ import Nav from '../components/Nav.astro';
               <div class="h-px bg-gold w-6"></div>
               <span class="font-mono text-[10px] tracking-[0.2em] uppercase text-gold">Wholesale Products</span>
             </div>
-            <h2 class="font-display font-light text-ink leading-none tracking-[-0.01em]" style="font-size: clamp(34px, 4vw, 48px);">
-              Your catalog.
+            <h2 class="font-display font-light text-ink leading-none tracking-[-0.01em]" style="font-size: clamp(34px, 4vw, 48px);" data-wholesale-location>
+              Wholesale catalog
             </h2>
+            <p class="mt-4 font-sans text-[14px] leading-relaxed text-ink-soft" data-wholesale-status>
+              Loading wholesale products...
+            </p>
           </div>
         </div>
         <div data-wholesale-products class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"></div>

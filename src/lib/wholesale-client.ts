@@ -1,4 +1,4 @@
-import { normalizeCheckoutUrl } from './cart-client';
+import { parseCart, type Cart } from './cart-client';
 
 const importEnv = (import.meta as unknown as { env?: Record<string, string | undefined> }).env ?? {};
 
@@ -49,14 +49,6 @@ interface WholesaleProduct {
     maximum?: number | null;
     increment?: number | null;
   } | null;
-}
-
-interface WholesaleCart {
-  id: string;
-  checkoutUrl: string;
-  totalQuantity: number;
-  totalAmount: string;
-  currencyCode: string;
 }
 
 function cleanDomain(value: string | undefined): string {
@@ -408,15 +400,43 @@ async function getWholesaleProducts(session: TokenSession, companyLocationId: st
     .filter((product) => product.availableForSale && product.variantId);
 }
 
-async function createWholesaleCart(session: TokenSession, companyLocationId: string, merchandiseId: string, quantity: number): Promise<WholesaleCart> {
+const WHOLESALE_CART_FRAGMENT = `
+  id
+  checkoutUrl
+  discountCodes { code applicable }
+  totalQuantity
+  lines(first: 100) {
+    edges {
+      node {
+        id
+        quantity
+        sellingPlanAllocation {
+          sellingPlan { id name }
+        }
+        merchandise {
+          ... on ProductVariant {
+            id
+            title
+            price { amount currencyCode }
+            product {
+              title
+              handle
+              images(first: 1) { edges { node { url altText } } }
+            }
+          }
+        }
+      }
+    }
+  }
+  cost { totalAmount { amount currencyCode } }
+`;
+
+async function createWholesaleCart(session: TokenSession, companyLocationId: string, merchandiseId: string, quantity: number): Promise<Cart> {
   const data = await storefrontFetch<any>(
     `mutation WholesaleCartCreate($input: CartInput!) {
       cartCreate(input: $input) {
         cart {
-          id
-          checkoutUrl
-          totalQuantity
-          cost { totalAmount { amount currencyCode } }
+          ${WHOLESALE_CART_FRAGMENT}
         }
         userErrors { field message }
       }
@@ -434,25 +454,15 @@ async function createWholesaleCart(session: TokenSession, companyLocationId: str
 
   const error = data.cartCreate.userErrors?.[0];
   if (error) throw new Error(error.message);
-  const cart = data.cartCreate.cart;
-  return {
-    id: cart.id,
-    checkoutUrl: cart.checkoutUrl,
-    totalQuantity: cart.totalQuantity,
-    totalAmount: cart.cost.totalAmount.amount,
-    currencyCode: cart.cost.totalAmount.currencyCode,
-  };
+  return parseCart(data.cartCreate.cart);
 }
 
-async function addToWholesaleCart(cartId: string, merchandiseId: string, quantity: number): Promise<WholesaleCart> {
+async function addToWholesaleCart(cartId: string, merchandiseId: string, quantity: number): Promise<Cart> {
   const data = await storefrontFetch<any>(
     `mutation WholesaleCartLinesAdd($cartId: ID!, $lines: [CartLineInput!]!) {
       cartLinesAdd(cartId: $cartId, lines: $lines) {
         cart {
-          id
-          checkoutUrl
-          totalQuantity
-          cost { totalAmount { amount currencyCode } }
+          ${WHOLESALE_CART_FRAGMENT}
         }
         userErrors { field message }
       }
@@ -462,14 +472,7 @@ async function addToWholesaleCart(cartId: string, merchandiseId: string, quantit
 
   const error = data.cartLinesAdd.userErrors?.[0];
   if (error) throw new Error(error.message);
-  const cart = data.cartLinesAdd.cart;
-  return {
-    id: cart.id,
-    checkoutUrl: cart.checkoutUrl,
-    totalQuantity: cart.totalQuantity,
-    totalAmount: cart.cost.totalAmount.amount,
-    currencyCode: cart.cost.totalAmount.currencyCode,
-  };
+  return parseCart(data.cartLinesAdd.cart);
 }
 
 function renderProducts(products: WholesaleProduct[], container: HTMLElement): void {
@@ -531,15 +534,36 @@ function setStatus(text: string): void {
   });
 }
 
-function setCart(cart: WholesaleCart): void {
-  localStorage.setItem(CART_KEY, cart.id);
-  const cartSummary = document.querySelector<HTMLElement>('[data-wholesale-cart]');
-  const checkout = document.querySelector<HTMLAnchorElement>('[data-wholesale-checkout]');
-  if (cartSummary) cartSummary.textContent = `${cart.totalQuantity} item${cart.totalQuantity === 1 ? '' : 's'} · ${formatMoney(cart.totalAmount, cart.currencyCode)}`;
-  if (checkout) {
-    checkout.href = normalizeCheckoutUrl(cart.checkoutUrl);
-    checkout.classList.remove('pointer-events-none', 'opacity-40');
+function getCartStore(): any | null {
+  const alpine = (window as any).Alpine;
+  if (!alpine?.store) return null;
+  try {
+    return alpine.store('cart') ?? null;
+  } catch {
+    return null;
   }
+}
+
+function setCartLoading(isLoading: boolean): void {
+  const cartStore = getCartStore();
+  if (!cartStore) return;
+  cartStore.isLoading = isLoading;
+}
+
+function setCartError(message: string): void {
+  const cartStore = getCartStore();
+  if (!cartStore) return;
+  cartStore.errorMessage = message;
+  cartStore.isOpen = true;
+}
+
+function applyWholesaleCart(cart: Cart): void {
+  localStorage.setItem(CART_KEY, cart.id);
+  const cartStore = getCartStore();
+  if (!cartStore?.applyCart) return;
+  cartStore.errorMessage = '';
+  cartStore.applyCart(cart);
+  cartStore.isOpen = true;
 }
 
 function setHeroMode(hero: HTMLElement | null, mode: 'login' | 'account'): void {
@@ -550,6 +574,7 @@ function setHeroMode(hero: HTMLElement | null, mode: 'login' | 'account'): void 
 }
 
 function showSignedOut(hero: HTMLElement | null, gate: HTMLElement | null, storeRegions: NodeListOf<HTMLElement>, message = ''): void {
+  hero?.classList.remove('hidden');
   setHeroMode(hero, 'login');
   gate?.classList.remove('hidden');
   storeRegions.forEach((region) => region.classList.add('hidden'));
@@ -558,13 +583,13 @@ function showSignedOut(hero: HTMLElement | null, gate: HTMLElement | null, store
 
 function showSignedIn(hero: HTMLElement | null, gate: HTMLElement | null, storeRegions: NodeListOf<HTMLElement>): void {
   setHeroMode(hero, 'account');
+  hero?.classList.add('hidden');
   gate?.classList.add('hidden');
   storeRegions.forEach((region) => region.classList.remove('hidden'));
 }
 
 async function initWholesale(): Promise<void> {
   const signInButton = document.querySelector<HTMLButtonElement>('[data-wholesale-login]');
-  const signOutButton = document.querySelector<HTMLButtonElement>('[data-wholesale-logout]');
   const productGrid = document.querySelector<HTMLElement>('[data-wholesale-products]');
   const locationLabel = document.querySelector<HTMLElement>('[data-wholesale-location]');
   const gate = document.querySelector<HTMLElement>('[data-wholesale-gate]');
@@ -573,11 +598,6 @@ async function initWholesale(): Promise<void> {
 
   signInButton?.addEventListener('click', () => {
     startLogin().catch((error) => setStatus(error.message));
-  });
-
-  signOutButton?.addEventListener('click', () => {
-    clearSession();
-    window.location.href = '/wholesale';
   });
 
   const params = new URLSearchParams(window.location.search);
@@ -629,7 +649,7 @@ async function initWholesale(): Promise<void> {
   const savedLocationId = localStorage.getItem(LOCATION_KEY);
   const location = locations.find((item) => item.id === savedLocationId) ?? locations[0];
   localStorage.setItem(LOCATION_KEY, location.id);
-  if (locationLabel) locationLabel.textContent = `${location.companyName} · ${location.name}`;
+  if (locationLabel) locationLabel.textContent = location.companyName;
 
   let products: WholesaleProduct[] = [];
   try {
@@ -652,6 +672,7 @@ async function initWholesale(): Promise<void> {
     if (!button) return;
     button.disabled = true;
     button.textContent = 'Adding';
+    setCartLoading(true);
     try {
       const variantId = button.dataset.variantId ?? '';
       const quantity = Number(button.dataset.quantity ?? '1') || 1;
@@ -659,12 +680,15 @@ async function initWholesale(): Promise<void> {
       const cart = cartId
         ? await addToWholesaleCart(cartId, variantId, quantity)
         : await createWholesaleCart(session, location.id, variantId, quantity);
-      setCart(cart);
+      applyWholesaleCart(cart);
       button.textContent = 'Added';
     } catch (error) {
-      setStatus(error instanceof Error ? error.message : 'Could not add that product.');
+      const message = error instanceof Error ? error.message : 'Could not add that product.';
+      setCartError(message);
+      setStatus(message);
       button.textContent = 'Try again';
     } finally {
+      setCartLoading(false);
       setTimeout(() => {
         button.disabled = false;
         button.textContent = 'Add';
