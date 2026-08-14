@@ -5,6 +5,7 @@ const STOREFRONT_TOKEN = importEnv.PUBLIC_SHOPIFY_STOREFRONT_TOKEN ?? importEnv.
 const CUSTOMER_ACCOUNT_CLIENT_ID = importEnv.PUBLIC_SHOPIFY_CUSTOMER_ACCOUNT_CLIENT_ID ?? '';
 const STOREFRONT_API_VERSION = importEnv.PUBLIC_SHOPIFY_B2B_STOREFRONT_API_VERSION ?? '2026-01';
 const WHOLESALE_PRODUCT_QUERY = importEnv.PUBLIC_SHOPIFY_WHOLESALE_PRODUCT_QUERY ?? '';
+const WHOLESALE_COLLECTION_HANDLE = importEnv.PUBLIC_SHOPIFY_WHOLESALE_COLLECTION_HANDLE ?? 'wholesale-collection';
 
 const STOREFRONT_URL = `https://${SHOPIFY_DOMAIN}/api/${STOREFRONT_API_VERSION}/graphql.json`;
 const OPENID_DISCOVERY_URL = `https://${SHOPIFY_DOMAIN}/.well-known/openid-configuration`;
@@ -132,6 +133,14 @@ function clearSession(): void {
   localStorage.removeItem(CART_KEY);
 }
 
+function getApiErrorMessage(json: any, fallback: string): string {
+  return json?.errors?.[0]?.message ?? json?.errors?.[0]?.extensions?.message ?? fallback;
+}
+
+function isTokenError(message: string, status?: number): boolean {
+  return status === 401 || /access token|token is invalid|invalid or revoked|unauthorized|forbidden/i.test(message);
+}
+
 async function startLogin(): Promise<void> {
   if (!CUSTOMER_ACCOUNT_CLIENT_ID) {
     throw new Error('Missing PUBLIC_SHOPIFY_CUSTOMER_ACCOUNT_CLIENT_ID.');
@@ -210,7 +219,12 @@ async function customerFetch<T>(query: string, variables: Record<string, unknown
 
   const json = await response.json();
   if (!response.ok || json.errors) {
-    throw new Error(json.errors?.[0]?.message ?? 'Shopify customer API request failed.');
+    const message = getApiErrorMessage(json, 'Shopify customer API request failed.');
+    if (isTokenError(message, response.status)) {
+      clearSession();
+      throw new Error('Your wholesale session expired. Please sign in again.');
+    }
+    throw new Error(message);
   }
   return json.data as T;
 }
@@ -229,7 +243,12 @@ async function storefrontFetch<T>(query: string, variables: Record<string, unkno
 
   const json = await response.json();
   if (!response.ok || json.errors) {
-    throw new Error(json.errors?.[0]?.message ?? 'Shopify Storefront API request failed.');
+    const message = getApiErrorMessage(json, 'Shopify Storefront API request failed.');
+    if (isTokenError(message, response.status)) {
+      clearSession();
+      throw new Error('Your wholesale session expired. Please sign in again.');
+    }
+    throw new Error(message);
   }
   return json.data as T;
 }
@@ -271,61 +290,100 @@ async function getBuyerLocations(session: TokenSession): Promise<BuyerLocation[]
 }
 
 async function getWholesaleProducts(session: TokenSession, companyLocationId: string): Promise<WholesaleProduct[]> {
-  const data = await storefrontFetch<{
-    products: {
+  type StorefrontProduct = {
+    id: string;
+    title: string;
+    handle: string;
+    description: string;
+    availableForSale: boolean;
+    priceRange: { minVariantPrice: { amount: string; currencyCode: string } };
+    images: { nodes: Array<{ url: string; altText: string | null }> };
+    variants: {
       nodes: Array<{
         id: string;
         title: string;
-        handle: string;
-        description: string;
         availableForSale: boolean;
-        priceRange: { minVariantPrice: { amount: string; currencyCode: string } };
-        images: { nodes: Array<{ url: string; altText: string | null }> };
-        variants: {
-          nodes: Array<{
-            id: string;
-            title: string;
-            availableForSale: boolean;
-            price: { amount: string; currencyCode: string };
-            quantityRule?: { minimum?: number | null; maximum?: number | null; increment?: number | null } | null;
-          }>;
-        };
+        price: { amount: string; currencyCode: string };
+        quantityRule?: { minimum?: number | null; maximum?: number | null; increment?: number | null } | null;
       }>;
     };
-  }>(
-    `query WholesaleProducts($first: Int!, $query: String, $buyer: BuyerInput!) @inContext(buyer: $buyer) {
-      products(first: $first, query: $query) {
-        nodes {
-          id
-          title
-          handle
-          description
-          availableForSale
-          priceRange { minVariantPrice { amount currencyCode } }
-          images(first: 1) { nodes { url altText } }
-          variants(first: 10) {
+  };
+
+  const productFields = `
+    id
+    title
+    handle
+    description
+    availableForSale
+    priceRange { minVariantPrice { amount currencyCode } }
+    images(first: 1) { nodes { url altText } }
+    variants(first: 10) {
+      nodes {
+        id
+        title
+        availableForSale
+        price { amount currencyCode }
+        quantityRule { minimum maximum increment }
+      }
+    }
+  `;
+
+  let productNodes: StorefrontProduct[] = [];
+
+  if (WHOLESALE_COLLECTION_HANDLE) {
+    const collectionData = await storefrontFetch<{
+      collection: null | {
+        products: { nodes: StorefrontProduct[] };
+      };
+    }>(
+      `query WholesaleCollectionProducts($handle: String!, $first: Int!, $buyer: BuyerInput!) @inContext(buyer: $buyer) {
+        collection(handle: $handle) {
+          products(first: $first) {
             nodes {
-              id
-              title
-              availableForSale
-              price { amount currencyCode }
-              quantityRule { minimum maximum increment }
+              ${productFields}
             }
           }
         }
+      }`,
+      {
+        handle: WHOLESALE_COLLECTION_HANDLE,
+        first: 100,
+        buyer: {
+          customerAccessToken: session.accessToken,
+          companyLocationId,
+        },
       }
-    }`,
-    {
-      first: 100,
-      query: WHOLESALE_PRODUCT_QUERY || null,
-      buyer: {
-        customerAccessToken: session.accessToken,
-        companyLocationId,
-      },
-    }
-  );
+    );
 
-  return data.products.nodes
+    productNodes = collectionData.collection?.products.nodes ?? [];
+  }
+
+  if (productNodes.length === 0 && WHOLESALE_PRODUCT_QUERY) {
+    const data = await storefrontFetch<{
+      products: {
+        nodes: StorefrontProduct[];
+      };
+    }>(
+      `query WholesaleProducts($first: Int!, $query: String, $buyer: BuyerInput!) @inContext(buyer: $buyer) {
+        products(first: $first, query: $query) {
+          nodes {
+            ${productFields}
+          }
+        }
+      }`,
+      {
+        first: 100,
+        query: WHOLESALE_PRODUCT_QUERY,
+        buyer: {
+          customerAccessToken: session.accessToken,
+          companyLocationId,
+        },
+      }
+    );
+    productNodes = data.products.nodes;
+  }
+
+  return productNodes
     .map((product) => {
       const variant = product.variants.nodes.find((node) => node.availableForSale) ?? product.variants.nodes[0];
       const image = product.images.nodes[0];

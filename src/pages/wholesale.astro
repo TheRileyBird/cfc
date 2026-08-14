@@ -1,8 +1,6 @@
 ---
 import Layout from '../layouts/Layout.astro';
 import Nav from '../components/Nav.astro';
-import { Image } from 'astro:assets';
-import productsImg from '../assets/images/group2.jpg';
 ---
 
 <Layout
@@ -13,93 +11,69 @@ import productsImg from '../assets/images/group2.jpg';
   <Nav />
 
   <main>
-    <section class="bg-ink pt-[160px] pb-[90px] relative overflow-hidden min-h-[calc(100vh-80px)] flex items-center">
-      <div class="absolute inset-0 hidden lg:block">
-        <Image
-          src={productsImg}
-          alt="CFC Skincare products arranged for wholesale partners"
-          class="absolute inset-y-0 right-0 w-[58%] h-full object-cover object-center"
-          widths={[900, 1300, 1800, 2200]}
-          sizes="58vw"
-          loading="eager"
-        />
-        <div class="absolute inset-0" style="background: linear-gradient(90deg, oklch(13% 0.010 255) 0%, oklch(13% 0.010 255) 42%, rgba(18,21,25,0.78) 66%, rgba(18,21,25,0.34) 100%);"></div>
-      </div>
-
-      <div class="max-w-[1440px] mx-auto px-6 sm:px-10 relative z-10">
-        <div class="reveal max-w-[720px]">
-          <div class="flex items-center gap-4 mb-8">
+    <section class="bg-ink border-b border-gold/40 py-12 lg:h-[250px] lg:py-0 flex items-center">
+      <div class="max-w-[1440px] mx-auto w-full px-6 sm:px-10">
+        <div class="reveal">
+          <div class="flex items-center gap-4 mb-5">
             <div class="h-px bg-gold w-6"></div>
             <span class="font-mono text-[10px] tracking-[0.2em] uppercase text-gold">Wholesale Access</span>
           </div>
           <h1
-            class="font-display font-light text-white leading-[1.0] tracking-[-0.02em] mb-8"
-            style="font-size: clamp(52px, 6vw, 92px);"
+            class="font-display font-light text-white leading-[1.02] tracking-[-0.01em] mb-4"
+            style="font-size: clamp(36px, 4vw, 54px);"
           >
-            CFC partner ordering starts here.
+            CFC wholesale ordering.
           </h1>
-          <p class="font-sans font-light text-[16px] leading-[1.75] max-w-[560px]" style="color: rgba(255,255,255,0.6);">
-            Approved wholesale buyers can sign in with the email assigned to their company location to view CFC wholesale products, pricing, and checkout terms.
+          <p class="font-sans font-light text-[14px] leading-[1.7] max-w-[620px]" style="color: rgba(255,255,255,0.6);">
+            Sign in with the email assigned to your company location to view wholesale products, pricing, and checkout terms.
           </p>
 
-          <div class="mt-10 flex flex-col sm:flex-row gap-4" data-wholesale-gate>
+          <div class="mt-6 flex flex-col sm:flex-row gap-3" data-wholesale-gate>
             <button
               type="button"
               data-wholesale-login
-              class="inline-flex items-center justify-center bg-gold px-8 py-4 font-mono text-[10px] tracking-[0.18em] uppercase text-ink transition-colors duration-200 hover:bg-gold-light"
+              class="inline-flex items-center justify-center bg-gold px-7 py-3 font-mono text-[10px] tracking-[0.18em] uppercase text-ink transition-colors duration-200 hover:bg-gold-light"
             >
               Enter Wholesale
             </button>
             <a
               href="/contact"
-              class="inline-flex items-center justify-center border border-white/20 px-8 py-4 font-mono text-[10px] tracking-[0.18em] uppercase text-white transition-colors duration-200 hover:border-gold hover:text-gold"
+              class="inline-flex items-center justify-center border border-white/20 px-7 py-3 font-mono text-[10px] tracking-[0.18em] uppercase text-white transition-colors duration-200 hover:border-gold hover:text-gold"
             >
               Request Access
             </a>
           </div>
           <p class="mt-5 hidden max-w-[560px] font-sans text-[13px] leading-relaxed text-white/60" data-wholesale-public-status></p>
 
-          <div data-wholesale-store class="hidden mt-10 border border-white/10 bg-white/5 p-6 backdrop-blur-sm">
-            <p class="font-mono text-[10px] tracking-[0.2em] uppercase text-gold mb-3">Approved Buyer</p>
-            <h2 class="font-display text-[34px] font-light leading-tight text-white" data-wholesale-location>Wholesale account</h2>
-            <p class="mt-3 font-sans font-light text-[14px] leading-relaxed text-white/60" data-wholesale-status>Loading wholesale products...</p>
-            <div class="mt-6 flex flex-wrap items-center gap-3">
+          <div data-wholesale-store class="hidden mt-6 border-t border-white/10 pt-5">
+            <p class="font-mono text-[10px] tracking-[0.2em] uppercase text-gold" data-wholesale-location>Wholesale account</p>
+            <div class="mt-3 flex flex-wrap items-center gap-3">
               <a
                 href="#wholesale-products"
-                class="inline-flex items-center justify-center bg-gold px-7 py-3 font-mono text-[10px] tracking-[0.18em] uppercase text-ink transition-colors duration-200 hover:bg-gold-light"
+                class="inline-flex items-center justify-center bg-gold px-6 py-3 font-mono text-[10px] tracking-[0.18em] uppercase text-ink transition-colors duration-200 hover:bg-gold-light"
               >
                 View Products
               </a>
               <a
                 href="#"
                 data-wholesale-checkout
-                class="pointer-events-none opacity-40 inline-flex items-center justify-center border border-white/20 px-7 py-3 font-mono text-[10px] tracking-[0.18em] uppercase text-white transition-colors duration-200 hover:border-gold hover:text-gold"
+                class="pointer-events-none opacity-40 inline-flex items-center justify-center border border-white/20 px-6 py-3 font-mono text-[10px] tracking-[0.18em] uppercase text-white transition-colors duration-200 hover:border-gold hover:text-gold"
               >
                 Checkout
               </a>
               <button
                 type="button"
                 data-wholesale-logout
-                class="inline-flex items-center justify-center border border-white/20 px-7 py-3 font-mono text-[10px] tracking-[0.18em] uppercase text-white/60 transition-colors duration-200 hover:border-white hover:text-white"
+                class="inline-flex items-center justify-center border border-white/20 px-6 py-3 font-mono text-[10px] tracking-[0.18em] uppercase text-white/60 transition-colors duration-200 hover:border-white hover:text-white"
               >
                 Sign Out
               </button>
             </div>
-            <p class="mt-5 font-mono text-[10px] tracking-[0.14em] uppercase text-white/45" data-wholesale-cart>Cart empty</p>
+            <p class="mt-4 font-sans text-[13px] leading-relaxed text-white/55" data-wholesale-status>Loading wholesale products...</p>
+            <p class="mt-2 font-mono text-[10px] tracking-[0.14em] uppercase text-white/45" data-wholesale-cart>Cart empty</p>
           </div>
         </div>
-
-        <div class="reveal mt-14 overflow-hidden aspect-[16/10] border border-white/10 lg:hidden">
-          <Image
-            src={productsImg}
-            alt="CFC Skincare products arranged for wholesale partners"
-            class="w-full h-full object-cover object-center"
-            widths={[640, 960, 1280]}
-            sizes="100vw"
-          />
-        </div>
       </div>
-      <div class="absolute bottom-0 inset-x-0 h-px" style="background: rgba(255,255,255,0.06);"></div>
     </section>
 
     <section id="wholesale-products" data-wholesale-store class="hidden bg-parchment py-[90px]">
