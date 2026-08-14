@@ -112,18 +112,35 @@ const lastVisibleIndex = firstVisibleIndex + 16;
         page: ${initialPage},
         perPage: 16,
         products: ${JSON.stringify(productState)},
+        wholesaleUnlocked: false,
+        wholesaleProducts: [],
+        pendingFilter: null,
         init() {
           const filter = new URLSearchParams(window.location.search).get('filter');
           if (['adult', 'teen', 'swag', 'all'].includes(filter ?? '')) {
             this.active = filter;
+          } else if (filter === 'wholesale') {
+            this.pendingFilter = 'wholesale';
           }
+          window.addEventListener('wholesale:ready', (event) => {
+            this.wholesaleProducts = event.detail.products;
+            this.wholesaleUnlocked = true;
+            if (this.pendingFilter === 'wholesale') {
+              this.active = 'wholesale';
+              this.page = 1;
+            }
+          });
         },
         reset() {
           this.active = ${JSON.stringify(defaultFilter)};
           this.sortBy = 'alpha';
           this.page = 1;
         },
+        totalAvailable() {
+          return this.active === 'wholesale' ? this.wholesaleProducts.length : ${totalProductsLabel};
+        },
         filteredProducts() {
+          if (this.active === 'wholesale') return this.wholesaleProducts;
           return this.products.filter((product) => {
             return this.active === 'all' || product.category === this.active;
           });
@@ -177,6 +194,15 @@ const lastVisibleIndex = firstVisibleIndex + 16;
                 {f.label}
               </button>
             ))}
+            <button
+              x-show="wholesaleUnlocked"
+              x-cloak
+              @click="active = 'wholesale'; page = 1"
+              :class="active === 'wholesale' ? 'bg-ink text-white' : 'bg-white text-ink-soft hover:text-ink border border-rule'"
+              class="px-5 py-2.5 font-mono text-[10px] tracking-[0.15em] uppercase transition-all duration-200"
+            >
+              Wholesale
+            </button>
           </div>
 
           <div class="flex flex-wrap items-center gap-3">
@@ -226,11 +252,11 @@ const lastVisibleIndex = firstVisibleIndex + 16;
           {!isFeatured && (
             <div class="flex items-center justify-between gap-4 mb-6 font-mono text-[10px] tracking-[0.1em] uppercase text-ink-soft">
               <p>Page <span x-text="page"></span> of <span x-text="totalPages()"></span></p>
-              <p><span x-text="totalResults()"></span> of {totalProductsLabel} products</p>
+              <p><span x-text="totalResults()"></span> of <span x-text="totalAvailable()"></span> products</p>
             </div>
           )}
 
-          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-px">
+          <div x-show="active !== 'wholesale'" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-px">
             {displayProducts.map((product, i) => {
               const isInitiallyVisible = i >= firstVisibleIndex && i < lastVisibleIndex;
               return (
@@ -247,6 +273,42 @@ const lastVisibleIndex = firstVisibleIndex + 16;
                 </div>
               );
             })}
+          </div>
+
+          <div x-show="active === 'wholesale'" x-cloak class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-px">
+            <template x-for="product in visibleProducts()" :key="product.id">
+              <article x-data="{ adding: false, added: false }" class="group flex h-full flex-col overflow-hidden bg-white transition-colors duration-300 hover:bg-parchment-2">
+                <div class="relative aspect-[1/1] overflow-hidden bg-parchment sm:aspect-[3/4]">
+                  <template x-if="product.imageUrl">
+                    <img :src="product.imageUrl" :alt="product.imageAlt" loading="lazy" class="h-full w-full object-cover transition-transform duration-[800ms] group-hover:scale-[1.06]" />
+                  </template>
+                  <template x-if="!product.imageUrl">
+                    <div class="flex h-full w-full items-center justify-center"><span class="font-display text-4xl text-rule">CFC</span></div>
+                  </template>
+                </div>
+                <div class="flex flex-1 flex-col p-5">
+                  <h3 class="mb-1.5 font-display text-[18px] font-normal leading-snug text-ink" x-text="product.title"></h3>
+                  <p class="mb-4 line-clamp-2 flex-1 font-sans text-[12px] font-light leading-relaxed text-ink-soft" x-text="product.description || ' '"></p>
+                  <div class="mt-auto flex items-center justify-between gap-4">
+                    <div>
+                      <span class="font-display text-[20px] font-normal text-ink" x-text="product.priceLabel"></span>
+                      <p x-show="product.minQuantityLabel" class="mt-1 font-mono text-[9px] uppercase tracking-[0.12em] text-ink-soft" x-text="product.minQuantityLabel"></p>
+                    </div>
+                    <button
+                      type="button"
+                      @click="if (!adding && !added) { adding = true; await window.cfcWholesaleAddToCart(product.variantId, product.quantity); adding = false; added = true; setTimeout(() => { added = false }, 1800); }"
+                      :class="added ? 'bg-ink text-white border-ink' : 'bg-white text-ink border-ink hover:bg-ink hover:text-white'"
+                      class="font-mono text-[9px] tracking-[0.12em] uppercase border px-3 py-2 transition-all duration-200"
+                      :disabled="adding"
+                    >
+                      <span x-show="!adding && !added">Add to Cart</span>
+                      <span x-show="adding">Adding…</span>
+                      <span x-show="added">Added ✓</span>
+                    </button>
+                  </div>
+                </div>
+              </article>
+            </template>
           </div>
 
           <p x-show="totalResults() === 0" class="mt-8 text-center font-sans font-light text-[14px] text-ink-soft">
