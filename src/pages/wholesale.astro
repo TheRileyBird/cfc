@@ -3,17 +3,17 @@ import Layout from '../layouts/Layout.astro';
 import Nav from '../components/Nav.astro';
 import { Image } from 'astro:assets';
 import productsImg from '../assets/images/group2.jpg';
-import treatmentImg from '../assets/images/bottle.jpg';
 ---
 
 <Layout
   title="Wholesale Access — CFC Skincare"
   description="Wholesale access for approved CFC Skincare partners, providers, and company buyers."
+  showNewsletter={false}
 >
   <Nav />
 
   <main>
-    <section class="bg-ink pt-[160px] pb-[90px] relative overflow-hidden">
+    <section class="bg-ink pt-[160px] pb-[90px] relative overflow-hidden min-h-[calc(100vh-80px)] flex items-center">
       <div class="absolute inset-0 hidden lg:block">
         <Image
           src={productsImg}
@@ -42,19 +42,49 @@ import treatmentImg from '../assets/images/bottle.jpg';
             Approved wholesale buyers can sign in with the email assigned to their company location to enter the Shopify-hosted CFC wholesale storefront.
           </p>
 
-          <div class="mt-10 flex flex-col sm:flex-row gap-4">
-            <a
-              href="#wholesale-store"
+          <div class="mt-10 flex flex-col sm:flex-row gap-4" data-wholesale-gate>
+            <button
+              type="button"
+              data-wholesale-login
               class="inline-flex items-center justify-center bg-gold px-8 py-4 font-mono text-[10px] tracking-[0.18em] uppercase text-ink transition-colors duration-200 hover:bg-gold-light"
             >
               Enter Wholesale
-            </a>
+            </button>
             <a
               href="/contact"
               class="inline-flex items-center justify-center border border-white/20 px-8 py-4 font-mono text-[10px] tracking-[0.18em] uppercase text-white transition-colors duration-200 hover:border-gold hover:text-gold"
             >
               Request Access
             </a>
+          </div>
+
+          <div data-wholesale-store class="hidden mt-10 border border-white/10 bg-white/5 p-6 backdrop-blur-sm">
+            <p class="font-mono text-[10px] tracking-[0.2em] uppercase text-gold mb-3">Approved Buyer</p>
+            <h2 class="font-display text-[34px] font-light leading-tight text-white" data-wholesale-location>Wholesale account</h2>
+            <p class="mt-3 font-sans font-light text-[14px] leading-relaxed text-white/60" data-wholesale-status>Loading wholesale products...</p>
+            <div class="mt-6 flex flex-wrap items-center gap-3">
+              <a
+                href="#wholesale-products"
+                class="inline-flex items-center justify-center bg-gold px-7 py-3 font-mono text-[10px] tracking-[0.18em] uppercase text-ink transition-colors duration-200 hover:bg-gold-light"
+              >
+                View Products
+              </a>
+              <a
+                href="#"
+                data-wholesale-checkout
+                class="pointer-events-none opacity-40 inline-flex items-center justify-center border border-white/20 px-7 py-3 font-mono text-[10px] tracking-[0.18em] uppercase text-white transition-colors duration-200 hover:border-gold hover:text-gold"
+              >
+                Checkout
+              </a>
+              <button
+                type="button"
+                data-wholesale-logout
+                class="inline-flex items-center justify-center border border-white/20 px-7 py-3 font-mono text-[10px] tracking-[0.18em] uppercase text-white/60 transition-colors duration-200 hover:border-white hover:text-white"
+              >
+                Sign Out
+              </button>
+            </div>
+            <p class="mt-5 font-mono text-[10px] tracking-[0.14em] uppercase text-white/45" data-wholesale-cart>Cart empty</p>
           </div>
         </div>
 
@@ -71,103 +101,20 @@ import treatmentImg from '../assets/images/bottle.jpg';
       <div class="absolute bottom-0 inset-x-0 h-px" style="background: rgba(255,255,255,0.06);"></div>
     </section>
 
-    <section id="wholesale-store" class="bg-parchment py-[90px]">
+    <section id="wholesale-products" data-wholesale-store class="hidden bg-parchment py-[90px]">
       <div class="max-w-[1440px] mx-auto px-6 sm:px-10">
-        <div class="grid grid-cols-1 lg:grid-cols-[5fr_7fr] gap-14 lg:gap-24 items-start">
-          <aside class="reveal-left">
-            <div class="flex items-center gap-4 mb-7">
+        <div class="mb-10 flex flex-col gap-5 sm:flex-row sm:items-end sm:justify-between">
+          <div>
+            <div class="flex items-center gap-4 mb-5">
               <div class="h-px bg-gold w-6"></div>
-              <span class="font-mono text-[10px] tracking-[0.2em] uppercase text-gold">Wholesale Store</span>
+              <span class="font-mono text-[10px] tracking-[0.2em] uppercase text-gold">Wholesale Products</span>
             </div>
-            <h2 class="font-display font-light text-ink leading-[1.08] tracking-[-0.01em] mb-7" style="font-size: clamp(34px, 3.4vw, 54px);">
-              Sign in with the email tied to your company account.
+            <h2 class="font-display font-light text-ink leading-none tracking-[-0.02em]" style="font-size: clamp(42px, 4.5vw, 68px);">
+              Your catalog.
             </h2>
-            <p class="font-sans font-light text-[14px] text-ink-soft leading-[1.8] max-w-[440px]">
-              Approved buyers can shop CFC wholesale pricing here on the main site. Shopify verifies your email, then applies your company location, catalog, pricing, and checkout terms.
-            </p>
-          </aside>
-
-          <div class="reveal-right bg-white border border-rule p-7 sm:p-9">
-            <div data-wholesale-gate>
-              <p class="font-mono text-[10px] tracking-[0.2em] uppercase text-gold mb-5">Buyer Login</p>
-              <h3 class="font-display text-[30px] sm:text-[36px] font-light text-ink mb-5 leading-tight">Access your wholesale catalog.</h3>
-              <p class="font-sans font-light text-[14px] leading-[1.8] text-ink-soft max-w-[620px] mb-8">
-                Use the same email assigned to your Shopify company contact. If the email is approved, your wholesale products and pricing will load after sign-in.
-              </p>
-              <button
-                type="button"
-                data-wholesale-login
-                class="inline-flex items-center justify-center bg-ink px-8 py-4 font-mono text-[10px] tracking-[0.18em] uppercase text-white transition-colors duration-200 hover:bg-gold hover:text-ink"
-              >
-                Sign In to Shop
-              </button>
-            </div>
-
-            <div data-wholesale-store class="hidden">
-              <div class="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
-                <div>
-                  <p class="font-mono text-[10px] tracking-[0.2em] uppercase text-gold mb-3">Approved Buyer</p>
-                  <h3 class="font-display text-[30px] sm:text-[36px] font-light text-ink leading-tight" data-wholesale-location>Wholesale account</h3>
-                  <p class="mt-3 font-sans font-light text-[13px] text-ink-soft" data-wholesale-status>Loading wholesale products...</p>
-                </div>
-                <div class="flex flex-wrap items-center gap-3">
-                  <button
-                    type="button"
-                    data-wholesale-logout
-                    class="border border-rule bg-white px-5 py-3 font-mono text-[9px] tracking-[0.15em] uppercase text-ink-soft transition-colors hover:border-ink hover:text-ink"
-                  >
-                    Sign Out
-                  </button>
-                  <a
-                    href="#"
-                    data-wholesale-checkout
-                    class="pointer-events-none opacity-40 inline-flex items-center justify-center bg-ink px-6 py-3 font-mono text-[9px] tracking-[0.15em] uppercase text-white transition-colors duration-200 hover:bg-gold hover:text-ink"
-                  >
-                    Checkout
-                  </a>
-                </div>
-              </div>
-              <div class="mt-6 border-y border-rule py-4 font-mono text-[10px] tracking-[0.14em] uppercase text-ink-soft" data-wholesale-cart>
-                Cart empty
-              </div>
-            </div>
           </div>
         </div>
-
-        <div data-wholesale-store class="hidden mt-12">
-          <div data-wholesale-products class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-px border border-rule bg-rule"></div>
-        </div>
-      </div>
-    </section>
-
-    <section class="bg-white py-[80px]">
-      <div class="max-w-[1440px] mx-auto px-6 sm:px-10">
-        <div class="grid grid-cols-1 md:grid-cols-[7fr_5fr] gap-px bg-rule border border-rule">
-          <div class="reveal-left bg-white overflow-hidden aspect-[16/9] md:aspect-auto md:min-h-full">
-            <Image
-              src={treatmentImg}
-              alt="CFC Skincare product bottle"
-              class="w-full h-full object-cover object-center"
-              widths={[720, 1080, 1440, 2000]}
-              sizes="(max-width: 768px) 100vw, 58vw"
-            />
-          </div>
-          <div class="reveal-right bg-ink p-8 sm:p-10 lg:p-12 flex flex-col justify-center">
-            <p class="font-mono text-[9px] tracking-[0.2em] uppercase text-gold mb-4">Need Access?</p>
-            <h2 class="font-display font-light text-white leading-[1.08] tracking-[-0.01em] mb-5" style="font-size: clamp(30px, 3vw, 44px);">
-              New wholesale buyers need to be approved before sign-in works.
-            </h2>
-            <p class="font-sans font-light text-[14px] leading-[1.8] text-white/60 mb-8">
-              If you are setting up a new business account, contact CFC with your company name, buyer email, shipping location, and resale or provider details.
-            </p>
-            <a
-              href="/contact"
-              class="inline-flex self-start items-center justify-center bg-white px-7 py-4 font-mono text-[10px] tracking-[0.18em] uppercase text-ink transition-colors duration-200 hover:bg-gold hover:text-ink"
-            >
-              Contact CFC
-            </a>
-          </div>
-        </div>
+        <div data-wholesale-products class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-px border border-rule bg-rule"></div>
       </div>
     </section>
   </main>
