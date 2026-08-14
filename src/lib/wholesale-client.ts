@@ -431,6 +431,12 @@ const WHOLESALE_CART_FRAGMENT = `
   cost { totalAmount { amount currencyCode } }
 `;
 
+function parseWholesaleCart(raw: any): Cart {
+  const cart = parseCart(raw);
+  cart.checkoutUrl = raw.checkoutUrl;
+  return cart;
+}
+
 async function createWholesaleCart(session: TokenSession, companyLocationId: string, merchandiseId: string, quantity: number): Promise<Cart> {
   const data = await storefrontFetch<any>(
     `mutation WholesaleCartCreate($input: CartInput!) {
@@ -454,7 +460,7 @@ async function createWholesaleCart(session: TokenSession, companyLocationId: str
 
   const error = data.cartCreate.userErrors?.[0];
   if (error) throw new Error(error.message);
-  return parseCart(data.cartCreate.cart);
+  return parseWholesaleCart(data.cartCreate.cart);
 }
 
 async function addToWholesaleCart(cartId: string, merchandiseId: string, quantity: number): Promise<Cart> {
@@ -472,7 +478,20 @@ async function addToWholesaleCart(cartId: string, merchandiseId: string, quantit
 
   const error = data.cartLinesAdd.userErrors?.[0];
   if (error) throw new Error(error.message);
-  return parseCart(data.cartLinesAdd.cart);
+  return parseWholesaleCart(data.cartLinesAdd.cart);
+}
+
+async function getWholesaleCart(cartId: string): Promise<Cart | null> {
+  const data = await storefrontFetch<any>(
+    `query WholesaleCart($cartId: ID!) {
+      cart(id: $cartId) {
+        ${WHOLESALE_CART_FRAGMENT}
+      }
+    }`,
+    { cartId }
+  );
+
+  return data.cart ? parseWholesaleCart(data.cart) : null;
 }
 
 function renderProducts(products: WholesaleProduct[], container: HTMLElement): void {
@@ -566,6 +585,20 @@ function applyWholesaleCart(cart: Cart): void {
   cartStore.isOpen = true;
 }
 
+async function refreshWholesaleCheckoutUrl(): Promise<string> {
+  const cartId = localStorage.getItem(CART_KEY);
+  if (!cartId) throw new Error('Your wholesale cart is empty.');
+
+  const cart = await getWholesaleCart(cartId);
+  if (!cart) {
+    localStorage.removeItem(CART_KEY);
+    throw new Error('Your wholesale cart expired. Please add the product again.');
+  }
+
+  applyWholesaleCart(cart);
+  return cart.checkoutUrl;
+}
+
 function setHeroMode(hero: HTMLElement | null, mode: 'login' | 'account'): void {
   if (!hero) return;
   hero.classList.toggle('min-h-[calc(85vh-96px)]', mode === 'login');
@@ -598,6 +631,26 @@ async function initWholesale(): Promise<void> {
 
   signInButton?.addEventListener('click', () => {
     startLogin().catch((error) => setStatus(error.message));
+  });
+
+  document.addEventListener('click', async (event) => {
+    const checkoutLink = (event.target as HTMLElement).closest<HTMLAnchorElement>('a[href]');
+    const cartStore = getCartStore();
+    const wholesaleCartId = localStorage.getItem(CART_KEY);
+    if (!checkoutLink || !cartStore?.checkoutUrl || !wholesaleCartId) return;
+    if (checkoutLink.href !== cartStore.checkoutUrl) return;
+
+    event.preventDefault();
+    setCartLoading(true);
+    try {
+      window.location.href = await refreshWholesaleCheckoutUrl();
+    } catch (error) {
+      const message = error instanceof Error ? error.message : 'Checkout is temporarily unavailable.';
+      setCartError(message);
+      setStatus(message);
+    } finally {
+      setCartLoading(false);
+    }
   });
 
   const params = new URLSearchParams(window.location.search);
