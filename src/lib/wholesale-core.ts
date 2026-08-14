@@ -1,4 +1,4 @@
-import { parseCart, type Cart } from './cart-client';
+import type { Cart } from './cart-client';
 
 const importEnv = (import.meta as unknown as { env?: Record<string, string | undefined> }).env ?? {};
 
@@ -422,6 +422,49 @@ const WHOLESALE_CART_FRAGMENT = `
   cost { totalAmount { amount currencyCode } }
 `;
 
+// B2B carts carry buyerIdentity.companyLocationId set at creation time. Shopify's
+// /checkouts/cn/{token} shorthand (used by normalizeCheckoutUrl for retail carts to
+// dodge a custom-domain redirect loop) doesn't carry that buyer identity forward —
+// it drops B2B shoppers into the store's native theme instead of checkout. Going
+// straight to the myshopify.com host on the *original* /cart/c/{token} path avoids
+// the redirect loop (the loop only happens when the custom domain is involved) while
+// preserving the buyer identity Shopify already resolved into the cart.
+function toWholesaleCheckoutUrl(checkoutUrl: string): string {
+  try {
+    const url = new URL(checkoutUrl);
+    url.protocol = 'https:';
+    url.host = SHOPIFY_DOMAIN;
+    return url.href;
+  } catch {
+    return checkoutUrl;
+  }
+}
+
+function parseWholesaleCart(raw: any): Cart {
+  const items = raw.lines.edges.map(({ node }: any) => ({
+    id: node.id,
+    quantity: node.quantity,
+    variantId: node.merchandise.id,
+    variantTitle: node.merchandise.title,
+    price: node.merchandise.price.amount,
+    productTitle: node.merchandise.product.title,
+    productHandle: node.merchandise.product.handle,
+    imageUrl: node.merchandise.product.images.edges[0]?.node.url ?? '',
+    imageAlt: node.merchandise.product.images.edges[0]?.node.altText ?? '',
+    sellingPlanId: node.sellingPlanAllocation?.sellingPlan?.id ?? '',
+    sellingPlanName: node.sellingPlanAllocation?.sellingPlan?.name ?? '',
+  }));
+
+  return {
+    id: raw.id,
+    checkoutUrl: toWholesaleCheckoutUrl(raw.checkoutUrl),
+    discountCodes: raw.discountCodes ?? [],
+    totalQuantity: raw.totalQuantity,
+    totalAmount: raw.cost.totalAmount.amount,
+    items,
+  };
+}
+
 export async function createWholesaleCart(session: TokenSession, companyLocationId: string, merchandiseId: string, quantity: number): Promise<Cart> {
   const data = await storefrontFetch<any>(
     `mutation WholesaleCartCreate($input: CartInput!) {
@@ -445,7 +488,7 @@ export async function createWholesaleCart(session: TokenSession, companyLocation
 
   const error = data.cartCreate.userErrors?.[0];
   if (error) throw new Error(error.message);
-  return parseCart(data.cartCreate.cart);
+  return parseWholesaleCart(data.cartCreate.cart);
 }
 
 export async function addToWholesaleCart(cartId: string, merchandiseId: string, quantity: number): Promise<Cart> {
@@ -463,7 +506,7 @@ export async function addToWholesaleCart(cartId: string, merchandiseId: string, 
 
   const error = data.cartLinesAdd.userErrors?.[0];
   if (error) throw new Error(error.message);
-  return parseCart(data.cartLinesAdd.cart);
+  return parseWholesaleCart(data.cartLinesAdd.cart);
 }
 
 export async function getWholesaleCart(cartId: string): Promise<Cart | null> {
@@ -476,5 +519,5 @@ export async function getWholesaleCart(cartId: string): Promise<Cart | null> {
     { cartId }
   );
 
-  return data.cart ? parseCart(data.cart) : null;
+  return data.cart ? parseWholesaleCart(data.cart) : null;
 }
