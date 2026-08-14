@@ -352,7 +352,13 @@ export async function getWholesaleProducts(session: TokenSession, companyLocatio
 
   return productNodes
     .map((product) => {
-      const variant = product.variants.nodes.find((node) => node.availableForSale) ?? product.variants.nodes[0];
+      // availableForSale is unreliable here — it flips to false under an
+      // authenticated B2B buyer context even though the read data (price,
+      // quantity rules) is correct, while an anonymous read shows it true for
+      // the exact same variant. Actual purchase eligibility is enforced by
+      // Shopify at the cart-mutation level regardless of this field, so we
+      // don't gate display on it — just fall back to the first variant.
+      const variant = product.variants.nodes[0];
       const image = product.images.nodes[0];
       return {
         id: product.id,
@@ -370,7 +376,7 @@ export async function getWholesaleProducts(session: TokenSession, companyLocatio
         quantityRule: variant?.quantityRule ?? null,
       };
     })
-    .filter((product) => product.availableForSale && product.variantId);
+    .filter((product) => product.variantId);
 }
 
 const WHOLESALE_CART_FRAGMENT = `
