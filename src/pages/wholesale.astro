@@ -11,9 +11,9 @@ import Nav from '../components/Nav.astro';
   <Nav />
 
   <main>
-    <section class="bg-parchment border-b border-rule min-h-[calc(85vh-96px)] pt-[132px] pb-16 flex items-center">
+    <section data-wholesale-hero class="bg-parchment border-b border-rule min-h-[calc(85vh-96px)] pt-[132px] pb-16 flex items-center">
       <div class="max-w-[760px] mx-auto w-full px-6 sm:px-10">
-        <div class="reveal text-center">
+        <div class="reveal text-center" data-wholesale-gate>
           <div class="mb-6 flex items-center justify-center gap-4">
             <div class="h-px bg-gold w-8"></div>
             <span class="font-mono text-[10px] tracking-[0.2em] uppercase text-gold">Wholesale Access</span>
@@ -23,22 +23,45 @@ import Nav from '../components/Nav.astro';
             class="font-display font-light text-ink leading-[1.02] tracking-[-0.01em] mb-5"
             style="font-size: clamp(38px, 5vw, 58px);"
           >
-            Wholesale ordering is temporarily unavailable.
+            Sign in to shop wholesale.
           </h1>
           <p class="mx-auto font-sans font-light text-[15px] leading-[1.75] max-w-[520px] text-ink-soft">
-            We're making improvements to wholesale checkout. Please contact us directly to place an order in the meantime.
+            Sign in with the email assigned to your company location to view wholesale products, pricing, and checkout terms.
           </p>
 
           <div class="mt-8 flex flex-col sm:flex-row sm:justify-center gap-3">
-            <a
-              href="/contact"
+            <button
+              type="button"
+              data-wholesale-login
               class="inline-flex items-center justify-center bg-ink px-8 py-4 font-mono text-[10px] tracking-[0.18em] uppercase text-white transition-colors duration-200 hover:bg-gold hover:text-ink"
             >
-              Contact Us
+              Enter Wholesale
+            </button>
+            <a
+              href="/contact"
+              class="inline-flex items-center justify-center border border-rule bg-white px-8 py-4 font-mono text-[10px] tracking-[0.18em] uppercase text-ink transition-colors duration-200 hover:border-gold hover:text-gold"
+            >
+              Request Access
             </a>
           </div>
+          <p class="mx-auto mt-5 hidden max-w-[520px] font-sans text-[13px] leading-relaxed text-ink-soft" data-wholesale-public-status></p>
+        </div>
+
+        <div data-wholesale-store class="hidden text-center">
+          <div class="mb-5 flex items-center justify-center gap-4">
+            <div class="h-px bg-gold w-8"></div>
+            <span class="font-mono text-[10px] tracking-[0.2em] uppercase text-gold">Wholesale Access</span>
+            <div class="h-px bg-gold w-8"></div>
+          </div>
+          <p class="mx-auto max-w-[520px] font-sans text-[14px] leading-relaxed text-ink-soft" data-wholesale-status>
+            Checking your wholesale account...
+          </p>
         </div>
       </div>
     </section>
   </main>
 </Layout>
+
+<script>
+  import '../lib/wholesale-client';
+</script>
