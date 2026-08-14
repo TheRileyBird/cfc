@@ -6,8 +6,29 @@ const SHOPIFY_DOMAIN = cleanDomain(importEnv.PUBLIC_SHOPIFY_STORE_DOMAIN ?? impo
 const STOREFRONT_TOKEN = importEnv.PUBLIC_SHOPIFY_STOREFRONT_TOKEN ?? importEnv.SHOPIFY_STOREFRONT_TOKEN ?? '';
 const CUSTOMER_ACCOUNT_CLIENT_ID = importEnv.PUBLIC_SHOPIFY_CUSTOMER_ACCOUNT_CLIENT_ID ?? '';
 const STOREFRONT_API_VERSION = importEnv.PUBLIC_SHOPIFY_B2B_STOREFRONT_API_VERSION ?? '2026-01';
-const WHOLESALE_PRODUCT_QUERY = importEnv.PUBLIC_SHOPIFY_WHOLESALE_PRODUCT_QUERY ?? '';
-const WHOLESALE_COLLECTION_HANDLE = importEnv.PUBLIC_SHOPIFY_WHOLESALE_COLLECTION_HANDLE ?? '';
+// Back Bar products are Shopify "Unlisted" — Shopify excludes Unlisted products
+// from every list-type Storefront query (products(), collection.products(),
+// search) no matter the filter or buyer context; they're only resolvable one at
+// a time via a singular product(handle:) lookup. So the catalog's product set is
+// configured explicitly here rather than discovered through any list query —
+// that's also what keeps them unreachable via browsing/search for anyone who
+// isn't fetching by exact handle.
+const WHOLESALE_PRODUCT_HANDLES = (
+  importEnv.PUBLIC_SHOPIFY_WHOLESALE_PRODUCT_HANDLES ??
+  [
+    'nad-jamin-jasmine-cleanser',
+    'sun-kissed-protection-tinted-sunscrenn',
+    'nad-bamboo-cleanser',
+    'luxe-whipped-intensive-moisturizer-1',
+    'pure-hydration-ha-serum-back-bar-whole-sale',
+    'color-correction-c-e-serum-back-bar-whole-sale',
+    'apple-stem-wrinkle-eraser-back-bar-whole-sale',
+    'green-enzyme-express-facial-back-bar',
+  ].join(',')
+)
+  .split(',')
+  .map((handle) => handle.trim())
+  .filter(Boolean);
 
 const STOREFRONT_URL = `https://${SHOPIFY_DOMAIN}/api/${STOREFRONT_API_VERSION}/graphql.json`;
 const OPENID_DISCOVERY_URL = `https://${SHOPIFY_DOMAIN}/.well-known/openid-configuration`;
@@ -309,64 +330,25 @@ export async function getWholesaleProducts(session: TokenSession, companyLocatio
     }
   `;
 
-  let productNodes: StorefrontProduct[] = [];
+  if (WHOLESALE_PRODUCT_HANDLES.length === 0) return [];
 
-  if (WHOLESALE_COLLECTION_HANDLE) {
-    const collectionData = await storefrontFetch<{
-      collection: null | {
-        products: { nodes: StorefrontProduct[] };
-      };
-    }>(
-      `query WholesaleCollectionProducts($handle: String!, $first: Int!, $buyer: BuyerInput!) @inContext(buyer: $buyer) {
-        collection(handle: $handle) {
-          products(first: $first) {
-            nodes {
-              ${productFields}
-            }
-          }
-        }
-      }`,
-      {
-        handle: WHOLESALE_COLLECTION_HANDLE,
-        first: 100,
-        buyer: {
-          customerAccessToken: session.accessToken,
-          companyLocationId,
-        },
-      }
-    );
+  const aliasedProducts = WHOLESALE_PRODUCT_HANDLES.map(
+    (handle, index) => `p${index}: product(handle: ${JSON.stringify(handle)}) { ${productFields} }`
+  ).join('\n');
 
-    productNodes = collectionData.collection?.products.nodes ?? [];
-  }
+  const data = await storefrontFetch<Record<string, StorefrontProduct | null>>(
+    `query WholesaleProducts($buyer: BuyerInput!) @inContext(buyer: $buyer) {
+      ${aliasedProducts}
+    }`,
+    {
+      buyer: {
+        customerAccessToken: session.accessToken,
+        companyLocationId,
+      },
+    }
+  );
 
-  if (productNodes.length === 0 && !WHOLESALE_COLLECTION_HANDLE) {
-    // No curated collection configured: source directly from the buyer's
-    // assigned company catalog by querying all products in buyer context.
-    // Shopify scopes this to only the products included in that catalog,
-    // so it stays correct without needing a hand-maintained collection.
-    const data = await storefrontFetch<{
-      products: {
-        nodes: StorefrontProduct[];
-      };
-    }>(
-      `query WholesaleProducts($first: Int!, $query: String, $buyer: BuyerInput!) @inContext(buyer: $buyer) {
-        products(first: $first, query: $query) {
-          nodes {
-            ${productFields}
-          }
-        }
-      }`,
-      {
-        first: 100,
-        query: WHOLESALE_PRODUCT_QUERY || null,
-        buyer: {
-          customerAccessToken: session.accessToken,
-          companyLocationId,
-        },
-      }
-    );
-    productNodes = data.products.nodes;
-  }
+  const productNodes = Object.values(data).filter((product): product is StorefrontProduct => product != null);
 
   return productNodes
     .map((product) => {
