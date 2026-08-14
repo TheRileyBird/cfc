@@ -431,12 +431,6 @@ const WHOLESALE_CART_FRAGMENT = `
   cost { totalAmount { amount currencyCode } }
 `;
 
-function parseWholesaleCart(raw: any): Cart {
-  const cart = parseCart(raw);
-  cart.checkoutUrl = raw.checkoutUrl;
-  return cart;
-}
-
 async function createWholesaleCart(session: TokenSession, companyLocationId: string, merchandiseId: string, quantity: number): Promise<Cart> {
   const data = await storefrontFetch<any>(
     `mutation WholesaleCartCreate($input: CartInput!) {
@@ -460,7 +454,7 @@ async function createWholesaleCart(session: TokenSession, companyLocationId: str
 
   const error = data.cartCreate.userErrors?.[0];
   if (error) throw new Error(error.message);
-  return parseWholesaleCart(data.cartCreate.cart);
+  return parseCart(data.cartCreate.cart);
 }
 
 async function addToWholesaleCart(cartId: string, merchandiseId: string, quantity: number): Promise<Cart> {
@@ -478,7 +472,7 @@ async function addToWholesaleCart(cartId: string, merchandiseId: string, quantit
 
   const error = data.cartLinesAdd.userErrors?.[0];
   if (error) throw new Error(error.message);
-  return parseWholesaleCart(data.cartLinesAdd.cart);
+  return parseCart(data.cartLinesAdd.cart);
 }
 
 async function getWholesaleCart(cartId: string): Promise<Cart | null> {
@@ -491,7 +485,7 @@ async function getWholesaleCart(cartId: string): Promise<Cart | null> {
     { cartId }
   );
 
-  return data.cart ? parseWholesaleCart(data.cart) : null;
+  return data.cart ? parseCart(data.cart) : null;
 }
 
 function renderProducts(products: WholesaleProduct[], container: HTMLElement): void {

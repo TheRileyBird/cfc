@@ -14,7 +14,8 @@
       "WebFetch(domain:www.cfcskincare.shop)",
       "Read(//Users/joshuariley/Downloads/**)",
       "Bash(python3 -c ' *)",
-      "WebFetch(domain:shopify.dev)"
+      "WebFetch(domain:shopify.dev)",
+      "Skill(browse)"
     ]
   }
 }

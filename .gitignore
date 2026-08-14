@@ -10,3 +10,4 @@ playwright-report/
 
 # Local Netlify folder
 .netlify
+.gstack/
