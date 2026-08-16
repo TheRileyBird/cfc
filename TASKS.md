@@ -15,3 +15,20 @@ unchecked task unless you are starting it.
 ## Queue
 
 - [ ] When I clicked return to cart from the Shopify order page, it brought me to this URL, which again, no one should be able to access  https://cfcskincare.myshopify.com/cart
+- [ ] Fix whole variant bug (see ### wholevariantbug)
+
+
+### wholevariantbug
+A separate bug I found on the way
+
+wholesale-core.ts:361 does const variant = product.variants.nodes[0] — it takes only the first variant. But these products have two:
+
+┌────────────────────────────┬─────────────────────────┐
+│          Product           │        Variants         │
+├────────────────────────────┼─────────────────────────┤
+│ Color Correction C&E Serum │ 18 oz. $720, 8 oz. $360 │
+├────────────────────────────┼─────────────────────────┤
+│ Pure Hydration HA Serum    │ 18 oz. $360, 8 oz. $180 │
+└────────────────────────────┴─────────────────────────┘
+
+Your wholesale grid can only ever sell the 18 oz. The 8 oz is unreachable. That matches your screenshots — both show "18 oz." Worth fixing once checkout works, though it's independent of the catalog issue.

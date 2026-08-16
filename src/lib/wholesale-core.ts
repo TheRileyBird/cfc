@@ -6,29 +6,16 @@ const SHOPIFY_DOMAIN = cleanDomain(importEnv.PUBLIC_SHOPIFY_STORE_DOMAIN ?? impo
 const STOREFRONT_TOKEN = importEnv.PUBLIC_SHOPIFY_STOREFRONT_TOKEN ?? importEnv.SHOPIFY_STOREFRONT_TOKEN ?? '';
 const CUSTOMER_ACCOUNT_CLIENT_ID = importEnv.PUBLIC_SHOPIFY_CUSTOMER_ACCOUNT_CLIENT_ID ?? '';
 const STOREFRONT_API_VERSION = importEnv.PUBLIC_SHOPIFY_B2B_STOREFRONT_API_VERSION ?? '2026-01';
-// Back Bar products are Shopify "Unlisted" — Shopify excludes Unlisted products
-// from every list-type Storefront query (products(), collection.products(),
-// search) no matter the filter or buyer context; they're only resolvable one at
-// a time via a singular product(handle:) lookup. So the catalog's product set is
-// configured explicitly here rather than discovered through any list query —
-// that's also what keeps them unreachable via browsing/search for anyone who
-// isn't fetching by exact handle.
-const WHOLESALE_PRODUCT_HANDLES = (
-  importEnv.PUBLIC_SHOPIFY_WHOLESALE_PRODUCT_HANDLES ??
-  [
-    'nad-jamin-jasmine-cleanser',
-    'sun-kissed-protection-tinted-sunscrenn',
-    'nad-bamboo-cleanser',
-    'luxe-whipped-intensive-moisturizer-1',
-    'pure-hydration-ha-serum-back-bar-whole-sale',
-    'color-correction-c-e-serum-back-bar-whole-sale',
-    'apple-stem-wrinkle-eraser-back-bar-whole-sale',
-    'green-enzyme-express-facial-back-bar',
-  ].join(',')
-)
-  .split(',')
-  .map((handle) => handle.trim())
-  .filter(Boolean);
+// The Wholesale Collection in Shopify is the single source of truth for what
+// appears on the wholesale tab: add a product to the collection and it shows up,
+// remove it and it disappears. No handle list to keep in sync here.
+//
+// These products stay out of the retail storefront through isRetailProduct() in
+// shopify.ts (static listings) and isWholesaleOnly() in cart-client.ts (search),
+// and no static product page is generated for them — the wholesale tab renders
+// them client-side only after the company check below passes.
+const WHOLESALE_COLLECTION_HANDLE =
+  importEnv.PUBLIC_SHOPIFY_WHOLESALE_COLLECTION_HANDLE ?? 'wholesale-collection';
 
 const STOREFRONT_URL = `https://${SHOPIFY_DOMAIN}/api/${STOREFRONT_API_VERSION}/graphql.json`;
 const OPENID_DISCOVERY_URL = `https://${SHOPIFY_DOMAIN}/.well-known/openid-configuration`;
@@ -52,24 +39,28 @@ export interface BuyerLocation {
   companyName: string;
 }
 
+export interface WholesaleVariant {
+  id: string;
+  title: string;
+  price: string;
+  currencyCode: string;
+  availableForSale: boolean;
+  quantityRule?: {
+    minimum?: number | null;
+    maximum?: number | null;
+    increment?: number | null;
+  } | null;
+}
+
 export interface WholesaleProduct {
   id: string;
   title: string;
   handle: string;
   description: string;
   availableForSale: boolean;
-  minPrice: string;
-  currencyCode: string;
   imageUrl: string;
   imageAlt: string;
-  variantId: string;
-  variantTitle: string;
-  variantPrice: string;
-  quantityRule?: {
-    minimum?: number | null;
-    maximum?: number | null;
-    increment?: number | null;
-  } | null;
+  variants: WholesaleVariant[];
 }
 
 function cleanDomain(value: string | undefined): string {
@@ -255,16 +246,14 @@ async function storefrontFetch<T>(query: string, variables: Record<string, unkno
   return json.data as T;
 }
 
-export async function getBuyerLocations(session: TokenSession): Promise<BuyerLocation[]> {
+type CompanyContact = {
+  company: { name: string } | null;
+  locations: { nodes: Array<{ id: string; name: string }> };
+};
+
+async function getCompanyContacts(session: TokenSession): Promise<CompanyContact[]> {
   const data = await customerFetch<{
-    customer: {
-      companyContacts: {
-        nodes: Array<{
-          company: { name: string } | null;
-          locations: { nodes: Array<{ id: string; name: string }> };
-        }>;
-      };
-    };
+    customer: { companyContacts: { nodes: CompanyContact[] } };
   }>(
     `query WholesaleCustomer {
       customer {
@@ -282,7 +271,20 @@ export async function getBuyerLocations(session: TokenSession): Promise<BuyerLoc
     session
   );
 
-  return data.customer.companyContacts.nodes.flatMap((contact) =>
+  return data.customer.companyContacts.nodes;
+}
+
+// The whole wholesale gate: belonging to a company is what grants access. A
+// company with no locations still counts — locations only drive the picker on
+// the /wholesale page, they no longer affect pricing or purchase eligibility.
+export async function hasCompanyAccess(session: TokenSession): Promise<boolean> {
+  const contacts = await getCompanyContacts(session);
+  return contacts.length > 0;
+}
+
+export async function getBuyerLocations(session: TokenSession): Promise<BuyerLocation[]> {
+  const contacts = await getCompanyContacts(session);
+  return contacts.flatMap((contact) =>
     contact.locations.nodes.map((location) => ({
       id: location.id,
       name: location.name,
@@ -291,14 +293,18 @@ export async function getBuyerLocations(session: TokenSession): Promise<BuyerLoc
   );
 }
 
-export async function getWholesaleProducts(session: TokenSession, companyLocationId: string): Promise<WholesaleProduct[]> {
+// Read without @inContext(buyer:). Buyer context asks Shopify to resolve the
+// products against the B2B catalog assigned to a company location; with no
+// catalog in place that resolution returns empty variants for some products and
+// blocks checkout on the rest. Prices here are the product's own Shopify prices,
+// which is what wholesale is priced at now.
+export async function getWholesaleProducts(): Promise<WholesaleProduct[]> {
   type StorefrontProduct = {
     id: string;
     title: string;
     handle: string;
     description: string;
     availableForSale: boolean;
-    priceRange: { minVariantPrice: { amount: string; currencyCode: string } };
     images: { nodes: Array<{ url: string; altText: string | null }> };
     variants: {
       nodes: Array<{
@@ -311,54 +317,37 @@ export async function getWholesaleProducts(session: TokenSession, companyLocatio
     };
   };
 
-  const productFields = `
-    id
-    title
-    handle
-    description
-    availableForSale
-    priceRange { minVariantPrice { amount currencyCode } }
-    images(first: 1) { nodes { url altText } }
-    variants(first: 10) {
-      nodes {
-        id
-        title
-        availableForSale
-        price { amount currencyCode }
-        quantityRule { minimum maximum increment }
+  const data = await storefrontFetch<{ collection: { products: { nodes: StorefrontProduct[] } } | null }>(
+    `query WholesaleCollection($handle: String!) {
+      collection(handle: $handle) {
+        products(first: 100) {
+          nodes {
+            id
+            title
+            handle
+            description
+            availableForSale
+            images(first: 1) { nodes { url altText } }
+            variants(first: 50) {
+              nodes {
+                id
+                title
+                availableForSale
+                price { amount currencyCode }
+                quantityRule { minimum maximum increment }
+              }
+            }
+          }
+        }
       }
-    }
-  `;
-
-  if (WHOLESALE_PRODUCT_HANDLES.length === 0) return [];
-
-  const aliasedProducts = WHOLESALE_PRODUCT_HANDLES.map(
-    (handle, index) => `p${index}: product(handle: ${JSON.stringify(handle)}) { ${productFields} }`
-  ).join('\n');
-
-  const data = await storefrontFetch<Record<string, StorefrontProduct | null>>(
-    `query WholesaleProducts($buyer: BuyerInput!) @inContext(buyer: $buyer) {
-      ${aliasedProducts}
     }`,
-    {
-      buyer: {
-        customerAccessToken: session.accessToken,
-        companyLocationId,
-      },
-    }
+    { handle: WHOLESALE_COLLECTION_HANDLE }
   );
 
-  const productNodes = Object.values(data).filter((product): product is StorefrontProduct => product != null);
+  const productNodes = data.collection?.products.nodes ?? [];
 
   return productNodes
     .map((product) => {
-      // availableForSale is unreliable here — it flips to false under an
-      // authenticated B2B buyer context even though the read data (price,
-      // quantity rules) is correct, while an anonymous read shows it true for
-      // the exact same variant. Actual purchase eligibility is enforced by
-      // Shopify at the cart-mutation level regardless of this field, so we
-      // don't gate display on it — just fall back to the first variant.
-      const variant = product.variants.nodes[0];
       const image = product.images.nodes[0];
       return {
         id: product.id,
@@ -366,17 +355,19 @@ export async function getWholesaleProducts(session: TokenSession, companyLocatio
         handle: product.handle,
         description: product.description,
         availableForSale: product.availableForSale,
-        minPrice: product.priceRange.minVariantPrice.amount,
-        currencyCode: product.priceRange.minVariantPrice.currencyCode,
         imageUrl: image?.url ?? '',
         imageAlt: image?.altText ?? product.title,
-        variantId: variant?.id ?? '',
-        variantTitle: variant?.title ?? '',
-        variantPrice: variant?.price.amount ?? product.priceRange.minVariantPrice.amount,
-        quantityRule: variant?.quantityRule ?? null,
+        variants: product.variants.nodes.map((variant) => ({
+          id: variant.id,
+          title: variant.title,
+          price: variant.price.amount,
+          currencyCode: variant.price.currencyCode,
+          availableForSale: variant.availableForSale,
+          quantityRule: variant.quantityRule ?? null,
+        })),
       };
     })
-    .filter((product) => product.variantId);
+    .filter((product) => product.variants.length > 0);
 }
 
 const WHOLESALE_CART_FRAGMENT = `
@@ -410,13 +401,11 @@ const WHOLESALE_CART_FRAGMENT = `
   cost { totalAmount { amount currencyCode } }
 `;
 
-// B2B carts carry buyerIdentity.companyLocationId set at creation time. Shopify's
-// /checkouts/cn/{token} shorthand (used by normalizeCheckoutUrl for retail carts to
-// dodge a custom-domain redirect loop) doesn't carry that buyer identity forward —
-// it drops B2B shoppers into the store's native theme instead of checkout. Going
-// straight to the myshopify.com host on the *original* /cart/c/{token} path avoids
-// the redirect loop (the loop only happens when the custom domain is involved) while
-// preserving the buyer identity Shopify already resolved into the cart.
+// Keep the checkout URL on the myshopify.com host and on the original
+// /cart/c/{token} path Shopify handed back. normalizeCheckoutUrl() rewrites retail
+// carts to the /checkouts/cn/{token} shorthand to dodge a custom-domain redirect
+// loop; that shorthand isn't needed here and has historically dropped wholesale
+// shoppers into the store's native theme instead of checkout.
 function toWholesaleCheckoutUrl(checkoutUrl: string): string {
   try {
     const url = new URL(checkoutUrl);
@@ -453,7 +442,11 @@ function parseWholesaleCart(raw: any): Cart {
   };
 }
 
-export async function createWholesaleCart(session: TokenSession, companyLocationId: string, merchandiseId: string, quantity: number): Promise<Cart> {
+// A plain cart, deliberately without buyerIdentity.companyLocationId. Attaching a
+// company location makes Shopify allocate the line against that location's B2B
+// catalog; with no catalog it silently clamps the line quantity to 0 and then
+// fails checkout with "no longer available".
+export async function createWholesaleCart(merchandiseId: string, quantity: number): Promise<Cart> {
   const data = await storefrontFetch<any>(
     `mutation WholesaleCartCreate($input: CartInput!) {
       cartCreate(input: $input) {
@@ -465,10 +458,6 @@ export async function createWholesaleCart(session: TokenSession, companyLocation
     }`,
     {
       input: {
-        buyerIdentity: {
-          customerAccessToken: session.accessToken,
-          companyLocationId,
-        },
         lines: [{ merchandiseId, quantity }],
       },
     }

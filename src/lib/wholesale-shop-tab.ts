@@ -1,11 +1,10 @@
 import {
   getSession,
-  getBuyerLocations,
+  hasCompanyAccess,
   getWholesaleProducts,
   createWholesaleCart,
   addToWholesaleCart,
   getWholesaleCart,
-  LOCATION_KEY,
   CART_KEY,
   type TokenSession,
 } from './wholesale-core';
@@ -76,10 +75,9 @@ async function restoreWholesaleCart(): Promise<void> {
 }
 
 let activeSession: TokenSession | null = null;
-let activeLocationId: string | null = null;
 
 async function addToCart(variantId: string, quantity: number): Promise<void> {
-  if (!activeSession || !activeLocationId) {
+  if (!activeSession) {
     setCartError('Your wholesale session expired. Please sign in again.');
     return;
   }
@@ -88,7 +86,7 @@ async function addToCart(variantId: string, quantity: number): Promise<void> {
     const cartId = localStorage.getItem(CART_KEY);
     const cart = cartId
       ? await addToWholesaleCart(cartId, variantId, quantity)
-      : await createWholesaleCart(activeSession, activeLocationId, variantId, quantity);
+      : await createWholesaleCart(variantId, quantity);
     applyWholesaleCart(cart);
   } catch (error) {
     const message = error instanceof Error ? error.message : 'Could not add that product.';
@@ -141,50 +139,53 @@ async function checkWholesaleAccess(): Promise<void> {
     // Cart badge stays stale; it resyncs on the next add or checkout click.
   }
 
-  let locations;
+  // Belonging to a company is the entire gate. Nothing below renders without it.
+  let unlocked = false;
   try {
-    locations = await getBuyerLocations(session);
+    unlocked = await hasCompanyAccess(session);
   } catch {
     // Session expired or Shopify unavailable — leave the tab hidden quietly.
     return;
   }
 
-  if (locations.length === 0) return;
-
-  const savedLocationId = localStorage.getItem(LOCATION_KEY);
-  const location = locations.find((item) => item.id === savedLocationId) ?? locations[0];
-  localStorage.setItem(LOCATION_KEY, location.id);
+  if (!unlocked) return;
 
   let products;
   try {
-    products = await getWholesaleProducts(session, location.id);
+    products = await getWholesaleProducts();
   } catch {
     return;
   }
 
   activeSession = session;
-  activeLocationId = location.id;
 
-  const tabProducts: WholesaleTabProduct[] = products.map((product, index) => {
-    const min = product.quantityRule?.minimum ?? 1;
-    const increment = product.quantityRule?.increment ?? 1;
-    const quantity = Math.max(min, increment, 1);
-    return {
-      id: product.id,
-      title: product.title,
-      description: product.description,
-      imageUrl: product.imageUrl,
-      imageAlt: product.imageAlt,
-      variantId: product.variantId,
-      price: Number(product.variantPrice) || 0,
-      priceLabel: formatMoney(product.variantPrice, product.currencyCode),
-      minQuantityLabel: quantity > 1 ? `Min ${quantity}` : '',
-      quantity,
-      category: 'wholesale',
-      available: true,
-      bestSellingRank: index,
-    };
-  });
+  // One card per variant: a product with 20/10/5/2 oz sizes needs four
+  // purchasable entries, and the shared grid renders a flat list of cards.
+  const tabProducts: WholesaleTabProduct[] = products.flatMap((product) =>
+    product.variants
+      .filter((variant) => variant.availableForSale)
+      .map((variant) => {
+        const min = variant.quantityRule?.minimum ?? 1;
+        const increment = variant.quantityRule?.increment ?? 1;
+        const quantity = Math.max(min, increment, 1);
+        const hasVariantName = variant.title && variant.title !== 'Default Title';
+        return {
+          id: variant.id,
+          title: hasVariantName ? `${product.title} — ${variant.title}` : product.title,
+          description: product.description,
+          imageUrl: product.imageUrl,
+          imageAlt: product.imageAlt,
+          variantId: variant.id,
+          price: Number(variant.price) || 0,
+          priceLabel: formatMoney(variant.price, variant.currencyCode),
+          minQuantityLabel: quantity > 1 ? `Min ${quantity}` : '',
+          quantity,
+          category: 'wholesale' as const,
+          available: true,
+          bestSellingRank: 0,
+        };
+      })
+  ).map((product, index) => ({ ...product, bestSellingRank: index }));
 
   window.dispatchEvent(new CustomEvent('wholesale:ready', { detail: { products: tabProducts } }));
 }
