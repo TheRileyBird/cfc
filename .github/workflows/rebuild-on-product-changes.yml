@@ -36,7 +36,7 @@ jobs:
           cursor=""
           while :; do
             if [ -z "$cursor" ]; then after=""; else after=", after: \\\"$cursor\\\""; fi
-            resp=$(curl -sf "https://${SHOPIFY_STORE_DOMAIN}/api/2024-01/graphql.json" \
+            resp=$(curl -sf "https://${SHOPIFY_STORE_DOMAIN}/api/2026-01/graphql.json" \
               -H "Content-Type: application/json" \
               -H "X-Shopify-Storefront-Access-Token: ${SHOPIFY_STOREFRONT_TOKEN}" \
               -d "{\"query\":\"query { products(first: 250${after}) { pageInfo { hasNextPage endCursor } edges { node { handle updatedAt } } } }\"}")

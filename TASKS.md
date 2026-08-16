@@ -14,4 +14,4 @@ unchecked task unless you are starting it.
 
 ## Queue
 
-- [ ] do back bar items have to be hardcoded... 
+- [ ] When I clicked return to cart from the Shopify order page, it brought me to this URL, which again, no one should be able to access  https://cfcskincare.myshopify.com/cart

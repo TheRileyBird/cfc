@@ -17,7 +17,7 @@ const CHECKOUT_DOMAIN = HEADLESS_DOMAINS.has(CONFIGURED_CHECKOUT_DOMAIN)
   ? SHOPIFY_CHECKOUT_FALLBACK_DOMAIN
   : CONFIGURED_CHECKOUT_DOMAIN;
 const STOREFRONT_TOKEN = env.PUBLIC_SHOPIFY_STOREFRONT_TOKEN ?? env.SHOPIFY_STOREFRONT_TOKEN ?? '';
-const API_VERSION = env.PUBLIC_SHOPIFY_API_VERSION ?? env.SHOPIFY_API_VERSION ?? '2024-01';
+const API_VERSION = env.PUBLIC_SHOPIFY_API_VERSION ?? env.SHOPIFY_API_VERSION ?? '2026-01';
 const STOREFRONT_URL = `https://${SHOPIFY_DOMAIN}/api/${API_VERSION}/graphql.json`;
 const USE_MOCKS = env.PUBLIC_SHOPIFY_USE_MOCKS === 'true' || env.SHOPIFY_USE_MOCKS === 'true';
 
@@ -235,12 +235,30 @@ export async function updateCartDiscountCodes(cartId: string, discountCodes: str
   return parseCart(data.cartDiscountCodesUpdate.cart);
 }
 
+// Wholesale/Back Bar SKUs are published to the storefront sales channel so
+// authenticated B2B buyers can purchase them, which also makes them reachable
+// by predictive search. Static listings already exclude them at build time via
+// isRetailProduct() in shopify.ts; this is the runtime equivalent so they never
+// surface to retail shoppers through search.
+//
+// The `wholesale` tag is the authoritative signal. The title/handle pattern is a
+// fallback for products that haven't been tagged yet — keep it, since an
+// untagged wholesale SKU leaking into retail search is worse than the rare
+// retail product that happens to be named "... Back Bar".
+const WHOLESALE_TAG = 'wholesale';
+const WHOLESALE_ONLY_PATTERN = /back\s*bar|whole\s*sale/i;
+
+function isWholesaleOnly(title: string, handle: string, tags: string[] = []): boolean {
+  if (tags.some((tag) => tag.trim().toLowerCase() === WHOLESALE_TAG)) return true;
+  return WHOLESALE_ONLY_PATTERN.test(`${title} ${handle}`);
+}
+
 export async function searchProducts(query: string): Promise<SearchProduct[]> {
   const data = await gql<any>(
     `query predictiveSearch($query: String!) {
-      predictiveSearch(query: $query, types: [PRODUCT], limit: 8) {
+      predictiveSearch(query: $query, types: [PRODUCT], limit: 10) {
         products {
-          id title handle
+          id title handle tags
           priceRange { minVariantPrice { amount currencyCode } }
           images(first: 1) { edges { node { url altText } } }
           variants(first: 1) { edges { node { id } } }
@@ -249,13 +267,16 @@ export async function searchProducts(query: string): Promise<SearchProduct[]> {
     }`,
     { query }
   );
-  return (data.predictiveSearch?.products ?? []).map((p: any) => ({
-    id: p.id,
-    title: p.title,
-    handle: p.handle,
-    price: p.priceRange.minVariantPrice.amount,
-    imageUrl: p.images.edges[0]?.node.url ?? '',
-    imageAlt: p.images.edges[0]?.node.altText ?? '',
-    variantId: p.variants.edges[0]?.node.id ?? '',
-  }));
+  return (data.predictiveSearch?.products ?? [])
+    .filter((p: any) => !isWholesaleOnly(p.title ?? '', p.handle ?? '', p.tags ?? []))
+    .slice(0, 8)
+    .map((p: any) => ({
+      id: p.id,
+      title: p.title,
+      handle: p.handle,
+      price: p.priceRange.minVariantPrice.amount,
+      imageUrl: p.images.edges[0]?.node.url ?? '',
+      imageAlt: p.images.edges[0]?.node.altText ?? '',
+      variantId: p.variants.edges[0]?.node.id ?? '',
+    }));
 }
