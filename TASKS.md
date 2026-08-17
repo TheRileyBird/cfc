@@ -16,7 +16,8 @@ unchecked task unless you are starting it.
 
 - [x] Fix whole variant bug (see ### wholevariantbug)
 - [x] Should show variants of products just like regular shop page... or at least NOT as 2+ versions of the same product... thats bad UX
-- [ ] When I clicked return to cart from the Shopify order page, it brought me to this URL, which again, no one should be able to access  https://cfcskincare.myshopify.com/cart
+- [x] When I clicked return to cart from the Shopify order page, it brought me to this URL, which again, no one should be able to access  https://cfcskincare.myshopify.com/cart
+- [x] Document the process for creating a wholesale B2B account in the backend and describe the users process on the front end. save to desktop as CFC-wholesale-process.md
 
 ### wholevariantbug
 A separate bug I found on the way
