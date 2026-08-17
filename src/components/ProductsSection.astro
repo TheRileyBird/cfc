@@ -145,6 +145,9 @@ const lastVisibleIndex = firstVisibleIndex + 16;
             return this.active === 'all' || product.category === this.active;
           });
         },
+        pickVariant(product, index) {
+          return product.variants[index] ?? product.variants[0];
+        },
         sortedProducts() {
           return [...this.filteredProducts()].sort((a, b) => {
             if (this.sortBy === 'best-selling') return a.bestSellingRank - b.bestSellingRank;
@@ -277,7 +280,7 @@ const lastVisibleIndex = firstVisibleIndex + 16;
 
           <div x-show="active === 'wholesale'" x-cloak class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-px">
             <template x-for="product in visibleProducts()" :key="product.id">
-              <article x-data="{ adding: false, added: false }" class="group flex h-full flex-col overflow-hidden bg-white transition-colors duration-300 hover:bg-parchment-2">
+              <article x-data="{ adding: false, added: false, vi: 0 }" class="group flex h-full flex-col overflow-hidden bg-white transition-colors duration-300 hover:bg-parchment-2">
                 <div class="relative aspect-[1/1] overflow-hidden bg-parchment sm:aspect-[3/4]">
                   <template x-if="product.imageUrl">
                     <img :src="product.imageUrl" :alt="product.imageAlt" loading="lazy" class="h-full w-full object-cover transition-transform duration-[800ms] group-hover:scale-[1.06]" />
@@ -289,14 +292,33 @@ const lastVisibleIndex = firstVisibleIndex + 16;
                 <div class="flex flex-1 flex-col p-5">
                   <h3 class="mb-1.5 font-display text-[18px] font-normal leading-snug text-ink" x-text="product.title"></h3>
                   <p class="mb-4 line-clamp-2 flex-1 font-sans text-[12px] font-light leading-relaxed text-ink-soft" x-text="product.description || ' '"></p>
+
+                  <!-- Multiple sizes pick on the card; single-size products just label it. -->
+                  <template x-if="product.variants.length > 1">
+                    <label class="mb-4 block">
+                      <span class="sr-only" x-text="'Size for ' + product.title"></span>
+                      <select
+                        x-model.number="vi"
+                        class="w-full border border-rule bg-white px-3 py-2 font-mono text-[10px] uppercase tracking-[0.12em] text-ink transition-colors duration-200 focus:border-ink focus:outline-none"
+                      >
+                        <template x-for="(v, i) in product.variants" :key="v.id">
+                          <option :value="i" x-text="v.title + ' · ' + v.priceLabel"></option>
+                        </template>
+                      </select>
+                    </label>
+                  </template>
+                  <template x-if="product.variants.length === 1 && product.variants[0].title">
+                    <p class="mb-4 font-mono text-[9px] uppercase tracking-[0.12em] text-ink-soft" x-text="product.variants[0].title"></p>
+                  </template>
+
                   <div class="mt-auto flex items-center justify-between gap-4">
                     <div>
-                      <span class="font-display text-[20px] font-normal text-ink" x-text="product.priceLabel"></span>
-                      <p x-show="product.minQuantityLabel" class="mt-1 font-mono text-[9px] uppercase tracking-[0.12em] text-ink-soft" x-text="product.minQuantityLabel"></p>
+                      <span class="font-display text-[20px] font-normal text-ink" x-text="pickVariant(product, vi).priceLabel"></span>
+                      <p x-show="pickVariant(product, vi).minQuantityLabel" class="mt-1 font-mono text-[9px] uppercase tracking-[0.12em] text-ink-soft" x-text="pickVariant(product, vi).minQuantityLabel"></p>
                     </div>
                     <button
                       type="button"
-                      @click="if (!adding && !added) { adding = true; await window.cfcWholesaleAddToCart(product.variantId, product.quantity); adding = false; added = true; setTimeout(() => { added = false }, 1800); }"
+                      @click="if (!adding && !added) { const v = pickVariant(product, vi); adding = true; await window.cfcWholesaleAddToCart(v.id, v.quantity); adding = false; added = true; setTimeout(() => { added = false }, 1800); }"
                       :class="added ? 'bg-ink text-white border-ink' : 'bg-white text-ink border-ink hover:bg-ink hover:text-white'"
                       class="font-mono text-[9px] tracking-[0.12em] uppercase border px-3 py-2 transition-all duration-200"
                       :disabled="adding"

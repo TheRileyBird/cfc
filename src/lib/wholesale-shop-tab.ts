@@ -9,20 +9,27 @@ import {
   type TokenSession,
 } from './wholesale-core';
 
+interface WholesaleTabVariant {
+  id: string;
+  title: string;
+  price: number;
+  priceLabel: string;
+  quantity: number;
+  minQuantityLabel: string;
+}
+
 interface WholesaleTabProduct {
   id: string;
   title: string;
   description: string;
   imageUrl: string;
   imageAlt: string;
-  variantId: string;
+  /** Lowest variant price — drives the grid's price sorting. */
   price: number;
-  priceLabel: string;
-  minQuantityLabel: string;
-  quantity: number;
   category: 'wholesale';
   available: boolean;
   bestSellingRank: number;
+  variants: WholesaleTabVariant[];
 }
 
 function formatMoney(amount: string, currencyCode = 'USD'): string {
@@ -159,33 +166,42 @@ async function checkWholesaleAccess(): Promise<void> {
 
   activeSession = session;
 
-  // One card per variant: a product with 20/10/5/2 oz sizes needs four
-  // purchasable entries, and the shared grid renders a flat list of cards.
-  const tabProducts: WholesaleTabProduct[] = products.flatMap((product) =>
-    product.variants
-      .filter((variant) => variant.availableForSale)
-      .map((variant) => {
-        const min = variant.quantityRule?.minimum ?? 1;
-        const increment = variant.quantityRule?.increment ?? 1;
-        const quantity = Math.max(min, increment, 1);
-        const hasVariantName = variant.title && variant.title !== 'Default Title';
-        return {
-          id: variant.id,
-          title: hasVariantName ? `${product.title} — ${variant.title}` : product.title,
-          description: product.description,
-          imageUrl: product.imageUrl,
-          imageAlt: product.imageAlt,
-          variantId: variant.id,
-          price: Number(variant.price) || 0,
-          priceLabel: formatMoney(variant.price, variant.currencyCode),
-          minQuantityLabel: quantity > 1 ? `Min ${quantity}` : '',
-          quantity,
-          category: 'wholesale' as const,
-          available: true,
-          bestSellingRank: 0,
-        };
-      })
-  ).map((product, index) => ({ ...product, bestSellingRank: index }));
+  // One card per product, with its sizes offered as variants on the card. Showing
+  // the same product as several near-identical tiles reads as duplicates.
+  const tabProducts: WholesaleTabProduct[] = products
+    .map((product) => {
+      const variants: WholesaleTabVariant[] = product.variants
+        .filter((variant) => variant.availableForSale)
+        .map((variant) => {
+          const min = variant.quantityRule?.minimum ?? 1;
+          const increment = variant.quantityRule?.increment ?? 1;
+          const quantity = Math.max(min, increment, 1);
+          const hasVariantName = Boolean(variant.title) && variant.title !== 'Default Title';
+          return {
+            id: variant.id,
+            title: hasVariantName ? variant.title : '',
+            price: Number(variant.price) || 0,
+            priceLabel: formatMoney(variant.price, variant.currencyCode),
+            quantity,
+            minQuantityLabel: quantity > 1 ? `Min ${quantity}` : '',
+          };
+        });
+
+      return {
+        id: product.id,
+        title: product.title,
+        description: product.description,
+        imageUrl: product.imageUrl,
+        imageAlt: product.imageAlt,
+        price: variants.length ? Math.min(...variants.map((variant) => variant.price)) : 0,
+        category: 'wholesale' as const,
+        available: variants.length > 0,
+        bestSellingRank: 0,
+        variants,
+      };
+    })
+    .filter((product) => product.variants.length > 0)
+    .map((product, index) => ({ ...product, bestSellingRank: index }));
 
   window.dispatchEvent(new CustomEvent('wholesale:ready', { detail: { products: tabProducts } }));
 }
