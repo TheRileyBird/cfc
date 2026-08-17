@@ -1,4 +1,4 @@
-import { getSession, startLogin, completeLogin, getBuyerLocations, LOCATION_KEY, type BuyerLocation } from './wholesale-core';
+import { getSession, clearSession, startLogin, completeLogin, getBuyerLocations, LOCATION_KEY, type BuyerLocation } from './wholesale-core';
 
 function setStatus(text: string): void {
   document.querySelectorAll<HTMLElement>('[data-wholesale-status]').forEach((status) => {
@@ -10,36 +10,33 @@ function setStatus(text: string): void {
   });
 }
 
-function setHeroMode(hero: HTMLElement | null, mode: 'login' | 'account'): void {
-  if (!hero) return;
-  hero.classList.toggle('min-h-[calc(85vh-96px)]', mode === 'login');
-  hero.classList.toggle('flex', mode === 'login');
-  hero.classList.toggle('items-center', mode === 'login');
-}
-
-function showSignedOut(hero: HTMLElement | null, gate: HTMLElement | null, storeRegions: NodeListOf<HTMLElement>, message = ''): void {
-  hero?.classList.remove('hidden');
-  setHeroMode(hero, 'login');
-  gate?.classList.remove('hidden');
-  storeRegions.forEach((region) => region.classList.add('hidden'));
-  setStatus(message);
-}
-
-function showSignedIn(hero: HTMLElement | null, gate: HTMLElement | null, storeRegions: NodeListOf<HTMLElement>): void {
-  setHeroMode(hero, 'account');
-  hero?.classList.add('hidden');
-  gate?.classList.add('hidden');
-  storeRegions.forEach((region) => region.classList.remove('hidden'));
+// The gate, the store status, and the denied panel all live *inside* the hero
+// section, so the hero itself stays visible in every state — hiding it blanks the
+// page. Only the panels inside it are swapped.
+function showPanel(
+  panels: { gate: HTMLElement | null; store: NodeListOf<HTMLElement>; denied: HTMLElement | null },
+  visible: 'gate' | 'store' | 'denied'
+): void {
+  panels.gate?.classList.toggle('hidden', visible !== 'gate');
+  panels.store.forEach((region) => region.classList.toggle('hidden', visible !== 'store'));
+  panels.denied?.classList.toggle('hidden', visible !== 'denied');
 }
 
 async function initWholesaleLogin(): Promise<void> {
   const signInButton = document.querySelector<HTMLButtonElement>('[data-wholesale-login]');
-  const gate = document.querySelector<HTMLElement>('[data-wholesale-gate]');
-  const hero = document.querySelector<HTMLElement>('[data-wholesale-hero]');
-  const storeRegions = document.querySelectorAll<HTMLElement>('[data-wholesale-store]');
+  const panels = {
+    gate: document.querySelector<HTMLElement>('[data-wholesale-gate]'),
+    store: document.querySelectorAll<HTMLElement>('[data-wholesale-store]'),
+    denied: document.querySelector<HTMLElement>('[data-wholesale-denied]'),
+  };
 
   signInButton?.addEventListener('click', () => {
     startLogin().catch((error) => setStatus(error.message));
+  });
+
+  document.querySelector<HTMLButtonElement>('[data-wholesale-signout]')?.addEventListener('click', () => {
+    clearSession();
+    window.location.assign('/wholesale');
   });
 
   const params = new URLSearchParams(window.location.search);
@@ -62,11 +59,11 @@ async function initWholesaleLogin(): Promise<void> {
       return;
     }
 
-    showSignedOut(hero, gate, storeRegions);
+    showPanel(panels, 'gate');
     return;
   }
 
-  showSignedIn(hero, gate, storeRegions);
+  showPanel(panels, 'store');
   setStatus('Checking your wholesale account...');
 
   let locations: BuyerLocation[] = [];
@@ -75,14 +72,15 @@ async function initWholesaleLogin(): Promise<void> {
   } catch (error) {
     const message = error instanceof Error ? error.message : 'Wholesale is temporarily unavailable.';
     if (message.includes('session expired')) {
-      showSignedOut(hero, gate, storeRegions, message);
+      showPanel(panels, 'gate');
+      setStatus(message);
       return;
     }
     throw error;
   }
 
   if (locations.length === 0) {
-    setStatus('This email is signed in, but it is not assigned to a wholesale company location.');
+    showPanel(panels, 'denied');
     return;
   }
 

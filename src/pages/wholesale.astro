@@ -57,6 +57,50 @@ import Nav from '../components/Nav.astro';
             Checking your wholesale account...
           </p>
         </div>
+
+        <!-- Signed in, but the customer isn't attached to a company. Shown instead
+             of a bare status line so the page never renders as an empty screen. -->
+        <div data-wholesale-denied class="hidden text-center">
+          <div class="mb-6 flex items-center justify-center gap-4">
+            <div class="h-px bg-gold w-8"></div>
+            <span class="font-mono text-[10px] tracking-[0.2em] uppercase text-gold">Wholesale Access</span>
+            <div class="h-px bg-gold w-8"></div>
+          </div>
+          <h1
+            class="font-display font-light text-ink leading-[1.02] tracking-[-0.01em] mb-5"
+            style="font-size: clamp(38px, 5vw, 58px);"
+          >
+            Let's get you set up.
+          </h1>
+          <p class="mx-auto font-sans font-light text-[15px] leading-[1.75] max-w-[520px] text-ink-soft">
+            You're signed in, but this account isn't linked to a wholesale company yet.
+            Wholesale is open to licensed providers, spas, and clinics — reach out and
+            we'll get your account approved.
+          </p>
+
+          <div class="mt-8 flex flex-col sm:flex-row sm:justify-center gap-3">
+            <a
+              href="/contact"
+              class="inline-flex items-center justify-center bg-ink px-8 py-4 font-mono text-[10px] tracking-[0.18em] uppercase text-white transition-colors duration-200 hover:bg-gold hover:text-ink"
+            >
+              Request Wholesale Access
+            </a>
+            <a
+              href="/shop"
+              class="inline-flex items-center justify-center border border-rule bg-white px-8 py-4 font-mono text-[10px] tracking-[0.18em] uppercase text-ink transition-colors duration-200 hover:border-gold hover:text-gold"
+            >
+              Continue Shopping
+            </a>
+          </div>
+
+          <button
+            type="button"
+            data-wholesale-signout
+            class="mt-6 font-mono text-[10px] tracking-[0.18em] uppercase text-ink-soft underline underline-offset-4 transition-colors duration-200 hover:text-gold"
+          >
+            Sign out
+          </button>
+        </div>
       </div>
     </section>
   </main>

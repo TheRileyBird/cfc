@@ -14,9 +14,9 @@ unchecked task unless you are starting it.
 
 ## Queue
 
-- [ ] When I clicked return to cart from the Shopify order page, it brought me to this URL, which again, no one should be able to access  https://cfcskincare.myshopify.com/cart
 - [ ] Fix whole variant bug (see ### wholevariantbug)
-
+- [ ] Should show variants of products just like regular shop page... or at least NOT as 2+ versions of the same product... thats bad UX
+- [ ] When I clicked return to cart from the Shopify order page, it brought me to this URL, which again, no one should be able to access  https://cfcskincare.myshopify.com/cart
 
 ### wholevariantbug
 A separate bug I found on the way
