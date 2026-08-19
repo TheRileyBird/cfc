@@ -18,6 +18,9 @@ unchecked task unless you are starting it.
 - [x] Should show variants of products just like regular shop page... or at least NOT as 2+ versions of the same product... thats bad UX
 - [x] When I clicked return to cart from the Shopify order page, it brought me to this URL, which again, no one should be able to access  https://cfcskincare.myshopify.com/cart
 - [x] Document the process for creating a wholesale B2B account in the backend and describe the users process on the front end. save to desktop as CFC-wholesale-process.md
+- [x] Investigate the Astro 404 for Bold's customer portal at `/pages/manage-subscriptions` and determine whether the Shopify/Liquid forwarding should change
+- [x] Provide the complete Liquid redirect replacement with a narrow Bold customer portal exception
+- [x] Keep the Bold subscription test product off the public site (build-side hiding + Shopify Unlisted)
 
 ### wholevariantbug
 A separate bug I found on the way

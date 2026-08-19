@@ -103,7 +103,41 @@ export interface ShopifyProductDetail extends Omit<ShopifyProduct, 'priceRange' 
   relatedProducts?: ShopifyProduct[];
 }
 
+// Internal-only products. These stay published in Shopify so their handle still
+// resolves one at a time and a real checkout can be run against them, but they
+// are dropped from every list query here — which also means no static product
+// page is generated for them, so they never reach the shop grid, the sitemap,
+// or a public URL. Mirrored by isHiddenProduct() in cart-client.ts, which
+// filters the live search box the same way (see isWholesaleOnly() for the same
+// build-time/runtime split).
+// The tag is the primary switch: it travels with the product, so renaming the
+// handle to something unguessable cannot accidentally un-hide it, and it keeps
+// the handle out of the client bundle that ships this same list to the browser.
+// The handle list is a secondary lever for a product that cannot be tagged.
+const HIDDEN_PRODUCT_TAG = 'internal-test';
+
+const HIDDEN_HANDLES = new Set(
+  (env.SHOPIFY_HIDDEN_PRODUCT_HANDLES ?? env.PUBLIC_SHOPIFY_HIDDEN_PRODUCT_HANDLES ?? '')
+    .split(',')
+    .map((handle) => handle.trim().toLowerCase())
+    .filter(Boolean)
+);
+
+// Local-only escape hatch: set this in .env and `npm run dev` renders the
+// hidden products so a test product's full buy flow can be exercised on
+// localhost. Netlify never sets it, so production builds always drop them.
+const SHOW_HIDDEN_PRODUCTS =
+  env.SHOPIFY_SHOW_HIDDEN_PRODUCTS === 'true' || env.PUBLIC_SHOPIFY_SHOW_HIDDEN_PRODUCTS === 'true';
+
+export function isHiddenProduct(handle: string, tags: string[] = []): boolean {
+  if (SHOW_HIDDEN_PRODUCTS) return false;
+  if (HIDDEN_HANDLES.has(handle.trim().toLowerCase())) return true;
+  return tags.some((tag) => tag.trim().toLowerCase() === HIDDEN_PRODUCT_TAG);
+}
+
 function isRetailProduct(product: ShopifyProduct): boolean {
+  if (isHiddenProduct(product.handle, product.tags)) return false;
+
   const productText = [product.title, product.handle, product.description, ...product.tags]
     .join(' ')
     .toLowerCase();
@@ -299,9 +333,9 @@ export async function getProducts(first = 24, sortKey = 'BEST_SELLING'): Promise
       PRODUCTS_QUERY,
       { first, after: null, sortKey }
     );
-    return filterRetailProducts(data.products.edges.map(e => e.node));
+    return getHiddenProductsForDev(filterRetailProducts(data.products.edges.map(e => e.node)));
   } catch {
-    return [];
+    return getHiddenProductsForDev([]);
   }
 }
 
@@ -328,11 +362,11 @@ export async function getAllProducts(sortKey = 'BEST_SELLING'): Promise<ShopifyP
       hasNextPage = data.products.pageInfo.hasNextPage;
       after = data.products.pageInfo.endCursor;
     } catch {
-      return filterRetailProducts(products);
+      return getHiddenProductsForDev(filterRetailProducts(products));
     }
   }
 
-  return filterRetailProducts(products);
+  return getHiddenProductsForDev(filterRetailProducts(products));
 }
 
 export async function getCollectionProducts(handle: string, first = 24): Promise<ShopifyProduct[]> {
@@ -374,7 +408,24 @@ export async function getProductsByHandles(handles: readonly string[]): Promise<
     }
   }));
 
-  return products.filter((product): product is ShopifyProduct => Boolean(product));
+  return products
+    .filter((product): product is ShopifyProduct => Boolean(product))
+    .filter((product) => !isHiddenProduct(product.handle, product.tags));
+}
+
+// Local dev only. Shopify drops Unlisted products from every list query, so once
+// the test product is set to Unlisted it stops coming back from getProducts()
+// even with the escape hatch on. Resolve the hidden handles one at a time by
+// exact handle instead — the same trick the wholesale catalog uses — and splice
+// them into the listings so the dev server still builds their product routes.
+async function getHiddenProductsForDev(existing: ShopifyProduct[]): Promise<ShopifyProduct[]> {
+  if (!SHOW_HIDDEN_PRODUCTS) return existing;
+
+  const seen = new Set(existing.map((product) => product.handle.toLowerCase()));
+  const missing = [...HIDDEN_HANDLES].filter((handle) => !seen.has(handle));
+  if (missing.length === 0) return existing;
+
+  return [...existing, ...(await getProductsByHandles(missing))];
 }
 
 export async function getFeaturedProducts(): Promise<ShopifyProduct[]> {

@@ -248,6 +248,26 @@ export async function updateCartDiscountCodes(cartId: string, discountCodes: str
 const WHOLESALE_TAG = 'wholesale';
 const WHOLESALE_ONLY_PATTERN = /back\s*bar|whole\s*sale/i;
 
+// Internal-only products, kept in step with shopify.ts. Duplicated rather than
+// imported because shopify.ts is build-time only — importing it here would pull
+// the whole catalog module into the browser bundle, the same reason
+// isWholesaleOnly() is duplicated. Update both when this list changes.
+const HIDDEN_PRODUCT_TAG = 'internal-test';
+const HIDDEN_HANDLES = new Set(
+  (env.PUBLIC_SHOPIFY_HIDDEN_PRODUCT_HANDLES ?? env.SHOPIFY_HIDDEN_PRODUCT_HANDLES ?? '')
+    .split(',')
+    .map((handle) => handle.trim().toLowerCase())
+    .filter(Boolean)
+);
+const SHOW_HIDDEN_PRODUCTS =
+  env.PUBLIC_SHOPIFY_SHOW_HIDDEN_PRODUCTS === 'true' || env.SHOPIFY_SHOW_HIDDEN_PRODUCTS === 'true';
+
+export function isHiddenProduct(handle: string, tags: string[] = []): boolean {
+  if (SHOW_HIDDEN_PRODUCTS) return false;
+  if (HIDDEN_HANDLES.has(handle.trim().toLowerCase())) return true;
+  return tags.some((tag) => tag.trim().toLowerCase() === HIDDEN_PRODUCT_TAG);
+}
+
 function isWholesaleOnly(title: string, handle: string, tags: string[] = []): boolean {
   if (tags.some((tag) => tag.trim().toLowerCase() === WHOLESALE_TAG)) return true;
   return WHOLESALE_ONLY_PATTERN.test(`${title} ${handle}`);
@@ -269,6 +289,7 @@ export async function searchProducts(query: string): Promise<SearchProduct[]> {
   );
   return (data.predictiveSearch?.products ?? [])
     .filter((p: any) => !isWholesaleOnly(p.title ?? '', p.handle ?? '', p.tags ?? []))
+    .filter((p: any) => !isHiddenProduct(p.handle ?? '', p.tags ?? []))
     .slice(0, 8)
     .map((p: any) => ({
       id: p.id,
