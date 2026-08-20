@@ -2,6 +2,11 @@
 # Order matters: explicit routes must come before the referral-code wildcard.
 
 # Shopify-hosted customer accounts
+# Subscribers manage their plan inside the Shopify customer account, where the
+# subscription app surfaces its portal — not on a theme page. Give that a
+# branded URL to put in emails; without an explicit rule the one-segment
+# referral wildcard below would swallow it and serve the homepage instead.
+/manage-subscriptions https://cfcskincare.myshopify.com/account 302!
 /account https://cfcskincare.myshopify.com/account 302!
 /account/* https://cfcskincare.myshopify.com/account/:splat 302!
 /customer_authentication/sso_hint https://cfcskincare.myshopify.com/account/login 302!
