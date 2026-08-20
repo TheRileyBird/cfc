@@ -69,6 +69,7 @@ export interface ShopifyProductDetail extends Omit<ShopifyProduct, 'priceRange' 
                 description: string | null;
                 recurringDeliveries: boolean;
                 options: Array<{ name: string; value: string }>;
+                billingPolicy?: { interval?: string | null; intervalCount?: number | null } | null;
               };
               priceAdjustments: Array<{
                 price: { amount: string; currencyCode: string };
@@ -95,6 +96,7 @@ export interface ShopifyProductDetail extends Omit<ShopifyProduct, 'priceRange' 
               description: string | null;
               recurringDeliveries: boolean;
               options: Array<{ name: string; value: string }>;
+              billingPolicy?: { interval?: string | null; intervalCount?: number | null } | null;
             };
           }>;
         };
@@ -473,6 +475,30 @@ export async function getFeaturedProducts(): Promise<ShopifyProduct[]> {
   return getCollectionProducts(FEATURED_COLLECTION_HANDLE, 24);
 }
 
+// The cadence a shopper is shown, derived from what Shopify will actually bill
+// rather than from the plan's name. A subscription app supplies both, and they
+// can disagree — Bold shipped a plan named "Monthly" that billed every two
+// months — so the name is only a fallback for a non-recurring plan.
+export function formatSellingPlanInterval(
+  interval: string | null | undefined,
+  intervalCount: number | null | undefined
+): string {
+  if (!interval || !intervalCount || intervalCount < 1) return '';
+
+  const unit = interval.toLowerCase();
+  if (intervalCount === 1) {
+    const everyUnit: Record<string, string> = {
+      day: 'Daily',
+      week: 'Weekly',
+      month: 'Monthly',
+      year: 'Yearly',
+    };
+    return everyUnit[unit] ?? `Every ${unit}`;
+  }
+
+  return `Every ${intervalCount} ${unit}s`;
+}
+
 export function formatPrice(amount: string, currency = 'USD'): string {
   return new Intl.NumberFormat('en-US', { style: 'currency', currency }).format(parseFloat(amount));
 }
@@ -510,6 +536,9 @@ const PRODUCT_DETAIL_QUERY = `
                     description
                     recurringDeliveries
                     options { name value }
+                    billingPolicy {
+                      ... on SellingPlanRecurringBillingPolicy { interval intervalCount }
+                    }
                   }
                   priceAdjustments {
                     price { amount currencyCode }
@@ -536,6 +565,9 @@ const PRODUCT_DETAIL_QUERY = `
                   description
                   recurringDeliveries
                   options { name value }
+                  billingPolicy {
+                    ... on SellingPlanRecurringBillingPolicy { interval intervalCount }
+                  }
                 }
               }
             }

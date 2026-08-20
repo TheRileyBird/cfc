@@ -339,3 +339,30 @@ describe('Unlisted products', () => {
     await expect(getUnlistedProducts()).resolves.toEqual([]);
   });
 });
+
+describe('Selling plan cadence', () => {
+  it('names common intervals the way a shopper would read them', async () => {
+    const { formatSellingPlanInterval } = await import('../../src/lib/shopify');
+
+    expect(formatSellingPlanInterval('MONTH', 1)).toBe('Monthly');
+    expect(formatSellingPlanInterval('MONTH', 2)).toBe('Every 2 months');
+    expect(formatSellingPlanInterval('WEEK', 1)).toBe('Weekly');
+    expect(formatSellingPlanInterval('DAY', 10)).toBe('Every 10 days');
+    expect(formatSellingPlanInterval('YEAR', 1)).toBe('Yearly');
+  });
+
+  it('reports the billed cadence even when the plan is named something else', async () => {
+    const { formatSellingPlanInterval } = await import('../../src/lib/shopify');
+
+    // Bold shipped a plan named "Monthly" that billed every two months.
+    expect(formatSellingPlanInterval('MONTH', 2)).toBe('Every 2 months');
+  });
+
+  it('returns nothing for a non-recurring plan, so the caller can fall back', async () => {
+    const { formatSellingPlanInterval } = await import('../../src/lib/shopify');
+
+    expect(formatSellingPlanInterval(null, null)).toBe('');
+    expect(formatSellingPlanInterval('MONTH', 0)).toBe('');
+    expect(formatSellingPlanInterval(undefined, 3)).toBe('');
+  });
+});
