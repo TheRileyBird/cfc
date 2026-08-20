@@ -4,12 +4,17 @@ import Nav from '../../components/Nav.astro';
 import FoilStamp from '../../components/motifs/FoilStamp.astro';
 import ProductCard from '../../components/ProductCard.astro';
 import { CalendarSync, ShoppingBag } from '@lucide/astro';
-import { getAllProducts, getProductByHandle, getFeaturedProducts, formatPrice, SUBSCRIPTION_RECURRING_DISCOUNT } from '../../lib/shopify';
+import { getAllProducts, getProductByHandle, getFeaturedProducts, getUnlistedProducts, isUnlistedProduct, formatPrice, SUBSCRIPTION_RECURRING_DISCOUNT } from '../../lib/shopify';
 import type { ShopifyProductDetail } from '../../lib/shopify';
 
 export async function getStaticPaths() {
-  const products = await getAllProducts();
-  return products.map((p) => ({ params: { handle: p.handle } }));
+  const [products, unlisted] = await Promise.all([getAllProducts(), getUnlistedProducts()]);
+  // Unlisted products get a page but appear in no listing, so they have to be
+  // added here explicitly — getAllProducts() deliberately omits them.
+  const handles = new Set(products.map((p) => p.handle));
+
+  return [...products, ...unlisted.filter((p) => !handles.has(p.handle))]
+    .map((p) => ({ params: { handle: p.handle } }));
 }
 
 const { handle } = Astro.params;
@@ -141,6 +146,7 @@ const variantsJson = JSON.stringify(variants.map(v => ({
   title={`${product.title} — CFC Skincare`}
   description={product.description?.slice(0, 155) || 'Medical-grade, plant-based skincare by CFC.'}
   image={images[0]?.url}
+  noindex={isUnlistedProduct(handle!)}
 >
   <Nav position="sticky" />
   <main class="bg-white">

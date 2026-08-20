@@ -301,3 +301,41 @@ describe('Subscription group filtering', () => {
     expect(result.sellingPlanGroups.edges.map(e => e.node.appName)).toEqual(['60442']);
   });
 });
+
+describe('Unlisted products', () => {
+  afterEach(() => {
+    vi.unstubAllEnvs();
+    vi.resetModules();
+  });
+
+  it('keeps an unlisted product out of the listings that build the shop grid', async () => {
+    vi.stubEnv('SHOPIFY_UNLISTED_PRODUCT_HANDLES', 'secret-handle');
+    vi.resetModules();
+
+    const { getProducts: get } = await import('../../src/lib/shopify');
+    const unlisted = { ...productFixture, handle: 'secret-handle', tags: [] };
+    mockFetch({ data: { products: { edges: [{ node: productFixture }, { node: unlisted }] } } });
+
+    const products = await get();
+
+    expect(products.map(p => p.handle)).toEqual(['gentle-cleanser']);
+  });
+
+  it('still resolves the unlisted product by handle so a page can be built for it', async () => {
+    vi.stubEnv('SHOPIFY_UNLISTED_PRODUCT_HANDLES', 'secret-handle');
+    vi.resetModules();
+
+    const { getUnlistedProducts, isUnlistedProduct } = await import('../../src/lib/shopify');
+    mockFetch({ data: { product: { ...productFixture, handle: 'secret-handle' } } });
+
+    expect(isUnlistedProduct('secret-handle')).toBe(true);
+    await expect(getUnlistedProducts()).resolves.toHaveLength(1);
+  });
+
+  it('has no unlisted products when the env var is blank', async () => {
+    const { getUnlistedProducts, isUnlistedProduct } = await import('../../src/lib/shopify');
+
+    expect(isUnlistedProduct('anything')).toBe(false);
+    await expect(getUnlistedProducts()).resolves.toEqual([]);
+  });
+});

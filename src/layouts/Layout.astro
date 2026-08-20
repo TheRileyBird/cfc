@@ -10,6 +10,7 @@ export interface Props {
   description?: string;
   image?: string;
   showNewsletter?: boolean;
+  noindex?: boolean;
 }
 
 const {
@@ -17,6 +18,7 @@ const {
   description = 'Medical-grade, plant-based skincare created by a nurse practitioner. Cleanse. Treat. Protect. Clinical results in under five minutes.',
   image = '/og-image.jpg',
   showNewsletter = true,
+  noindex = false,
 } = Astro.props;
 
 const siteUrl = Astro.site ?? new URL('https://cfcskincare.com');
@@ -31,6 +33,7 @@ const ogImage = image.startsWith('http') ? image : new URL(image, siteUrl).href;
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <link rel="icon" type="image/png" href="/favicon.png" />
     <link rel="canonical" href={canonicalURL} />
+    {noindex && <meta name="robots" content="noindex, nofollow" />}
 
     <title>{title}</title>
     <meta name="description" content={description} />

@@ -130,8 +130,27 @@ const HIDDEN_HANDLES = new Set(
 const SHOW_HIDDEN_PRODUCTS =
   env.SHOPIFY_SHOW_HIDDEN_PRODUCTS === 'true' || env.PUBLIC_SHOPIFY_SHOW_HIDDEN_PRODUCTS === 'true';
 
+// Products that need a real page on production but must appear in no listing —
+// the storefront equivalent of Shopify's "Unlisted": reachable only if you know
+// the URL. Used to run a live purchase against a test product without putting it
+// in front of shoppers.
+//
+// Deliberately NOT prefixed PUBLIC_: it is read during the build only, so the
+// handle never gets inlined into the browser bundle the way a PUBLIC_ var would.
+const UNLISTED_HANDLES = new Set(
+  (env.SHOPIFY_UNLISTED_PRODUCT_HANDLES ?? '')
+    .split(',')
+    .map((handle) => handle.trim().toLowerCase())
+    .filter(Boolean)
+);
+
+export function isUnlistedProduct(handle: string): boolean {
+  return UNLISTED_HANDLES.has(handle.trim().toLowerCase());
+}
+
 export function isHiddenProduct(handle: string, tags: string[] = []): boolean {
   if (SHOW_HIDDEN_PRODUCTS) return false;
+  if (isUnlistedProduct(handle)) return true;
   if (HIDDEN_HANDLES.has(handle.trim().toLowerCase())) return true;
   return tags.some((tag) => tag.trim().toLowerCase() === HIDDEN_PRODUCT_TAG);
 }
@@ -427,6 +446,27 @@ async function getHiddenProductsForDev(existing: ShopifyProduct[]): Promise<Shop
   if (missing.length === 0) return existing;
 
   return [...existing, ...(await getProductsByHandles(missing))];
+}
+
+// Resolved one at a time by exact handle, because a product excluded from the
+// listings cannot be found any other way. Only getStaticPaths uses this, so the
+// page exists while every listing still ignores it.
+export async function getUnlistedProducts(): Promise<ShopifyProduct[]> {
+  if (UNLISTED_HANDLES.size === 0) return [];
+
+  const products = await Promise.all([...UNLISTED_HANDLES].map(async (handle) => {
+    try {
+      const data = await shopifyFetch<{ product: ShopifyProduct | null }>(
+        PRODUCT_BY_HANDLE_LISTING_QUERY,
+        { handle }
+      );
+      return data.product;
+    } catch {
+      return null;
+    }
+  }));
+
+  return products.filter((product): product is ShopifyProduct => Boolean(product));
 }
 
 export async function getFeaturedProducts(): Promise<ShopifyProduct[]> {
