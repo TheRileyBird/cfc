@@ -540,6 +540,17 @@ const SUBSCRIPTION_GROUP_IDS = new Set(
     .filter(Boolean)
 );
 
+// Bold's "dynamic discount" drops the rate after the first order (30% then 15%,
+// say). Shopify's Storefront API only ever exposes the first-order price, so
+// without this the page would advertise an introductory rate as though it were
+// the ongoing one. Percent off for renewals; 0 disables the disclosure.
+export const SUBSCRIPTION_RECURRING_DISCOUNT = (() => {
+  const raw = Number(
+    env.SHOPIFY_SUBSCRIPTION_RECURRING_DISCOUNT ?? env.PUBLIC_SHOPIFY_SUBSCRIPTION_RECURRING_DISCOUNT ?? ''
+  );
+  return Number.isFinite(raw) && raw > 0 && raw < 100 ? raw : 0;
+})();
+
 // Drops plans from unlisted groups in BOTH the group list the page reads names
 // from and the per-variant allocations it reads prices from — leaving one
 // behind would render an offer with no price, or a price with no offer.

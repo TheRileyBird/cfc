@@ -4,7 +4,7 @@ import Nav from '../../components/Nav.astro';
 import FoilStamp from '../../components/motifs/FoilStamp.astro';
 import ProductCard from '../../components/ProductCard.astro';
 import { CalendarSync, ShoppingBag } from '@lucide/astro';
-import { getAllProducts, getProductByHandle, getFeaturedProducts, formatPrice } from '../../lib/shopify';
+import { getAllProducts, getProductByHandle, getFeaturedProducts, formatPrice, SUBSCRIPTION_RECURRING_DISCOUNT } from '../../lib/shopify';
 import type { ShopifyProductDetail } from '../../lib/shopify';
 
 export async function getStaticPaths() {
@@ -97,6 +97,13 @@ const sellingPlans = dedupedPlans.sort((a, b) => planDiscount(b.id) - planDiscou
 const displayPlanName = (plan: { groupName: string; originalName: string }) =>
   plan.groupName?.trim() || plan.originalName?.trim() || 'Subscription';
 const displayDiscount = (discount: number) => (discount > 0 ? `Save ${discount}%` : '');
+
+// Only worth saying when the renewal rate is genuinely lower than the rate the
+// badge is advertising — otherwise the badge already tells the whole story.
+const recurringNote = (discount: number) =>
+  SUBSCRIPTION_RECURRING_DISCOUNT > 0 && discount > SUBSCRIPTION_RECURRING_DISCOUNT
+    ? `then ${SUBSCRIPTION_RECURRING_DISCOUNT}% off after your 1st order`
+    : '';
 const variantsJson = JSON.stringify(variants.map(v => ({
   id: v.id,
   title: v.title,
@@ -343,6 +350,9 @@ const variantsJson = JSON.stringify(variants.map(v => ({
                             {plan.deliveryOption && (
                               <span class="block font-sans text-[11px] font-light mt-0.5 opacity-70">{plan.deliveryOption}</span>
                             )}
+                            {recurringNote(discount) && (
+                              <span class="block font-sans text-[10px] font-light mt-0.5 opacity-60">{recurringNote(discount)}</span>
+                            )}
                           </span>
                         </span>
                       </button>
@@ -384,7 +394,7 @@ const variantsJson = JSON.stringify(variants.map(v => ({
                   x-cloak
                   class="font-sans text-[11px] leading-[1.6] text-ink-soft mb-3"
                 >
-                  This item is a recurring or deferred purchase. By continuing, you agree to the cancellation policy and authorize charges at the prices, frequency, and dates shown until fulfilled or canceled, if permitted.
+                  {SUBSCRIPTION_RECURRING_DISCOUNT > 0 && `Your introductory discount applies to your first order; renewals are ${SUBSCRIPTION_RECURRING_DISCOUNT}% off. `}This item is a recurring or deferred purchase. By continuing, you agree to the cancellation policy and authorize charges at the prices, frequency, and dates shown until fulfilled or canceled, if permitted.
                 </p>
               )}
 
