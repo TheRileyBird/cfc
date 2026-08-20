@@ -109,16 +109,21 @@ const variantsJson = JSON.stringify(variants.map(v => ({
   title: v.title,
   available: v.availableForSale,
   price: formatPrice(v.price.amount),
-  sellingPlans: sellingPlans.map((plan) => {
+  // A variant only carries the plans it is actually enrolled in. Keeping an
+  // unenrolled plan here would leave it priceless and still selectable, and the
+  // cart rejects a selling plan the variant has no allocation for.
+  sellingPlans: sellingPlans.flatMap((plan) => {
     const allocation = (v.sellingPlanAllocations?.edges ?? []).find(({ node }) => node.sellingPlan.id === plan.id)?.node;
     const priceAdjustment = allocation?.priceAdjustments[0];
+    if (!priceAdjustment) return [];
+
     const planPrice = Number(priceAdjustment?.price.amount ?? 0);
     const compareAtPrice = Number(priceAdjustment?.compareAtPrice?.amount ?? v.price.amount);
     const discount = compareAtPrice > planPrice && planPrice > 0
       ? Math.round(((compareAtPrice - planPrice) / compareAtPrice) * 100)
       : 0;
 
-    return {
+    return [{
       id: plan.id,
       name: displayPlanName(plan),
       originalName: plan.originalName,
@@ -127,7 +132,7 @@ const variantsJson = JSON.stringify(variants.map(v => ({
       price: priceAdjustment?.price.amount ? formatPrice(priceAdjustment.price.amount, priceAdjustment.price.currencyCode) : '',
       compareAtPrice: priceAdjustment?.compareAtPrice?.amount ? formatPrice(priceAdjustment.compareAtPrice.amount, priceAdjustment.compareAtPrice.currencyCode) : '',
       discountLabel: displayDiscount(discount),
-    };
+    }];
   }),
 })));
 ---
