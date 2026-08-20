@@ -236,6 +236,9 @@ const variantsJson = JSON.stringify(variants.map(v => ({
               currentSellingPlans() {
                 return this.currentVariant().sellingPlans || [];
               },
+              planAvailable(planId) {
+                return this.currentSellingPlans().some((plan) => plan.id === planId);
+              },
               selectVariant(id) {
                 this.selectedId = id;
                 if (this.purchaseOption === 'subscription') {
@@ -250,6 +253,7 @@ const variantsJson = JSON.stringify(variants.map(v => ({
               },
               selectSubscription(planId) {
                 this.purchaseOption = 'subscription';
+                if (!this.planAvailable(planId)) return;
                 this.selectedSellingPlanId = planId;
               },
               async buyNow() {
@@ -332,6 +336,8 @@ const variantsJson = JSON.stringify(variants.map(v => ({
                       return (
                       <button
                         type="button"
+                        x-show={`planAvailable(${JSON.stringify(plan.id)})`}
+                        x-cloak
                         @click={`selectSubscription(${JSON.stringify(plan.id)})`}
                         :class={`selectedSellingPlanId === ${JSON.stringify(plan.id)} ? 'border-gold-deep text-gold-deep' : 'border-rule text-ink-soft hover:border-gold'`}
                         class="relative min-h-[76px] w-full border bg-white px-4 py-3 text-left transition-all duration-200"
