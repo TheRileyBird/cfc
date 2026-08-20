@@ -67,27 +67,36 @@ const fallbackSellingPlans = variants.flatMap((v) => (v.sellingPlanAllocations?.
     description: node.sellingPlan.description,
   };
 }));
-const sellingPlans = Array.from(
+const dedupedPlans = Array.from(
   new Map((productSellingPlans.length > 0 ? productSellingPlans : fallbackSellingPlans).map((plan) => [plan.id, plan])).values()
-).sort((a, b) => {
-  const score = (plan: { groupName: string; originalName: string }) => {
-    const text = `${plan.groupName} ${plan.originalName}`.toLowerCase();
-    return text.includes('new sign') || text.includes('black friday') || text.includes('subscription for skincare') ? 0 : 1;
-  };
-  return score(a) - score(b);
-});
-const displayPlanName = (plan: { groupName: string; originalName: string }, discount: number) => {
-  const text = `${plan.groupName} ${plan.originalName}`.toLowerCase();
-  if (text.includes('new sign') || text.includes('black friday') || discount >= 25) {
-    return 'New sign up Subscription for skincare';
-  }
-  return 'Subscriptions for skin care';
-};
-const displayDiscount = (plan: { groupName: string; originalName: string }, discount: number) => {
-  const text = `${plan.groupName} ${plan.originalName}`.toLowerCase();
-  if (text.includes('new sign') || text.includes('black friday') || discount >= 25) return 'Save 30%';
-  return 'Save 15%';
-};
+);
+
+// Read the discount off the plan's own price adjustment instead of matching its
+// name. The old name-matching was written against one subscription app's plan
+// titles, so a plan from any other app fell through to a hardcoded "Save 15%"
+// that had nothing to do with what Shopify would charge.
+function planDiscount(planId: string): number {
+  const percents = variants.map((v) => {
+    const allocation = (v.sellingPlanAllocations?.edges ?? []).find(({ node }) => node.sellingPlan.id === planId)?.node;
+    const adjustment = allocation?.priceAdjustments[0];
+    if (!adjustment) return 0;
+
+    const planPrice = Number(adjustment.price.amount);
+    const compareAt = Number(adjustment.compareAtPrice?.amount ?? v.price.amount);
+    return compareAt > planPrice && planPrice > 0
+      ? Math.round(((compareAt - planPrice) / compareAt) * 100)
+      : 0;
+  });
+
+  return Math.max(0, ...percents);
+}
+
+// Best offer first.
+const sellingPlans = dedupedPlans.sort((a, b) => planDiscount(b.id) - planDiscount(a.id));
+
+const displayPlanName = (plan: { groupName: string; originalName: string }) =>
+  plan.groupName?.trim() || plan.originalName?.trim() || 'Subscription';
+const displayDiscount = (discount: number) => (discount > 0 ? `Save ${discount}%` : '');
 const variantsJson = JSON.stringify(variants.map(v => ({
   id: v.id,
   title: v.title,
@@ -104,13 +113,13 @@ const variantsJson = JSON.stringify(variants.map(v => ({
 
     return {
       id: plan.id,
-      name: displayPlanName(plan, discount),
+      name: displayPlanName(plan),
       originalName: plan.originalName,
       description: plan.description,
       deliveryOption: plan.deliveryOption,
       price: priceAdjustment?.price.amount ? formatPrice(priceAdjustment.price.amount, priceAdjustment.price.currencyCode) : '',
       compareAtPrice: priceAdjustment?.compareAtPrice?.amount ? formatPrice(priceAdjustment.compareAtPrice.amount, priceAdjustment.compareAtPrice.currencyCode) : '',
-      discountLabel: displayDiscount(plan, discount),
+      discountLabel: displayDiscount(discount),
     };
   }),
 })));
@@ -310,8 +319,9 @@ const variantsJson = JSON.stringify(variants.map(v => ({
                     </button>
 
                     {sellingPlans.map((plan) => {
-                      const label = displayPlanName(plan, 0);
-                      const discountLabel = displayDiscount(plan, 0);
+                      const discount = planDiscount(plan.id);
+                      const label = displayPlanName(plan);
+                      const discountLabel = displayDiscount(discount);
                       return (
                       <button
                         type="button"
@@ -319,11 +329,13 @@ const variantsJson = JSON.stringify(variants.map(v => ({
                         :class={`selectedSellingPlanId === ${JSON.stringify(plan.id)} ? 'border-gold-deep text-gold-deep' : 'border-rule text-ink-soft hover:border-gold'`}
                         class="relative min-h-[76px] w-full border bg-white px-4 py-3 text-left transition-all duration-200"
                       >
-                        <span
-                          class="absolute -top-3 right-3 bg-gold-deep px-2 py-1 font-mono text-[9px] leading-none tracking-[0.08em] uppercase text-white"
-                        >
-                          {discountLabel}
-                        </span>
+                        {discountLabel && (
+                          <span
+                            class="absolute -top-3 right-3 bg-gold-deep px-2 py-1 font-mono text-[9px] leading-none tracking-[0.08em] uppercase text-white"
+                          >
+                            {discountLabel}
+                          </span>
+                        )}
                         <span class="flex items-center gap-3">
                           <CalendarSync class="h-7 w-7 shrink-0" stroke-width={1.7} />
                           <span>

@@ -84,6 +84,7 @@ export interface ShopifyProductDetail extends Omit<ShopifyProduct, 'priceRange' 
   sellingPlanGroups?: {
     edges: Array<{
       node: {
+        appName: string | null;
         name: string;
         options: Array<{ name: string; values: string[] }>;
         sellingPlans: {
@@ -484,6 +485,7 @@ const PRODUCT_DETAIL_QUERY = `
       sellingPlanGroups(first: 10) {
         edges {
           node {
+            appName
             name
             options { name values }
             sellingPlans(first: 10) {
@@ -518,6 +520,63 @@ const PRODUCT_DETAIL_QUERY = `
   }
 `;
 
+// Which subscription groups the storefront is allowed to offer.
+//
+// Shopify reports the owner of a selling plan group in `appName`. Bold puts its
+// own subscription group ID there — the "ID#" shown next to each group in the
+// Bold admin — so this is a list of Bold group IDs, not app names. Propel's
+// leftover groups report no owner at all and are therefore excluded whenever
+// this is set.
+//
+// Several groups can sit on one product at once: the Propel plans survived the
+// migration, and Bold runs a grandfathered group alongside the one new signups
+// should get. Left unfiltered a product advertises all of them at once, at
+// different prices. Blank means show everything, which is only right while
+// exactly one group exists.
+const SUBSCRIPTION_GROUP_IDS = new Set(
+  (env.SHOPIFY_SUBSCRIPTION_GROUP_IDS ?? env.PUBLIC_SHOPIFY_SUBSCRIPTION_GROUP_IDS ?? '')
+    .split(',')
+    .map((id) => id.trim())
+    .filter(Boolean)
+);
+
+// Drops plans from unlisted groups in BOTH the group list the page reads names
+// from and the per-variant allocations it reads prices from — leaving one
+// behind would render an offer with no price, or a price with no offer.
+//
+// Hiding a group only removes it from the storefront. Shopify keeps billing
+// anyone already subscribed to it, which is what makes retiring the
+// grandfathered group safe.
+export function filterSellingPlanGroups<T extends ShopifyProductDetail>(product: T): T {
+  if (SUBSCRIPTION_GROUP_IDS.size === 0) return product;
+
+  const groups = (product.sellingPlanGroups?.edges ?? []).filter(
+    ({ node }) => node.appName !== null && SUBSCRIPTION_GROUP_IDS.has(node.appName)
+  );
+
+  const allowedPlanIds = new Set(
+    groups.flatMap(({ node }) => node.sellingPlans.edges.map(({ node: plan }) => plan.id))
+  );
+
+  return {
+    ...product,
+    sellingPlanGroups: { edges: groups },
+    variants: {
+      edges: product.variants.edges.map((edge) => ({
+        ...edge,
+        node: {
+          ...edge.node,
+          sellingPlanAllocations: {
+            edges: (edge.node.sellingPlanAllocations?.edges ?? []).filter(
+              ({ node }) => allowedPlanIds.has(node.sellingPlan.id)
+            ),
+          },
+        },
+      })),
+    },
+  };
+}
+
 export async function getProductByHandle(handle: string): Promise<ShopifyProductDetail | null> {
   if (USE_MOCKS) {
     const mock = getMockProducts().find(p => p.handle === handle);
@@ -548,10 +607,10 @@ export async function getProductByHandle(handle: string): Promise<ShopifyProduct
       metafield?: { references?: { edges: Array<{ node: ShopifyProduct }> } } | null;
     }).metafield?.references?.edges.map(({ node }) => node) ?? [];
 
-    return {
+    return filterSellingPlanGroups({
       ...data.product,
       relatedProducts: filterRetailProducts(rawReferences),
-    };
+    });
   } catch {
     return null;
   }

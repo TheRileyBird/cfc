@@ -203,3 +203,101 @@ describe('Internal-only products in site search', () => {
     expect(results.map(result => result.handle)).toEqual(['gentle-cleanser']);
   });
 });
+
+describe('Subscription group filtering', () => {
+  afterEach(() => {
+    vi.unstubAllEnvs();
+    vi.resetModules();
+  });
+
+  const plan = (id: string) => ({
+    node: { id, name: 'Monthly', description: null, recurringDeliveries: true, options: [{ name: 'Delivery frequency', value: 'Monthly' }] },
+  });
+
+  const productWithTwoApps = {
+    ...productFixture,
+    descriptionHtml: '<p>x</p>',
+    priceRange: { minVariantPrice: { amount: '48.00', currencyCode: 'USD' }, maxVariantPrice: { amount: '48.00', currencyCode: 'USD' } },
+    sellingPlanGroups: {
+      edges: [
+        { node: { appName: '60442', name: 'Subscribe and save', options: [], sellingPlans: { edges: [plan('gid://shopify/SellingPlan/26788724954')] } } },
+        { node: { appName: '60315', name: 'Subscribe and save', options: [], sellingPlans: { edges: [plan('gid://shopify/SellingPlan/26788692186')] } } },
+      ],
+    },
+    variants: {
+      edges: [{
+        node: {
+          id: variantId,
+          title: 'Default Title',
+          availableForSale: true,
+          price: { amount: '48.00' },
+          sellingPlanAllocations: {
+            edges: [
+              { node: { sellingPlan: { id: 'gid://shopify/SellingPlan/26788724954', name: 'Monthly', description: null, recurringDeliveries: true, options: [] }, priceAdjustments: [] } },
+              { node: { sellingPlan: { id: 'gid://shopify/SellingPlan/26788692186', name: 'Monthly', description: null, recurringDeliveries: true, options: [] }, priceAdjustments: [] } },
+            ],
+          },
+        },
+      }],
+    },
+  };
+
+  it('shows every group when no subscription group is configured', async () => {
+    const { filterSellingPlanGroups } = await import('../../src/lib/shopify');
+
+    const result = filterSellingPlanGroups(productWithTwoApps as never) as typeof productWithTwoApps;
+
+    expect(result.sellingPlanGroups.edges).toHaveLength(2);
+  });
+
+  it('keeps only the configured Bold group, dropping the grandfathered one', async () => {
+    vi.stubEnv('PUBLIC_SHOPIFY_SUBSCRIPTION_GROUP_IDS', '60442');
+    vi.resetModules();
+
+    const { filterSellingPlanGroups } = await import('../../src/lib/shopify');
+    const result = filterSellingPlanGroups(productWithTwoApps as never) as typeof productWithTwoApps;
+
+    expect(result.sellingPlanGroups.edges.map(e => e.node.appName)).toEqual(['60442']);
+  });
+
+  it('drops the other group\'s variant allocations too, so no offer is left priceless', async () => {
+    vi.stubEnv('PUBLIC_SHOPIFY_SUBSCRIPTION_GROUP_IDS', '60442');
+    vi.resetModules();
+
+    const { filterSellingPlanGroups } = await import('../../src/lib/shopify');
+    const result = filterSellingPlanGroups(productWithTwoApps as never) as typeof productWithTwoApps;
+    const planIds = result.variants.edges[0].node.sellingPlanAllocations.edges.map(e => e.node.sellingPlan.id);
+
+    expect(planIds).toEqual(['gid://shopify/SellingPlan/26788724954']);
+  });
+
+  it('hides subscriptions entirely when no group matches', async () => {
+    vi.stubEnv('PUBLIC_SHOPIFY_SUBSCRIPTION_GROUP_IDS', '99999');
+    vi.resetModules();
+
+    const { filterSellingPlanGroups } = await import('../../src/lib/shopify');
+    const result = filterSellingPlanGroups(productWithTwoApps as never) as typeof productWithTwoApps;
+
+    expect(result.sellingPlanGroups.edges).toEqual([]);
+    expect(result.variants.edges[0].node.sellingPlanAllocations.edges).toEqual([]);
+  });
+  it('excludes Propel\'s leftover groups, which report no owner at all', async () => {
+    vi.stubEnv('PUBLIC_SHOPIFY_SUBSCRIPTION_GROUP_IDS', '60442');
+    vi.resetModules();
+
+    const { filterSellingPlanGroups } = await import('../../src/lib/shopify');
+    const withPropel = {
+      ...productWithTwoApps,
+      sellingPlanGroups: {
+        edges: [
+          ...productWithTwoApps.sellingPlanGroups.edges,
+          { node: { appName: null, name: 'New sign up Subscription for skincare', options: [], sellingPlans: { edges: [plan('gid://shopify/SellingPlan/26328826074')] } } },
+        ],
+      },
+    };
+
+    const result = filterSellingPlanGroups(withPropel as never) as typeof productWithTwoApps;
+
+    expect(result.sellingPlanGroups.edges.map(e => e.node.appName)).toEqual(['60442']);
+  });
+});
