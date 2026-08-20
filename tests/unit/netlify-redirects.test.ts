@@ -93,7 +93,7 @@ describe('Netlify redirect rules', () => {
   });
   it('routes the subscription portal URL before the one-segment referral wildcard', () => {
     const config = readRedirects();
-    const portalRule = config.indexOf('/manage-subscriptions https://cfcskincare.myshopify.com/account 302!');
+    const portalRule = config.indexOf('/manage-subscriptions https://cfcskincare.myshopify.com/pages/manage-subscriptions 302!');
     const collabsRule = config.indexOf('/:discount_code /index.html 200');
 
     expect(portalRule).toBeGreaterThan(-1);

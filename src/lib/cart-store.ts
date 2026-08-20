@@ -60,6 +60,10 @@ export function createCartStore(api: CartApi = {
       return localStorage.getItem(DISCOUNT_STORAGE_KEY)?.trim() || '';
     },
 
+    clearPendingDiscountCode() {
+      localStorage.removeItem(DISCOUNT_STORAGE_KEY);
+    },
+
     async applyPendingDiscountCode() {
       const discountCode = this.getPendingDiscountCode();
       if (!this.id || !discountCode) return;
@@ -70,10 +74,22 @@ export function createCartStore(api: CartApi = {
         const accepted = cart.discountCodes.some(
           (code) => code.code.toLowerCase() === discountCode.toLowerCase() && code.applicable
         );
+
+        // A rejected code is deliberately kept: "not applicable to this cart"
+        // usually means the qualifying product is not in it yet, and the code
+        // should still work once it is.
         if (!accepted) throw new Error('Discount code is not applicable to this cart.');
+
         cart.checkoutUrl = appendDiscountToCheckoutUrl(cart.checkoutUrl, discountCode);
         this.applyCart(cart);
+
+        // The cart carries the discount server-side from here on, so the pending
+        // copy has done its job. Keeping it was what made a one-off referral code
+        // reattach to every later cart on this browser, subscriptions included.
+        this.clearPendingDiscountCode();
       } catch {
+        // Transient API failure — keep the code so the next cart action retries,
+        // and let checkout validate it via the URL in the meantime.
         this.checkoutUrl = appendDiscountToCheckoutUrl(this.checkoutUrl, discountCode);
       }
     },

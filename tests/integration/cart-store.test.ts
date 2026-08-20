@@ -172,4 +172,20 @@ describe('cart store integration behavior', () => {
 
     expect(store.errorMessage).toBe('We could not add that item to your cart. Please try again.');
   });
+  it('stops reapplying a discount code once the cart has accepted it', async () => {
+    // A referral code used to live in localStorage forever, so it reattached to
+    // every later cart on the same browser — including subscription orders.
+    localStorage.setItem('shopify_discount_code', 'CHRISTAL');
+    const api = mockApi();
+    const store = createCartStore(api);
+
+    await store.addItem(variantId, 1);
+
+    expect(store.checkoutUrl).toContain('discount=CHRISTAL');
+    expect(localStorage.getItem('shopify_discount_code')).toBeNull();
+
+    await store.addItem(alternateVariantId, 1);
+
+    expect(api.updateCartDiscountCodes).toHaveBeenCalledTimes(1);
+  });
 });

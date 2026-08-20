@@ -14,25 +14,7 @@ unchecked task unless you are starting it.
 
 ## Queue
 
-- [x] Fix whole variant bug (see ### wholevariantbug)
-- [x] Should show variants of products just like regular shop page... or at least NOT as 2+ versions of the same product... thats bad UX
-- [x] When I clicked return to cart from the Shopify order page, it brought me to this URL, which again, no one should be able to access  https://cfcskincare.myshopify.com/cart
-- [x] Document the process for creating a wholesale B2B account in the backend and describe the users process on the front end. save to desktop as CFC-wholesale-process.md
-- [x] Investigate the Astro 404 for Bold's customer portal at `/pages/manage-subscriptions` and determine whether the Shopify/Liquid forwarding should change
-- [x] Provide the complete Liquid redirect replacement with a narrow Bold customer portal exception
-- [x] Keep the Bold subscription test product off the public site (build-side hiding + Shopify Unlisted)
-
-### wholevariantbug
-A separate bug I found on the way
-
-wholesale-core.ts:361 does const variant = product.variants.nodes[0] — it takes only the first variant. But these products have two:
-
-┌────────────────────────────┬─────────────────────────┐
-│          Product           │        Variants         │
-├────────────────────────────┼─────────────────────────┤
-│ Color Correction C&E Serum │ 18 oz. $720, 8 oz. $360 │
-├────────────────────────────┼─────────────────────────┤
-│ Pure Hydration HA Serum    │ 18 oz. $360, 8 oz. $180 │
-└────────────────────────────┴─────────────────────────┘
-
-Your wholesale grid can only ever sell the 18 oz. The 8 oz is unreachable. That matches your screenshots — both show "18 oz." Worth fixing once checkout works, though it's independent of the catalog issue.
+- [x] I keep getting Discount code CHRISTAL but i havent entered that for a long time... is that stuck in my cookies? or is that a code bug
+      Answer: code bug, not cookies. `shopify_discount_code` was written to
+      localStorage and never removed, so it reattached to every later cart.
+      Fixed by clearing it once the cart accepts it.
