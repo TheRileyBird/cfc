@@ -18,3 +18,12 @@ unchecked task unless you are starting it.
       Answer: code bug, not cookies. `shopify_discount_code` was written to
       localStorage and never removed, so it reattached to every later cart.
       Fixed by clearing it once the cart accepts it.
+- [x] Allow subscriptions to be bought without a shipping fee (in-store pickup)
+      No code change — Shopify config. Enabled Settings > Shipping and delivery >
+      Pickup in store for 317 North Columbia Street. Bold supports pickup for
+      subscriptions (its portal ships a Ship/Pickup toggle and a pickup-location
+      picker), and checkout now offers pickup on subscription carts, defaulting
+      to shipping. Note: the SUBSCRIPTION delivery group already quotes $0.00
+      shipping while ONE_TIME_PURCHASE quotes $9.99 — worth confirming that free
+      rate is deliberate.
+
